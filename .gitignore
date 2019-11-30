@@ -1,0 +1,10 @@
+.backups
+.last-package-update-day
+.lsp-session-v1
+auto-save-list/
+elpa/
+projectile-bookmarks.eld
+recentf
+snippets
+transient
+url
