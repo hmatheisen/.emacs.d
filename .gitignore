@@ -4,5 +4,5 @@
 !.gitignore
 !init.el
 !logo-small.png
-!elisp/
-!scripts/
+!elisp
+!scripts
