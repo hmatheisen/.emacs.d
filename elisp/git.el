@@ -9,4 +9,5 @@
   :ensure t
   :bind ("C-x g" . 'magit-status))
 
+(provide 'git)
 ;;; git.el ends here

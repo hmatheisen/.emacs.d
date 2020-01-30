@@ -7,12 +7,6 @@
 
 ;;; Code:
 
-;; MELPA
-(package-initialize)
-(require 'package)
-(add-to-list 'package-archives
-	     '("melpa" . "http://melpa.milkbox.net/packages/"))
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -20,10 +14,10 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" default)))
+    ("fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" "13d20048c12826c7ea636fbe513d6f24c0d43709a761052adbca052708798ce3" default)))
  '(package-selected-packages
    (quote
-    (htmlize yasnippet-snippets 2048-game undo-tree flymd auctex latex-preview-pane tern web-mode flymake-eslint yaml-mode nginx-mode dockerfile-mode docker all-the-icons tide company-tern tern-auto-complete company-lsp lsp-ui lsp-mode flycheck projectile cider clojure-mode neotree spacemacs-theme dap-mode elpy js2-mode org-bullets org markdown-mode magit go-mode company counsel ivy move-text buffer-move auto-package-update use-package))))
+    (which-key counsel org-bullets magit spacemace-theme theme-switcher new-term use-package spacemacs-theme moe-theme flycheck buffer-move))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -31,27 +25,43 @@
  ;; If there is more than one, they won't work right.
  )
 
-;; Require my own scripts
-(add-to-list 'load-path "~/.emacs.d/scripts/new-term")
-(add-to-list 'load-path "~/.emacs.d/scripts/theme-switcher")
+;; Check whether system is mac
+(defconst *is-a-mac* (eq system-type 'darwin))
 
-;; Require other config files
+;; MELPA
+(require 'package)
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/"))
+(setq package-enable-at-startup nil)
+(package-initialize)
+
+;; Setting up the package manager. Install if missing.
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(eval-and-compile
+  (require 'use-package-ensure)
+  (setq use-package-always-ensure t))
+
+;; Personal scripts
+(add-to-list 'load-path "~/.emacs.d/scripts/theme-switcher")
+(add-to-list 'load-path "~/.emacs.d/scripts/new-term")
+
+(require 'theme-switcher)
+(require 'new-term)
+
+;; Add init config to load-path
 (add-to-list 'load-path "~/.emacs.d/elisp")
 
-(load "~/.emacs.d/elisp/packages")
-(load "~/.emacs.d/elisp/global")
-(load "~/.emacs.d/elisp/buffer")
-(load "~/.emacs.d/elisp/keybindings")
-(load "~/.emacs.d/elisp/ivy-mode")
-(load "~/.emacs.d/elisp/company-mode")
-(load "~/.emacs.d/elisp/golang")
-(load "~/.emacs.d/elisp/git")
-(load "~/.emacs.d/elisp/markdown")
-(load "~/.emacs.d/elisp/org-mode")
-(load "~/.emacs.d/elisp/javascript")
-(load "~/.emacs.d/elisp/python-mode")
-(load "~/.emacs.d/elisp/lsp-conf")
-(load "~/.emacs.d/elisp/web.el")
+(require 'themes)
+(require 'global)
+(require 'keybindings)
+(require 'buffer)
+(require 'git)
+(require 'ivy-counsel)
+(require 'org-mode)
+
+(provide 'init)
 
 ;;; init.el ends here
-(put 'set-goal-column 'disabled nil)
