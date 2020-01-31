@@ -1,8 +1,5 @@
-# Ignore everything
-*
-# Except for..
-!.gitignore
-!init.el
-!logo-small.png
-!elisp
-!scripts
+.backups
+auto-save-list
+elpa
+recentf
+transient

@@ -7,24 +7,6 @@
 
 ;;; Code:
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   (quote
-    ("fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" "13d20048c12826c7ea636fbe513d6f24c0d43709a761052adbca052708798ce3" default)))
- '(package-selected-packages
-   (quote
-    (which-key counsel org-bullets magit spacemace-theme theme-switcher new-term use-package spacemacs-theme moe-theme flycheck buffer-move))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-
 ;; Check whether system is mac
 (defconst *is-a-mac* (eq system-type 'darwin))
 
@@ -44,6 +26,9 @@
   (require 'use-package-ensure)
   (setq use-package-always-ensure t))
 
+;; Custom in another file
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+
 ;; Personal scripts
 (add-to-list 'load-path "~/.emacs.d/scripts/theme-switcher")
 (add-to-list 'load-path "~/.emacs.d/scripts/new-term")
@@ -61,6 +46,7 @@
 (require 'git)
 (require 'ivy-counsel)
 (require 'org-mode)
+(require 'lsp-init)
 
 (provide 'init)
 
