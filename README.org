@@ -6,5 +6,7 @@
 * Install
 
 #+BEGIN_SRC bash
-git clone https://github.com/hmatheisen/.emacs.d.git ~/.emacs.d
+git clone --recursive https://github.com/hmatheisen/.emacs.d.git ~/.emacs.d
 #+END_SRC
+
+I use the ~--recursive~ since I use submodules for some packages that I wrote
