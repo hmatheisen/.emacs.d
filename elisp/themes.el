@@ -5,6 +5,9 @@
 
 ;;; Code:
 
+;; Allow to load themes without prompting
+(setq custom-safe-themes t)
+
 ;; Spacemacs Theme
 (use-package spacemacs-common
   :ensure spacemacs-theme)

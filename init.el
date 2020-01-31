@@ -26,19 +26,21 @@
   (require 'use-package-ensure)
   (setq use-package-always-ensure t))
 
-;; Custom in another file
+;; Custom params in another file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
 ;; Personal scripts
 (add-to-list 'load-path "~/.emacs.d/scripts/theme-switcher")
 (add-to-list 'load-path "~/.emacs.d/scripts/new-term")
 
-(require 'theme-switcher)
-(require 'new-term)
-
 ;; Add init config to load-path
 (add-to-list 'load-path "~/.emacs.d/elisp")
 
+;; Require scripts/
+(require 'theme-switcher)
+(require 'new-term)
+
+;; Require config in elisp/
 (require 'themes)
 (require 'global)
 (require 'keybindings)

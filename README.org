@@ -1,0 +1,20 @@
+#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline
+#+OPTIONS: author:t broken-links:nil c:nil creator:nil
+#+OPTIONS: d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t num:t
+#+OPTIONS: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
+#+OPTIONS: timestamp:t title:t toc:t todo:t |:t
+
+#+TITLE: Emacs Config
+#+DATE: <2020-01-31 Fri>
+#+AUTHOR: Henry MATHEISEN
+#+EMAIL: henry.mthsn@gmail.com
+#+LANGUAGE: en
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+#+CREATOR: Emacs 26.3 (Org mode 9.1.9)
+
+* Install
+
+#+BEGIN_SRC bash
+git clone https://github.com/hmatheisen/.emacs.d.git ~/.emacs.d
+#+END_SRC
