@@ -55,7 +55,7 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#new-term][New Term]]
   - [[#theme-switcher][Theme Switcher]]
 - [[#closing-files][Closing files]]
-  - [[#initel-][=init.el-]]
+  - [[#initel-1][=init.el=]]
 
 * What is this?
 
@@ -576,7 +576,7 @@ This allows me to configure a theme for the day and a theme for the night that a
 
 * Closing files
 
-** =init.el-
+** =init.el=
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 ;;; init.el ends here
