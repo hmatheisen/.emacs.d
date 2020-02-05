@@ -7,6 +7,9 @@
 
 ;; Allow to load themes without prompting
 (setq custom-safe-themes t)
+(use-package custom
+  :ensure nil
+  :config (setq custom-safe-themes t))
 
 ;; Spacemacs Theme
 (use-package spacemacs-common

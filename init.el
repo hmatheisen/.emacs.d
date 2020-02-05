@@ -2,15 +2,14 @@
 
 ;;; Commentary:
 ;;; My Emacs Init File
-;;; I first declare the scripts folder in which I store my personal scripts for Emacs
-;;; Then the elisp folders contains package declaration/config and editor config
+;;; This file is generted by `config.org', since there are no comments in here,
+;;; you should go have a look there for more information.
 
 ;;; Code:
 
-;; Check whether system is mac
-(defconst *is-a-mac* (eq system-type 'darwin))
+(defconst *is-a-mac* (eq system-type 'darwin)
+  "Check whether system is mac.")
 
-;; MELPA
 (require 'package)
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
@@ -18,7 +17,6 @@
 (setq package-enable-at-startup nil)
 (package-initialize)
 
-;; Setting up the package manager. Install if missing.
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
@@ -26,30 +24,229 @@
   (require 'use-package-ensure)
   (setq use-package-always-ensure t))
 
-;; Custom params in another file
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(add-to-list 'load-path "~/.emacs.d/site-lisp/theme-switcher")
+(add-to-list 'load-path "~/.emacs.d/site-lisp/new-term")
 
-;; Personal scripts
-(add-to-list 'load-path "~/.emacs.d/scripts/theme-switcher")
-(add-to-list 'load-path "~/.emacs.d/scripts/new-term")
+(use-package emacs
+  :preface
+  (defun add-to-path (path)
+    "Add a path to `exec-path' and Emacs \"PATH\" variable."
+    (add-to-list 'exec-path (substring path 1))
+    (setenv "PATH" (concat (getenv "PATH") path)))
+  :ensure nil
+  :config
+  ;; Avoid a few issues on MacOS
+  (when *is-a-mac*
+    (setq mac-option-modifier nil
+          mac-command-modifier 'meta
+          select-enable-clipboard t))
+  ;; Enable downcase/upcase region
+  (put 'downcase-region 'disabled nil)
+  (put 'upcase-region 'disabled nil)
+  ;; Remove Toolbar
+  (tool-bar-mode -1)
+  ;; Disable menu bar
+  (menu-bar-mode -1)
+  ;; Trash can support
+  (setq delete-by-moving-to-trash t)
+  ;; Set tabs to 2
+  (setq-default tab-width 2)
+  ;; Indent using spaces
+  (setq-default indent-tabs-mode nil)
+  ;; Title Bar Settings
+  (when *is-a-mac*
+    (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+    (add-to-list 'default-frame-alist '(ns-appearance . dark))
+    (setq ns-use-proxy-icon  nil)
+    (setq frame-title-format nil))
+  ;; Make that damn bell shut up
+  (setq ring-bell-function 'ignore)
+  ;; Add useful path to exec-path and PATH
+  (add-to-path ":/usr/local/bin")
+  (add-to-path ":/Library/TeX/texbin")
+  ;; Default truncate lines
+  (setq-default truncate-lines t))
 
-;; Add init config to load-path
-(add-to-list 'load-path "~/.emacs.d/elisp")
+(use-package custom
+  :ensure nil
+  :config (setq custom-safe-themes t))
 
-;; Require scripts/
-(require 'theme-switcher)
-(require 'new-term)
+(use-package "startup"
+  :ensure nil
+  :config (setq fancy-splash-image "~/.emacs.d/logo-small.png"))
 
-;; Require config in elisp/
-(require 'themes)
-(require 'global)
-(require 'keybindings)
-(require 'buffer)
-(require 'git)
-(require 'ivy-counsel)
-(require 'org-mode)
-(require 'lsp-init)
+(use-package term
+  :ensure nil
+  :config
+  (if *is-a-mac*
+      (setq explicit-shell-file-name "/usr/local/bin/bash")
+    (setq explicit-shell-file-name "/bin/bash")))
 
-(provide 'init)
+(use-package "window"
+  :ensure nil
+  :config
+  ;; Resizing
+  (global-set-key (kbd "M--") 'shrink-window)
+  (global-set-key (kbd "M-+") 'enlarge-window)
+  (global-set-key (kbd "C--") 'shrink-window-horizontally)
+  (global-set-key (kbd "C-+") 'enlarge-window-horizontally)
+  ;; Other window
+  (global-set-key (kbd "M-o") 'other-window)
+  (global-set-key (kbd "M-O") '(lambda ()
+                                 (interactive)
+                                 (other-window -1))))
 
-;;; init.el ends here
+(use-package "subr"
+  :ensure nil
+  :config (fset 'yes-or-no-p 'y-or-n-p))
+
+(use-package time
+  :ensure nil
+  :config (display-time-mode t))
+
+(use-package simple
+  :ensure nil
+  :config (column-number-mode t))
+
+(use-package battery
+  :ensure nil
+  :config (display-battery-mode t))
+
+(use-package linum
+  :ensure nil
+  :config (global-linum-mode t))
+
+(use-package files
+  :ensure nil
+  :config (setq backup-directory-alist '(("." . "~/.emacs.d/.backups"))))
+
+(use-package frame
+  :ensure nil
+  :config (add-hook 'after-init-hook 'toggle-frame-fullscreen))
+
+(use-package winner
+  :ensure nil
+  :config (winner-mode t))
+
+(use-package delsel
+  :ensure nil
+  :config (delete-selection-mode +1))
+
+(use-package scroll-bar
+  :ensure nil
+  :config (scroll-bar-mode -1))
+
+(use-package paren
+  :ensure nil
+  :init (setq show-paren-delay 0)
+  :config (show-paren-mode t))
+
+(use-package ediff
+  :ensure nil
+  :config (setq ediff-split-window-function 'split-window-horizontally))
+
+(use-package elec-pair
+  :ensure nil
+  :hook (prog-mode . electric-pair-mode))
+
+(use-package ibuffer
+  :ensure nil
+  :config
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
+  ;; Create home filter group
+  (setq ibuffer-saved-filter-groups
+        '(("home"
+           ("emacs-config" (filename . ".emacs.d"))
+           ("Terminal" (mode . term-mode))
+           ("Magit" (mode . magit-mode))
+           ("Org" (or (mode . org-mode)
+                      (filename . "Org")
+                      (name . "\*Org Agenda\*")))
+           ("Help" (or (name . "\*Help\*")
+                       (name . "\*Apropos\*")
+                       (name . "\*info\*"))))))
+  ;; Add filter group
+  (add-hook 'ibuffer-mode-hook
+            '(lambda ()
+               (ibuffer-switch-to-saved-filter-groups "home"))))
+
+(use-package spacemacs-common
+  :ensure spacemacs-theme)
+
+(use-package moe-theme)
+
+(use-package counsel
+  :diminish ivy-mode counsel-mode
+  :bind (("C-s" . swiper-isearch))
+  :hook ((after-init . ivy-mode)
+         (ivy-mode . counsel-mode))
+  :init
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-count-format "(%d/%d) "))
+
+(use-package lsp-mode)
+
+(use-package company-mode
+  :init
+  (setq company-selection-wrap-around t)
+  (setq company-minimum-prefix-length 1)
+  (setq company-idle-delay 0)
+  (with-eval-after-load 'company
+    (define-key company-active-map (kbd "M-n") nil)
+    (define-key company-active-map (kbd "M-p") nil)
+    (define-key company-active-map (kbd "C-n") 'company-select-next)
+    (define-key company-active-map (kbd "C-p") 'company-select-previous))
+  :ensure company
+  :hook (after-init . global-company-mode))
+
+(use-package company-lsp
+  :after (company lsp)
+  :init
+  (push 'company-lsp company-backends))
+
+(use-package org
+  :hook ((org-mode . visual-line-mode)
+         (org-mode . org-indent-mode)))
+
+(use-package org-bullets :hook (org-mode . org-bullets-mode))
+
+(use-package toc-org
+  :hook ((org-mode      . toc-org-mode)
+         (markdown-mode . toc-org-mode)))
+
+(use-package magit
+  :ensure t
+  :bind ("C-x g" . 'magit-status))
+
+(use-package flycheck
+  :config (global-flycheck-mode t))
+
+(use-package treemacs
+  :init
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window)))
+
+(use-package which-key
+  :diminish which-key-mode
+  :config
+  (which-key-mode +1)
+  (setq which-key-idle-delay 0.4
+        which-key-idle-secondary-delay 0.4))
+
+(use-package new-term
+  :preface
+  (defun my-new-term-hook ()
+    (define-key term-raw-map (kbd "C-c <up>") 'bigger-term-window)
+    (define-key term-raw-map (kbd "C-c <down>") 'smaller-term-window)
+    (define-key term-raw-map (kbd "C-c q") 'quit-term))
+  :ensure nil
+  :init
+  (setq new-shell "/usr/local/bin/bash")
+  (global-set-key (kbd "C-x t") 'toggle-term-window)
+  (add-hook 'term-mode-hook 'my-new-term-hook))
+
+(use-package theme-switcher
+  :ensure nil
+  :init
+  (setq light-theme 'spacemacs-light)
+  (setq dark-theme 'spacemacs-dark))

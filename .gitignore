@@ -1,5 +1,7 @@
-.backups
-auto-save-list
-elpa
+.backups/
+.cache/
+auto-save-list/
+custom.el
+elpa/
 recentf
-transient
+transient/

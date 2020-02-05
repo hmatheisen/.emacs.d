@@ -1,0 +1,552 @@
+#+TITLE: He-Macs
+#+SUBTITLE: Henry's GNU Emacs literate config
+#+AUTHOR: hmatheisen
+#+LANGUAGE: en
+#+OPTIONS: num:nil toc:2
+
+#+BEGIN_QUOTE
+I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
+#+END_QUOTE
+
+* Table of Contens :TOC:
+- [[#what-is-this][What is this?]]
+  - [[#abstract][Abstract]]
+  - [[#why-though][Why though?]]
+  - [[#installation][Installation]]
+- [[#creating-the-files][Creating the files]]
+  - [[#files-to-ignore][Files to ignore]]
+  - [[#initel][=init.el=]]
+- [[#initialization][Initialization]]
+  - [[#custom-constantsvariables][Custom constants/variables]]
+  - [[#add-package-archives][Add package archives]]
+  - [[#install-use-package][Install use-package]]
+  - [[#require-personal-packages][Require personal packages]]
+- [[#global-settings][Global settings]]
+  - [[#settings-without-packages][Settings without packages]]
+  - [[#custom][Custom]]
+  - [[#startup-screen][Startup screen]]
+  - [[#terminal-binary][Terminal binary]]
+  - [[#window][Window]]
+  - [[#y-or-n--yes-or-no][Y or N > Yes or No]]
+  - [[#time-mode][Time mode]]
+  - [[#column-numbers][Column numbers]]
+  - [[#display-battery-level][Display battery level]]
+  - [[#line-numbers-everywhere][Line numbers everywhere]]
+  - [[#backup-files][Backup files]]
+  - [[#full-frame-on-startup][Full frame on startup]]
+  - [[#winner-mode][Winner mode]]
+  - [[#modern-region-behavior][Modern region behavior]]
+  - [[#no-scroll-bar][No scroll bar]]
+  - [[#matching-parentheses][Matching Parentheses]]
+  - [[#ediff][Ediff]]
+  - [[#auto-pair][Auto-pair]]
+  - [[#ibuffer][ibuffer]]
+- [[#third-party-packages][Third-party Packages]]
+  - [[#themes][Themes]]
+  - [[#ivy][Ivy]]
+  - [[#code-completion][Code Completion]]
+  - [[#org-mode][Org Mode]]
+  - [[#magit][Magit]]
+  - [[#flycheck][Flycheck]]
+  - [[#treemacs][Treemacs]]
+  - [[#which-key][Which key]]
+- [[#personal-packages][Personal Packages]]
+  - [[#new-term][New Term]]
+  - [[#theme-switcher][Theme Switcher]]
+
+* What is this?
+
+Let's forget about this dumb play on words between my name and a cartoon from the 80's and actually explain what this file is.
+
+** Abstract
+
+This is my attempt at writing a literate Emacs configuration using Org, a "simple outliner for note-taking and list management" that actually does way more.  Although this configuration is for myself but anyone is free to watch, copy or use its content.
+
+** Why though?
+
+Fame?  No.  Fun?  Maybe.  Having your whole configuration in a single file might be a little messy but a literate file such as this one looks like a neat idea to organize and document my dear Emacs configuration.  Of course the file will eventually be gigantic but Org Mode makes it easy to manage.  Documentation is also a huge plus since I usually get lost in the maze of Emacs Lisp that is my current config.
+
+** Installation
+
+All you need to do is to clone this repository, I added the tangled file to git so the =init.el= is already here.  Since I use submodules, you need to clone recursively this repository.
+
+#+BEGIN_SRC bash
+# Maybe backup you files first
+mv ~/.emacs.d ~/.emacs.bak
+#+END_SRC
+
+#+BEGIN_SRC bash
+git clone --recursive https://github.com/hmatheisen/.emacs.d.git ~/.emacs.d
+#+END_SRC
+
+* Creating the files
+
+** Files to ignore
+
+This is my =.gitignore= file.
+
+#+BEGIN_SRC text :tangle .gitignore
+.backups/
+.cache/
+auto-save-list/
+custom.el
+elpa/
+recentf
+transient/
+#+END_SRC
+
+** =init.el=
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+;;; init.el --- Emacs Init File
+
+;;; Commentary:
+;;; My Emacs Init File
+;;; This file is generted by `config.org', since there are no comments in here,
+;;; you should go have a look there for more information.
+
+;;; Code:
+#+END_SRC
+
+* Initialization
+
+These are the first few lines of code that start it all.  They go into =init.el= and will be added to git since they are needed to install Org on a new system and therefore read this file ton install the rest of the configuration.  I will keep maintaining =init.el= in this file since =org-babel-tangle= just rewrites the file if new modifications are made.
+
+** Custom constants/variables
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(defconst *is-a-mac* (eq system-type 'darwin)
+  "Check whether system is mac.")
+#+END_SRC
+
+** Add package archives
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(require 'package)
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/"))
+(setq package-enable-at-startup nil)
+(package-initialize)
+#+END_SRC
+
+** Install use-package
+
+=use-package= is quite handy and will allow us to require and install packages in a tidy way, we install it here and make sure it installs the packages we want by default.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(eval-and-compile
+  (require 'use-package-ensure)
+  (setq use-package-always-ensure t))
+#+END_SRC
+
+** Require personal packages
+
+Those packages are installed with git submodules.  They are isolated packages written by me so they don't need any description here.  We just add them to load path so that =use-package= can do the job later.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(add-to-list 'load-path "~/.emacs.d/site-lisp/theme-switcher")
+(add-to-list 'load-path "~/.emacs.d/site-lisp/new-term")
+#+END_SRC
+
+* Global settings
+
+These are settings to change the look/behavior of Emacs using only native options.  I regroup them by their package using =use-package=.  There is nothing really fancy happening here, just cleaning up the UI and setting some variables.  Since I always ensure packages by default, I make sure to add =:ensure nil= on native packages so =use-package= does not try to look for them in MELPA.
+
+** Settings without packages
+
+These are settings defined in the C source code of emacs so they are not related to any Lisp packages, let's pu them in a package called =emacs=.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package emacs
+  :preface
+  (defun add-to-path (path)
+    "Add a path to `exec-path' and Emacs \"PATH\" variable."
+    (add-to-list 'exec-path (substring path 1))
+    (setenv "PATH" (concat (getenv "PATH") path)))
+  :ensure nil
+  :config
+  ;; Avoid a few issues on MacOS
+  (when *is-a-mac*
+    (setq mac-option-modifier nil
+          mac-command-modifier 'meta
+          select-enable-clipboard t))
+  ;; Enable downcase/upcase region
+  (put 'downcase-region 'disabled nil)
+  (put 'upcase-region 'disabled nil)
+  ;; Remove Toolbar
+  (tool-bar-mode -1)
+  ;; Disable menu bar
+  (menu-bar-mode -1)
+  ;; Trash can support
+  (setq delete-by-moving-to-trash t)
+  ;; Set tabs to 2
+  (setq-default tab-width 2)
+  ;; Indent using spaces
+  (setq-default indent-tabs-mode nil)
+  ;; Title Bar Settings
+  (when *is-a-mac*
+    (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+    (add-to-list 'default-frame-alist '(ns-appearance . dark))
+    (setq ns-use-proxy-icon  nil)
+    (setq frame-title-format nil))
+  ;; Make that damn bell shut up
+  (setq ring-bell-function 'ignore)
+  ;; Add useful path to exec-path and PATH
+  (add-to-path ":/usr/local/bin")
+  (add-to-path ":/Library/TeX/texbin")
+  ;; Default truncate lines
+  (setq-default truncate-lines t))
+#+END_SRC
+
+** Custom
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package custom
+  :ensure nil
+  :config (setq custom-safe-themes t))
+#+END_SRC
+
+** Startup screen
+
+I use my own image in the startup screen, it's the same logo as the native one but without borders since they look weird when changing theme.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package "startup"
+  :ensure nil
+  :config (setq fancy-splash-image "~/.emacs.d/logo-small.png"))
+#+END_SRC
+
+** Terminal binary
+
+On MacOS, I use a new version of =bash= installed with =brew= since I can't update the default one. Therefore the path is changed to =/usr/local/bin/bash=.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package term
+  :ensure nil
+  :config
+  (if *is-a-mac*
+      (setq explicit-shell-file-name "/usr/local/bin/bash")
+    (setq explicit-shell-file-name "/bin/bash")))
+#+END_SRC
+
+** Window
+
+Change keybindings to resize window so I can just keep pressing them.  Also I change the default keybindings to go to another window since =C-x o= is a little too long in my opinion.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package "window"
+  :ensure nil
+  :config
+  ;; Resizing
+  (global-set-key (kbd "M--") 'shrink-window)
+  (global-set-key (kbd "M-+") 'enlarge-window)
+  (global-set-key (kbd "C--") 'shrink-window-horizontally)
+  (global-set-key (kbd "C-+") 'enlarge-window-horizontally)
+  ;; Other window
+  (global-set-key (kbd "M-o") 'other-window)
+  (global-set-key (kbd "M-O") '(lambda ()
+                                 (interactive)
+                                 (other-window -1))))
+#+END_SRC
+
+** Y or N > Yes or No
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package "subr"
+  :ensure nil
+  :config (fset 'yes-or-no-p 'y-or-n-p))
+#+END_SRC
+
+** Time mode
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package time
+  :ensure nil
+  :config (display-time-mode t))
+#+END_SRC
+
+** Column numbers
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package simple
+  :ensure nil
+  :config (column-number-mode t))
+#+END_SRC
+
+** Display battery level
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package battery
+  :ensure nil
+  :config (display-battery-mode t))
+#+END_SRC
+
+** Line numbers everywhere
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package linum
+  :ensure nil
+  :config (global-linum-mode t))
+#+END_SRC
+
+** Backup files 
+
+Make sure that all backup files only exist in one place.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package files
+  :ensure nil
+  :config (setq backup-directory-alist '(("." . "~/.emacs.d/.backups"))))
+#+END_SRC
+
+** Full frame on startup
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package frame
+  :ensure nil
+  :config (add-hook 'after-init-hook 'toggle-frame-fullscreen))
+#+END_SRC
+
+** Winner mode
+
+Allows to revert changes on the window configuration.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package winner
+  :ensure nil
+  :config (winner-mode t))
+#+END_SRC
+
+** Modern region behavior
+
+Replace the active region when typing/yanking text, which is a little handier than the default behaviour.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package delsel
+  :ensure nil
+  :config (delete-selection-mode +1))
+#+END_SRC
+
+** No scroll bar
+
+I mean who likes this really?
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package scroll-bar
+  :ensure nil
+  :config (scroll-bar-mode -1))
+#+END_SRC
+
+** Matching Parentheses
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package paren
+  :ensure nil
+  :init (setq show-paren-delay 0)
+  :config (show-paren-mode t))
+#+END_SRC
+
+** Ediff
+
+Enter ediff with side-by-side buffers to better compare the differences.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package ediff
+  :ensure nil
+  :config (setq ediff-split-window-function 'split-window-horizontally))
+#+END_SRC
+
+** Auto-pair
+
+Auto close quote, parentheses, brackets, etc.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package elec-pair
+  :ensure nil
+  :hook (prog-mode . electric-pair-mode))
+#+END_SRC
+
+** ibuffer
+
+Although I don't usually list open buffers, ibuffer is a little better way of doing it.  I have nothing against the default buffer list but it can get quite messy when there are lots of open buffers.  ibuffer allows to group them depending on theie mode/folder/extensions.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package ibuffer
+  :ensure nil
+  :config
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
+  ;; Create home filter group
+  (setq ibuffer-saved-filter-groups
+        '(("home"
+           ("emacs-config" (filename . ".emacs.d"))
+           ("Terminal" (mode . term-mode))
+           ("Magit" (mode . magit-mode))
+           ("Org" (or (mode . org-mode)
+                      (filename . "Org")
+                      (name . "\*Org Agenda\*")))
+           ("Help" (or (name . "\*Help\*")
+                       (name . "\*Apropos\*")
+                       (name . "\*info\*"))))))
+  ;; Add filter group
+  (add-hook 'ibuffer-mode-hook
+            '(lambda ()
+               (ibuffer-switch-to-saved-filter-groups "home"))))
+#+END_SRC
+
+* Third-party Packages
+
+Here are all the packages I require from MELPA.  
+
+** Themes
+
+Spacemacs themes are pretty cool and minimal
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package spacemacs-common
+  :ensure spacemacs-theme)
+#+END_SRC
+
+I also like moe-theme
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package moe-theme)
+#+END_SRC
+
+** Ivy
+
+I use Ivy as as a completion frontend, it integrates really well with other super cool tools such as Swiper and Counsel.  There are other choices for this such as Helm that I don't really like or the default Ido mode that I should try one day.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package counsel
+  :diminish ivy-mode counsel-mode
+  :bind (("C-s" . swiper-isearch))
+  :hook ((after-init . ivy-mode)
+         (ivy-mode . counsel-mode))
+  :init
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-count-format "(%d/%d) "))
+#+END_SRC
+
+** Code Completion
+
+I use =lsp-mode= as my completion tool.  Language Server Protocols allows to use the most modern code completions since they use servers as completion engines and =lsp-mode= is a great Emacs client for it.  I also use =company-mode= for the frontend completion.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package lsp-mode)
+
+(use-package company-mode
+  :init
+  (setq company-selection-wrap-around t)
+  (setq company-minimum-prefix-length 1)
+  (setq company-idle-delay 0)
+  (with-eval-after-load 'company
+    (define-key company-active-map (kbd "M-n") nil)
+    (define-key company-active-map (kbd "M-p") nil)
+    (define-key company-active-map (kbd "C-n") 'company-select-next)
+    (define-key company-active-map (kbd "C-p") 'company-select-previous))
+  :ensure company
+  :hook (after-init . global-company-mode))
+
+(use-package company-lsp
+  :after (company lsp)
+  :init
+  (push 'company-lsp company-backends))
+#+END_SRC
+
+** Org Mode
+
+I use org mode fo lots of things epacially to write this file.  It's just really great!
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package org
+  :hook ((org-mode . visual-line-mode)
+         (org-mode . org-indent-mode)))
+
+(use-package org-bullets :hook (org-mode . org-bullets-mode))
+
+(use-package toc-org
+  :hook ((org-mode      . toc-org-mode)
+         (markdown-mode . toc-org-mode)))
+#+END_SRC
+
+** Magit
+
+Magit is an awesome git wrapper, everyone loves it, I love it and I use it everyday.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package magit
+  :ensure t
+  :bind ("C-x g" . 'magit-status))
+#+END_SRC
+
+** Flycheck
+
+Flycheck linter.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package flycheck
+  :config (global-flycheck-mode t))
+#+END_SRC
+
+** Treemacs
+
+Tree file structure for Emacs
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package treemacs
+  :init
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window)))
+#+END_SRC
+
+** Which key
+
+This is great to get a list of available commands while typing a key chord.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package which-key
+  :diminish which-key-mode
+  :config
+  (which-key-mode +1)
+  (setq which-key-idle-delay 0.4
+        which-key-idle-secondary-delay 0.4))
+#+END_SRC
+
+* Personal Packages
+
+This part is about configuring packages that are not part of GNU Emacs but written by me.  I chose not to upload them on MELPA since similar version of thos packages already exists, I just didn't like them :)
+
+** [[https://github.com/hmatheisen/new-term][New Term]]
+
+This package allows to toggle a small terminal window on the bottom of the screen.  It has a few other features like making it bigger or smaller and quitting by closing the shell process and killing the window.  It is somewhat similar to what you would find in more modern editors such as VS Code.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package new-term
+  :preface
+  (defun my-new-term-hook ()
+    (define-key term-raw-map (kbd "C-c <up>") 'bigger-term-window)
+    (define-key term-raw-map (kbd "C-c <down>") 'smaller-term-window)
+    (define-key term-raw-map (kbd "C-c q") 'quit-term))
+  :ensure nil
+  :init
+  (setq new-shell "/usr/local/bin/bash")
+  (global-set-key (kbd "C-x t") 'toggle-term-window)
+  (add-hook 'term-mode-hook 'my-new-term-hook))
+#+END_SRC
+
+** [[https://github.com/hmatheisen/theme-switcher][Theme Switcher]]
+
+This allows me to configure a theme for the day and a theme for the night that automatically switches at given time.  I currently have it configure with both =spacemacs-light= and =spacemacs-dark=.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package theme-switcher
+  :ensure nil
+  :init
+  (setq light-theme 'spacemacs-light)
+  (setq dark-theme 'spacemacs-dark))
+#+END_SRC
+

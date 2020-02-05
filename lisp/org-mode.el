@@ -10,5 +10,9 @@
 
 (use-package org-bullets :hook (org-mode . org-bullets-mode))
 
+(use-package toc-org
+  :hook ((org-mode      . toc-org-mode)
+         (markdown-mode . toc-org-mode)))
+
 (provide 'org-mode)
 ;;; org-mode.el ends here
