@@ -24,7 +24,6 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
 - [[#global-settings][Global settings]]
   - [[#settings-without-packages][Settings without packages]]
   - [[#custom][Custom]]
-  - [[#startup-screen][Startup screen]]
   - [[#terminal-binary][Terminal binary]]
   - [[#window][Window]]
   - [[#y-or-n--yes-or-no][Y or N > Yes or No]]
@@ -50,9 +49,13 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#flycheck][Flycheck]]
   - [[#treemacs][Treemacs]]
   - [[#which-key][Which key]]
+  - [[#undo-tree][Undo tree]]
+  - [[#dashboard][Dashboard]]
 - [[#personal-packages][Personal Packages]]
   - [[#new-term][New Term]]
   - [[#theme-switcher][Theme Switcher]]
+- [[#closing-files][Closing files]]
+  - [[#initel-][=init.el-]]
 
 * What is this?
 
@@ -207,17 +210,9 @@ These are settings defined in the C source code of emacs so they are not related
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package custom
   :ensure nil
-  :config (setq custom-safe-themes t))
-#+END_SRC
-
-** Startup screen
-
-I use my own image in the startup screen, it's the same logo as the native one but without borders since they look weird when changing theme.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package "startup"
-  :ensure nil
-  :config (setq fancy-splash-image "~/.emacs.d/logo-small.png"))
+  :config 
+  (setq custom-safe-themes t)
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory)))
 #+END_SRC
 
 ** Terminal binary
@@ -436,7 +431,8 @@ I use Ivy as as a completion frontend, it integrates really well with other supe
 I use =lsp-mode= as my completion tool.  Language Server Protocols allows to use the most modern code completions since they use servers as completion engines and =lsp-mode= is a great Emacs client for it.  I also use =company-mode= for the frontend completion.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package lsp-mode)
+(use-package lsp-mode
+  :hook ((python-mode . lsp)))
 
 (use-package company-mode
   :init
@@ -521,6 +517,29 @@ This is great to get a list of available commands while typing a key chord.
         which-key-idle-secondary-delay 0.4))
 #+END_SRC
 
+** Undo tree
+
+Handy features for undo/redo
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package undo-tree
+  :config (global-undo-tree-mode))
+#+END_SRC
+
+** Dashboard
+
+I am currently testing this, I think I like it :)
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package dashboard
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-startup-banner 'official
+        dashboard-items '((recents . 5)
+                          (bookmarks . 5))
+        dashboard-center-content t))
+#+END_SRC
+
 * Personal Packages
 
 This part is about configuring packages that are not part of GNU Emacs but written by me.  I chose not to upload them on MELPA since similar version of thos packages already exists, I just didn't like them :)
@@ -551,7 +570,14 @@ This allows me to configure a theme for the day and a theme for the night that a
 (use-package theme-switcher
   :ensure nil
   :init
-  (setq light-theme 'spacemacs-light)
-  (setq dark-theme 'spacemacs-dark))
+  (setq day-theme 'spacemacs-light)
+  (setq night-theme 'spacemacs-dark))
 #+END_SRC
 
+* Closing files
+
+** =init.el-
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+;;; init.el ends here
+#+END_SRC

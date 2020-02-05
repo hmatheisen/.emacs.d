@@ -69,11 +69,9 @@
 
 (use-package custom
   :ensure nil
-  :config (setq custom-safe-themes t))
-
-(use-package "startup"
-  :ensure nil
-  :config (setq fancy-splash-image "~/.emacs.d/logo-small.png"))
+  :config 
+  (setq custom-safe-themes t)
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory)))
 
 (use-package term
   :ensure nil
@@ -184,7 +182,8 @@
   (setq ivy-use-virtual-buffers t)
   (setq ivy-count-format "(%d/%d) "))
 
-(use-package lsp-mode)
+(use-package lsp-mode
+  :hook ((python-mode . lsp)))
 
 (use-package company-mode
   :init
@@ -238,6 +237,17 @@
   (setq which-key-idle-delay 0.4
         which-key-idle-secondary-delay 0.4))
 
+(use-package undo-tree
+  :config (global-undo-tree-mode))
+
+(use-package dashboard
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-startup-banner 'official
+        dashboard-items '((recents . 5)
+                          (bookmarks . 5))
+        dashboard-center-content t))
+
 (use-package new-term
   :preface
   (defun my-new-term-hook ()
@@ -253,5 +263,7 @@
 (use-package theme-switcher
   :ensure nil
   :init
-  (setq light-theme 'spacemacs-light)
-  (setq dark-theme 'spacemacs-dark))
+  (setq day-theme 'spacemacs-light)
+  (setq night-theme 'spacemacs-dark))
+
+;;; init.el ends here
