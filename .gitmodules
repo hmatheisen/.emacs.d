@@ -1,6 +1,0 @@
-[submodule "scripts/new-term"]
-	path = scripts/new-term
-	url = https://github.com/hmatheisen/new-term
-[submodule "scripts/theme-switcher"]
-	path = scripts/theme-switcher
-	url = https://github.com/hmatheisen/theme-switcher
