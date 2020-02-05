@@ -205,8 +205,13 @@
   (push 'company-lsp company-backends))
 
 (use-package org
-  :hook ((org-mode . visual-line-mode)
-         (org-mode . org-indent-mode)))
+  :preface
+  (defun my-org-mode-hook ()
+    (org-indent-mode 1)
+    (visual-line-mode 1)
+    (linum-mode -1))
+  :init
+  (add-hook 'org-mode-hook 'my-org-mode-hook))
 
 (use-package org-bullets :hook (org-mode . org-bullets-mode))
 
