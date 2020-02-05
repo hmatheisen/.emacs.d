@@ -246,7 +246,8 @@
   (setq dashboard-startup-banner 'official
         dashboard-items '((recents . 5)
                           (bookmarks . 5))
-        dashboard-center-content t))
+        dashboard-center-content t
+        dashboard-banner-logo-title "Welcome to He-Macs!"))
 
 (use-package new-term
   :preface

@@ -63,7 +63,7 @@ Let's forget about this dumb play on words between my name and a cartoon from th
 
 ** Abstract
 
-This is my attempt at writing a literate Emacs configuration using Org, a "simple outliner for note-taking and list management" that actually does way more.  Although this configuration is for myself but anyone is free to watch, copy or use its content.
+This is my attempt at writing a literate Emacs configuration using Org, a "simple outliner for note-taking and list management" that actually does way more.  Although this configuration is for myself and is opinionated, anyone is free to watch, copy or use its content.
 
 ** Why though?
 
@@ -537,7 +537,8 @@ I am currently testing this, I think I like it :)
   (setq dashboard-startup-banner 'official
         dashboard-items '((recents . 5)
                           (bookmarks . 5))
-        dashboard-center-content t))
+        dashboard-center-content t
+        dashboard-banner-logo-title "Welcome to He-Macs!"))
 #+END_SRC
 
 * Personal Packages
@@ -581,3 +582,4 @@ This allows me to configure a theme for the day and a theme for the night that a
 #+BEGIN_SRC emacs-lisp :tangle init.el
 ;;; init.el ends here
 #+END_SRC
+
