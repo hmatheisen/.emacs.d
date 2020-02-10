@@ -146,6 +146,17 @@
   :ensure nil
   :hook (prog-mode . electric-pair-mode))
 
+(use-package "buff-menu"
+  :ensure nil
+  :preface
+  (defun my-list-buffers (&optional arg)
+    "Wrapper around the `buffer-menu-other-window' function to
+switch to the newly opened window."
+    (interactive "P")
+    (buffer-menu-other-window)
+    (other-window))
+  :config (global-set-key (kbd "C-x C-b") 'my-list-buffers))
+
 (use-package spacemacs-common
   :ensure spacemacs-theme)
 

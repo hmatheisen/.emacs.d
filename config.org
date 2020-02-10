@@ -39,6 +39,7 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#matching-parentheses][Matching Parentheses]]
   - [[#ediff][Ediff]]
   - [[#auto-pair][Auto-pair]]
+  - [[#list-buffers][List buffers]]
 - [[#third-party-packages][Third-party Packages]]
   - [[#themes][Themes]]
   - [[#ivy][Ivy]]
@@ -358,12 +359,30 @@ Enter ediff with side-by-side buffers to better compare the differences.
 
 ** Auto-pair
 
+
 Auto close quote, parentheses, brackets, etc.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package elec-pair
   :ensure nil
   :hook (prog-mode . electric-pair-mode))
+#+END_SRC
+
+** List buffers
+
+Switch window right after using list buffers.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package "buff-menu"
+  :ensure nil
+  :preface
+  (defun my-list-buffers (&optional arg)
+    "Wrapper around the `buffer-menu-other-window' function to
+switch to the newly opened window."
+    (interactive "P")
+    (buffer-menu-other-window)
+    (other-window))
+  :config (global-set-key (kbd "C-x C-b") 'my-list-buffers))
 #+END_SRC
 
 * Third-party Packages
