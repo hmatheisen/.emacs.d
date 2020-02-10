@@ -242,6 +242,12 @@ switch to the newly opened window."
 
 (use-package cider)
 
+(use-package tide
+  :after (typescript-mode company flycheck)
+  :hook ((typescript-mode . tide-setup)
+         (typescript-mode . tide-hl-identifier-mode)
+         (before-save . tide-format-before-save)))
+
 (use-package new-term
   :preface
   (defun my-new-term-hook ()

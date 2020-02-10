@@ -52,6 +52,7 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#undo-tree][Undo tree]]
   - [[#dashboard][Dashboard]]
   - [[#clojure][Clojure]]
+  - [[#typescript][Typescript]]
 - [[#personal-packages][Personal Packages]]
   - [[#new-term][New Term]]
   - [[#theme-switcher][Theme Switcher]]
@@ -553,6 +554,17 @@ Install =CIDER= for REPL support and other intractive features.
 (use-package cider)
 #+END_SRC
 
+** Typescript
+
+Tide is a great interactive environment for Typescript.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package tide
+  :after (typescript-mode company flycheck)
+  :hook ((typescript-mode . tide-setup)
+         (typescript-mode . tide-hl-identifier-mode)
+         (before-save . tide-format-before-save)))
+#+END_SRC
 
 * Personal Packages
 
