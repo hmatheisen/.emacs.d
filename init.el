@@ -238,6 +238,10 @@ switch to the newly opened window."
         dashboard-center-content t
         dashboard-banner-logo-title "Welcome to He-Macs!"))
 
+(use-package clojure-mode)
+
+(use-package cider)
+
 (use-package new-term
   :preface
   (defun my-new-term-hook ()

@@ -51,6 +51,7 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#which-key][Which key]]
   - [[#undo-tree][Undo tree]]
   - [[#dashboard][Dashboard]]
+  - [[#clojure][Clojure]]
 - [[#personal-packages][Personal Packages]]
   - [[#new-term][New Term]]
   - [[#theme-switcher][Theme Switcher]]
@@ -533,6 +534,25 @@ I am currently testing this, I think I like it :)
         dashboard-center-content t
         dashboard-banner-logo-title "Welcome to He-Macs!"))
 #+END_SRC
+
+** Clojure
+
+*** Clojure mode
+
+Install =clojure-mode= for editing.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package clojure-mode)
+#+END_SRC
+
+*** CIDER
+
+Install =CIDER= for REPL support and other intractive features.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package cider)
+#+END_SRC
+
 
 * Personal Packages
 
