@@ -1,7 +1,10 @@
 .backups/
 .cache/
+.lsp-session-v1
 auto-save-list/
+bookmarks
 custom.el
 elpa/
+games/
 recentf
 transient/

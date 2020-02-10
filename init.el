@@ -54,11 +54,10 @@
   ;; Indent using spaces
   (setq-default indent-tabs-mode nil)
   ;; Title Bar Settings
-  (when *is-a-mac*
-    (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-    (add-to-list 'default-frame-alist '(ns-appearance . dark))
-    (setq ns-use-proxy-icon  nil)
-    (setq frame-title-format nil))
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+  (add-to-list 'default-frame-alist '(ns-appearance . dark))
+  (setq ns-use-proxy-icon  nil)
+  (setq frame-title-format nil)
   ;; Make that damn bell shut up
   (setq ring-bell-function 'ignore)
   ;; Add useful path to exec-path and PATH
@@ -146,27 +145,6 @@
 (use-package elec-pair
   :ensure nil
   :hook (prog-mode . electric-pair-mode))
-
-(use-package ibuffer
-  :ensure nil
-  :config
-  (global-set-key (kbd "C-x C-b") 'ibuffer)
-  ;; Create home filter group
-  (setq ibuffer-saved-filter-groups
-        '(("home"
-           ("emacs-config" (filename . ".emacs.d"))
-           ("Terminal" (mode . term-mode))
-           ("Magit" (mode . magit-mode))
-           ("Org" (or (mode . org-mode)
-                      (filename . "Org")
-                      (name . "\*Org Agenda\*")))
-           ("Help" (or (name . "\*Help\*")
-                       (name . "\*Apropos\*")
-                       (name . "\*info\*"))))))
-  ;; Add filter group
-  (add-hook 'ibuffer-mode-hook
-            '(lambda ()
-               (ibuffer-switch-to-saved-filter-groups "home"))))
 
 (use-package spacemacs-common
   :ensure spacemacs-theme)
@@ -264,7 +242,7 @@
 (use-package theme-switcher
   :ensure nil
   :init
-  (setq day-theme 'spacemacs-light)
+  (setq day-theme 'moe-dark)
   (setq night-theme 'spacemacs-dark))
 
 ;;; init.el ends here

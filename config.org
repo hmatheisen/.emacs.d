@@ -39,7 +39,6 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#matching-parentheses][Matching Parentheses]]
   - [[#ediff][Ediff]]
   - [[#auto-pair][Auto-pair]]
-  - [[#ibuffer][ibuffer]]
 - [[#third-party-packages][Third-party Packages]]
   - [[#themes][Themes]]
   - [[#ivy][Ivy]]
@@ -91,9 +90,12 @@ This is my =.gitignore= file.
 #+BEGIN_SRC text :tangle .gitignore
 .backups/
 .cache/
+.lsp-session-v1
 auto-save-list/
+bookmarks
 custom.el
 elpa/
+games/
 recentf
 transient/
 #+END_SRC
@@ -191,11 +193,10 @@ These are settings defined in the C source code of emacs so they are not related
   ;; Indent using spaces
   (setq-default indent-tabs-mode nil)
   ;; Title Bar Settings
-  (when *is-a-mac*
-    (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-    (add-to-list 'default-frame-alist '(ns-appearance . dark))
-    (setq ns-use-proxy-icon  nil)
-    (setq frame-title-format nil))
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+  (add-to-list 'default-frame-alist '(ns-appearance . dark))
+  (setq ns-use-proxy-icon  nil)
+  (setq frame-title-format nil)
   ;; Make that damn bell shut up
   (setq ring-bell-function 'ignore)
   ;; Add useful path to exec-path and PATH
@@ -363,33 +364,6 @@ Auto close quote, parentheses, brackets, etc.
 (use-package elec-pair
   :ensure nil
   :hook (prog-mode . electric-pair-mode))
-#+END_SRC
-
-** ibuffer
-
-Although I don't usually list open buffers, ibuffer is a little better way of doing it.  I have nothing against the default buffer list but it can get quite messy when there are lots of open buffers.  ibuffer allows to group them depending on theie mode/folder/extensions.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package ibuffer
-  :ensure nil
-  :config
-  (global-set-key (kbd "C-x C-b") 'ibuffer)
-  ;; Create home filter group
-  (setq ibuffer-saved-filter-groups
-        '(("home"
-           ("emacs-config" (filename . ".emacs.d"))
-           ("Terminal" (mode . term-mode))
-           ("Magit" (mode . magit-mode))
-           ("Org" (or (mode . org-mode)
-                      (filename . "Org")
-                      (name . "\*Org Agenda\*")))
-           ("Help" (or (name . "\*Help\*")
-                       (name . "\*Apropos\*")
-                       (name . "\*info\*"))))))
-  ;; Add filter group
-  (add-hook 'ibuffer-mode-hook
-            '(lambda ()
-               (ibuffer-switch-to-saved-filter-groups "home"))))
 #+END_SRC
 
 * Third-party Packages
@@ -571,7 +545,7 @@ This allows me to configure a theme for the day and a theme for the night that a
 (use-package theme-switcher
   :ensure nil
   :init
-  (setq day-theme 'spacemacs-light)
+  (setq day-theme 'moe-dark)
   (setq night-theme 'spacemacs-dark))
 #+END_SRC
 
