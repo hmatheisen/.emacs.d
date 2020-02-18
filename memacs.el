@@ -1,8 +1,14 @@
 ;;; memacs.el --- GNU Emacs Mini Init File
 
 ;;; Commentary:
-;;; A micro config for quick Emacs use.  All the code is
-;;; taken from `config.org' this is also where the documentation is.
+;;;
+;;; A micro config for quick Emacs use.  All the code is taken from
+;;; `config.org' in the global settings section, i highly recommend
+;;; visiting this file instrad since this is where the docs are.
+;;;
+;;; I use this mostly in the terminal with an alias that allows me to
+;;; load only this file at Emacs startup, making in really fast.
+;;; There are no packages, pure vanilla Emacs config.
 
 ;;; Code:
 
@@ -66,27 +72,20 @@
                                (other-window -1)))
 
 (fset 'yes-or-no-p 'y-or-n-p)
-
 (display-time-mode t)
-
 (column-number-mode t)
-
 (display-battery-mode t)
-
 (global-linum-mode t)
-
 (setq backup-directory-alist '(("." . "~/.emacs.d/.backups")))
-
 (winner-mode t)
-
 (delete-selection-mode +1)
-
 (scroll-bar-mode -1)
-
 (show-paren-mode t)
-
 (setq ediff-split-window-function 'split-window-horizontally)
-
 (add-hook 'prog-mode 'electric-pair-mode)
+
+(ido-mode t)
+(setq ido-everywhere t
+      ido-enable-flex-matching t)
 
 ;;; memacs.el ends here

@@ -49,10 +49,10 @@
   (menu-bar-mode -1)
   ;; Trash can support
   (setq delete-by-moving-to-trash t)
-  ;; Set tabs to 2
-  (setq-default tab-width 2)
   ;; Indent using spaces
   (setq-default indent-tabs-mode nil)
+  ;; Set tabs to 2
+  (setq-default tab-width 2)
   ;; Title Bar Settings
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
   (add-to-list 'default-frame-alist '(ns-appearance . dark))
@@ -214,6 +214,12 @@ switch to the newly opened window."
 (use-package flycheck
   :config (global-flycheck-mode t))
 
+(use-package projectile
+  :config
+  (projectile-mode t)
+  (setq projectile-completion-system 'ivy)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+
 (use-package treemacs
   :init
   (with-eval-after-load 'winum
@@ -229,13 +235,17 @@ switch to the newly opened window."
 (use-package undo-tree
   :config (global-undo-tree-mode))
 
+(use-package all-the-icons)
+
 (use-package dashboard
   :config
   (dashboard-setup-startup-hook)
   (setq dashboard-startup-banner 'official
-        dashboard-items '((recents . 5)
-                          (bookmarks . 5))
+        dashboard-items '((bookmarks . 10)
+                          (recents . 5))
         dashboard-center-content t
+        dashboard-set-heading-icons t
+        dashboard-set-file-icons    t
         dashboard-banner-logo-title "Welcome to He-Macs!"))
 
 (use-package clojure-mode)
@@ -244,9 +254,23 @@ switch to the newly opened window."
 
 (use-package tide
   :after (typescript-mode company flycheck)
-  :hook ((typescript-mode . tide-setup)
-         (typescript-mode . tide-hl-identifier-mode)
-         (before-save . tide-format-before-save)))
+  :hook
+  ((typescript-mode . tide-setup)
+   (typescript-mode . tide-hl-identifier-mode)
+   (before-save . tide-format-before-save))
+  :config
+  (setq tide-format-options '(:indentSize 2 :tabSize 2)
+        typescript-indent-level 2))
+
+(use-package tex
+  :ensure auctex)
+(use-package latex-preview-pane)
+
+(use-package docker
+  :ensure t
+  :bind ("C-c d" . docker))
+
+(use-package dockerfile-mode)
 
 (use-package new-term
   :preface

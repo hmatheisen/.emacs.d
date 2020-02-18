@@ -2,13 +2,12 @@
 #+SUBTITLE: Henry's GNU Emacs literate config
 #+AUTHOR: hmatheisen
 #+LANGUAGE: en
-#+OPTIONS: num:nil toc:2
 
 #+BEGIN_QUOTE
 I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
 #+END_QUOTE
 
-* Table of Contens :TOC:
+* Table of Contents :TOC:noexport:
 - [[#what-is-this][What is this?]]
   - [[#abstract][Abstract]]
   - [[#why-though][Why though?]]
@@ -47,12 +46,16 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#org-mode][Org Mode]]
   - [[#magit][Magit]]
   - [[#flycheck][Flycheck]]
+  - [[#projectile][Projectile]]
   - [[#treemacs][Treemacs]]
   - [[#which-key][Which key]]
   - [[#undo-tree][Undo tree]]
+  - [[#all-the-icons][All the icons]]
   - [[#dashboard][Dashboard]]
   - [[#clojure][Clojure]]
   - [[#typescript][Typescript]]
+  - [[#latex][LaTeX]]
+  - [[#docker][Docker]]
 - [[#personal-packages][Personal Packages]]
   - [[#new-term][New Term]]
   - [[#theme-switcher][Theme Switcher]]
@@ -191,10 +194,10 @@ These are settings defined in the C source code of emacs so they are not related
   (menu-bar-mode -1)
   ;; Trash can support
   (setq delete-by-moving-to-trash t)
-  ;; Set tabs to 2
-  (setq-default tab-width 2)
   ;; Indent using spaces
   (setq-default indent-tabs-mode nil)
+  ;; Set tabs to 2
+  (setq-default tab-width 2)
   ;; Title Bar Settings
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
   (add-to-list 'default-frame-alist '(ns-appearance . dark))
@@ -389,7 +392,7 @@ switch to the newly opened window."
 
 * Third-party Packages
 
-Here are all the packages I require from MELPA.  
+Here are all the packages I require from MELPA.
 
 ** Themes
 
@@ -488,6 +491,18 @@ Flycheck linter.
   :config (global-flycheck-mode t))
 #+END_SRC
 
+** Projectile
+
+Testing =Projectile= for project management.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package projectile
+  :config
+  (projectile-mode t)
+  (setq projectile-completion-system 'ivy)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+#+END_SRC
+
 ** Treemacs
 
 Tree file structure for Emacs
@@ -521,6 +536,14 @@ Handy features for undo/redo
   :config (global-undo-tree-mode))
 #+END_SRC
 
+** All the icons
+
+   Icons support in Emacs
+
+   #+BEGIN_SRC emacs-lisp :tangle init.el
+   (use-package all-the-icons)
+   #+END_SRC
+
 ** Dashboard
 
 I am currently testing this, I think I like it :)
@@ -530,9 +553,11 @@ I am currently testing this, I think I like it :)
   :config
   (dashboard-setup-startup-hook)
   (setq dashboard-startup-banner 'official
-        dashboard-items '((recents . 5)
-                          (bookmarks . 5))
+        dashboard-items '((bookmarks . 10)
+                          (recents . 5))
         dashboard-center-content t
+        dashboard-set-heading-icons t
+        dashboard-set-file-icons    t
         dashboard-banner-logo-title "Welcome to He-Macs!"))
 #+END_SRC
 
@@ -561,9 +586,35 @@ Tide is a great interactive environment for Typescript.
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package tide
   :after (typescript-mode company flycheck)
-  :hook ((typescript-mode . tide-setup)
-         (typescript-mode . tide-hl-identifier-mode)
-         (before-save . tide-format-before-save)))
+  :hook
+  ((typescript-mode . tide-setup)
+   (typescript-mode . tide-hl-identifier-mode)
+   (before-save . tide-format-before-save))
+  :config
+  (setq tide-format-options '(:indentSize 2 :tabSize 2)
+        typescript-indent-level 2))
+#+END_SRC
+
+** LaTeX
+
+I use two packages for LaTeX: =auctex= which is a great environment for Emacs and =latex-preview-pane= which makes enables a preview in a split window with file watching.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package tex
+  :ensure auctex)
+(use-package latex-preview-pane)
+#+END_SRC
+
+** Docker
+
+To provide support fo docker I use =docker-mode= which is a wrapper for the Docker CLI and =dockerfile-mode= which allows syntax highlighting for Dockerfiles.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package docker
+  :ensure t
+  :bind ("C-c d" . docker))
+
+(use-package dockerfile-mode)
 #+END_SRC
 
 * Personal Packages
