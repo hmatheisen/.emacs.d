@@ -88,4 +88,6 @@
 (setq ido-everywhere t
       ido-enable-flex-matching t)
 
+(load-theme 'wombat)
+
 ;;; memacs.el ends here

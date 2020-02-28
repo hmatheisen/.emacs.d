@@ -172,7 +172,10 @@ switch to the newly opened window."
   (setq ivy-count-format "(%d/%d) "))
 
 (use-package lsp-mode
-  :hook ((python-mode . lsp)))
+  :init (setq lsp-keymap-prefix "C-c l")
+  :hook ((python-mode . lsp)
+         (ruby-mode . lsp))
+  :commands lsp)
 
 (use-package company-mode
   :init
@@ -190,14 +193,16 @@ switch to the newly opened window."
 (use-package company-lsp
   :after (company lsp)
   :init
-  (push 'company-lsp company-backends))
+  (push 'company-lsp company-backends)
+  :commands company-lsp)
 
 (use-package org
   :preface
   (defun my-org-mode-hook ()
     (org-indent-mode 1)
     (visual-line-mode 1)
-    (linum-mode -1))
+    (linum-mode -1)
+    (flyspell-mode 1))
   :init
   (add-hook 'org-mode-hook 'my-org-mode-hook))
 

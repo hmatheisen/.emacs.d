@@ -102,6 +102,10 @@ bookmarks
 custom.el
 elpa/
 games/
+ido.last
+nov-places
+projectile-bookmarks.eld
+projectile.cache
 recentf
 transient/
 #+END_SRC
@@ -308,9 +312,9 @@ Make sure that all backup files only exist in one place.
 ** Full frame on startup
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package frame
-  :ensure nil
-  :config (add-hook 'after-init-hook 'toggle-frame-fullscreen))
+  (use-package frame
+    :ensure nil
+    :config (add-hook 'after-init-hook 'toggle-frame-fullscreen))
 #+END_SRC
 
 ** Winner mode
@@ -430,7 +434,10 @@ I use =lsp-mode= as my completion tool.  Language Server Protocols allows to use
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package lsp-mode
-  :hook ((python-mode . lsp)))
+  :init (setq lsp-keymap-prefix "C-c l")
+  :hook ((python-mode . lsp)
+         (ruby-mode . lsp))
+  :commands lsp)
 
 (use-package company-mode
   :init
@@ -448,7 +455,8 @@ I use =lsp-mode= as my completion tool.  Language Server Protocols allows to use
 (use-package company-lsp
   :after (company lsp)
   :init
-  (push 'company-lsp company-backends))
+  (push 'company-lsp company-backends)
+  :commands company-lsp)
 #+END_SRC
 
 ** Org Mode
@@ -461,7 +469,8 @@ I use org mode fo lots of things epacially to write this file.  It's just really
   (defun my-org-mode-hook ()
     (org-indent-mode 1)
     (visual-line-mode 1)
-    (linum-mode -1))
+    (linum-mode -1)
+    (flyspell-mode 1))
   :init
   (add-hook 'org-mode-hook 'my-org-mode-hook))
 
