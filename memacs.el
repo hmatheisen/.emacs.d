@@ -21,35 +21,46 @@
   "Add a path to `exec-path' and Emacs \"PATH\" variable."
   (add-to-list 'exec-path (substring path 1))
   (setenv "PATH" (concat (getenv "PATH") path)))
+
 ;; Avoid a few issues on MacOS
 (when *is-a-mac*
   (setq mac-option-modifier nil
         mac-command-modifier 'meta
         select-enable-clipboard t))
+
 ;; Enable downcase/upcase region
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
+
 ;; Remove Toolbar
 (tool-bar-mode -1)
+
 ;; Disable menu bar
 (menu-bar-mode -1)
+
 ;; Trash can support
 (setq delete-by-moving-to-trash t)
+
 ;; Set tabs to 2
 (setq-default tab-width 2)
+
 ;; Indent using spaces
 (setq-default indent-tabs-mode nil)
+
 ;; Title Bar Settings
 (when *is-a-mac*
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
   (add-to-list 'default-frame-alist '(ns-appearance . dark))
   (setq ns-use-proxy-icon  nil)
   (setq frame-title-format nil))
+
 ;; Make that damn bell shut up
 (setq ring-bell-function 'ignore)
+
 ;; Add useful path to exec-path and PATH
 (add-to-path ":/usr/local/bin")
 (add-to-path ":/Library/TeX/texbin")
+
 ;; Default truncate lines
 (setq-default truncate-lines t)
 
@@ -65,6 +76,7 @@
 (global-set-key (kbd "M-+") 'enlarge-window)
 (global-set-key (kbd "C--") 'shrink-window-horizontally)
 (global-set-key (kbd "C-+") 'enlarge-window-horizontally)
+
 ;; Other window
 (global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "M-O") '(lambda ()

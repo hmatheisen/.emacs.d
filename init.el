@@ -62,7 +62,8 @@
   (setq ring-bell-function 'ignore)
   ;; Add useful path to exec-path and PATH
   (add-to-path ":/usr/local/bin")
-  (add-to-path ":/Library/TeX/texbin")
+(add-to-path ":/Library/TeX/texbin")
+(add-to-path ":~/go/bin")
   ;; Default truncate lines
   (setq-default truncate-lines t))
 
@@ -119,7 +120,9 @@
 
 (use-package frame
   :ensure nil
-  :config (add-hook 'after-init-hook 'toggle-frame-fullscreen))
+  :config
+  (add-hook 'after-init-hook 'toggle-frame-fullscreen)
+  (set-frame-font "JetBrains Mono-13"))
 
 (use-package winner
   :ensure nil
@@ -157,6 +160,11 @@ switch to the newly opened window."
     (other-window))
   :config (global-set-key (kbd "C-x C-b") 'my-list-buffers))
 
+(use-package compile
+  :ensure nil
+  :config
+  (global-set-key (kbd "C-c C-k") 'recompile))
+
 (use-package spacemacs-common
   :ensure spacemacs-theme)
 
@@ -174,6 +182,7 @@ switch to the newly opened window."
 (use-package lsp-mode
   :init (setq lsp-keymap-prefix "C-c l")
   :hook ((python-mode . lsp)
+         (go-mode . lsp)
          (ruby-mode . lsp))
   :commands lsp)
 
@@ -276,6 +285,15 @@ switch to the newly opened window."
   :bind ("C-c d" . docker))
 
 (use-package dockerfile-mode)
+
+(use-package yaml-mode)
+
+(use-package go-mode
+  :config
+  (defun lsp-go-install-save-hooks ()
+    (add-hook 'before-save-hook #'lsp-format-buffer t t)
+    (add-hook 'before-save-hook #'lsp-organize-imports t t))
+  (add-hook 'go-mode-hook #'lsp-go-install-save-hooks))
 
 (use-package new-term
   :preface
