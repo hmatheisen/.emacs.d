@@ -161,16 +161,11 @@
   ;; Filter groups
   (setq ibuffer-saved-filter-groups
         '(("default"
+           ("dashboard"    (name . "\*dashboard\*"))
+           ("Magit"        (name . "\magit*"))
            ("emacs-config" (filename . ".emacs.d"))
            ("Org"          (mode . org-mode))
-           ("Magit"        (name . "\*magit"))
-           ("dired"        (mode . dired-mode))
-           ("emacs"        (or
-                            (name . "\*scratch\*")
-                            (name . "\*Messages\*")
-                            (name . "\*Help\*")
-                            (name . "\*Apropos\*")
-                            (name . "\*info\*"))))))
+           ("dired"        (mode . dired-mode)))))
   ;; Add hook
   (add-hook 'ibuffer-mode-hook
             '(lambda ()
