@@ -62,8 +62,8 @@
   (setq ring-bell-function 'ignore)
   ;; Add useful path to exec-path and PATH
   (add-to-path ":/usr/local/bin")
-(add-to-path ":/Library/TeX/texbin")
-(add-to-path ":~/go/bin")
+  (add-to-path ":/Library/TeX/texbin")
+  (add-to-path ":~/go/bin")
   ;; Default truncate lines
   (setq-default truncate-lines t))
 
@@ -92,7 +92,12 @@
   (global-set-key (kbd "M-o") 'other-window)
   (global-set-key (kbd "M-O") '(lambda ()
                                  (interactive)
-                                 (other-window -1))))
+                                 (other-window -1)))
+  ;;keep cursor at same position when scrolling
+  (setq scroll-preserve-screen-position 1)
+  ;;scroll window up/down by one line
+  (global-set-key (kbd "M-n") (kbd "C-u 1 C-v"))
+  (global-set-key (kbd "M-p") (kbd "C-u 1 M-v")))
 
 (use-package "subr"
   :ensure nil
@@ -149,26 +154,40 @@
   :ensure nil
   :hook (prog-mode . electric-pair-mode))
 
-(use-package "buff-menu"
-  :ensure nil
-  :preface
-  (defun my-list-buffers (&optional arg)
-    "Wrapper around the `buffer-menu-other-window' function to
-switch to the newly opened window."
-    (interactive "P")
-    (buffer-menu-other-window)
-    (other-window))
-  :config (global-set-key (kbd "C-x C-b") 'my-list-buffers))
+(use-package "ibuffer"
+  :config
+  ;; Replace command to ibuffer
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
+  ;; Filter groups
+  (setq ibuffer-saved-filter-groups
+        '(("default"
+           ("emacs-config" (filename . ".emacs.d"))
+           ("Org"          (mode . org-mode))
+           ("Magit"        (name . "\*magit"))
+           ("dired"        (mode . dired-mode))
+           ("emacs"        (or
+                            (name . "\*scratch\*")
+                            (name . "\*Messages\*")
+                            (name . "\*Help\*")
+                            (name . "\*Apropos\*")
+                            (name . "\*info\*"))))))
+  ;; Add hook
+  (add-hook 'ibuffer-mode-hook
+            '(lambda ()
+               (ibuffer-switch-to-saved-filter-groups "default")))
+  ;; Do not show groups that are empty
+  (setq ibuffer-show-empty-filter-groups nil)
+  ;; Do not prompt when deleting a new buffer
+  (setq ibuffer-expert t))
 
 (use-package compile
   :ensure nil
   :config
   (global-set-key (kbd "C-c C-k") 'recompile))
 
-(use-package spacemacs-common
-  :ensure spacemacs-theme)
-
+(use-package spacemacs-common :ensure spacemacs-theme)
 (use-package moe-theme)
+(use-package color-theme-sanityinc-tomorrow)
 
 (use-package counsel
   :diminish ivy-mode counsel-mode
@@ -247,7 +266,9 @@ switch to the newly opened window."
         which-key-idle-secondary-delay 0.4))
 
 (use-package undo-tree
-  :config (global-undo-tree-mode))
+  :config 
+  (global-undo-tree-mode)
+  (global-set-key "\C-z" 'advertised-undo))
 
 (use-package all-the-icons)
 
@@ -275,10 +296,6 @@ switch to the newly opened window."
   :config
   (setq tide-format-options '(:indentSize 2 :tabSize 2)
         typescript-indent-level 2))
-
-(use-package tex
-  :ensure auctex)
-(use-package latex-preview-pane)
 
 (use-package docker
   :ensure t
@@ -310,7 +327,7 @@ switch to the newly opened window."
 (use-package theme-switcher
   :ensure nil
   :init
-  (setq day-theme 'moe-dark)
-  (setq night-theme 'spacemacs-dark))
+  (setq day-theme 'sanityinc-tomorrow-bright)
+  (setq night-theme 'sanityinc-tomorrow-bright))
 
 ;;; init.el ends here

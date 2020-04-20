@@ -38,7 +38,7 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#matching-parentheses][Matching Parentheses]]
   - [[#ediff][Ediff]]
   - [[#auto-pair][Auto-pair]]
-  - [[#list-buffers][List buffers]]
+  - [[#use-ibuffer][Use ibuffer]]
   - [[#compile][Compile]]
 - [[#third-party-packages][Third-party Packages]]
   - [[#themes][Themes]]
@@ -55,7 +55,6 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#dashboard][Dashboard]]
   - [[#clojure][Clojure]]
   - [[#typescript][Typescript]]
-  - [[#latex][LaTeX]]
   - [[#docker][Docker]]
   - [[#yaml][yaml]]
   - [[#go][Go]]
@@ -199,7 +198,7 @@ default, I make sure to add =:ensure nil= on native packages so
 ** Settings without packages
 
 These are settings defined in the C source code of emacs so they are
-not related to any Lisp packages, let's pu them in a package called
+not related to any Lisp packages, let's put them in a package called
 =emacs=.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
@@ -286,10 +285,17 @@ Change keybindings to resize window so I can just keep pressing them.  Also I ch
   (global-set-key (kbd "M-o") 'other-window)
   (global-set-key (kbd "M-O") '(lambda ()
                                  (interactive)
-                                 (other-window -1))))
+                                 (other-window -1)))
+  ;;keep cursor at same position when scrolling
+  (setq scroll-preserve-screen-position 1)
+  ;;scroll window up/down by one line
+  (global-set-key (kbd "M-n") (kbd "C-u 1 C-v"))
+  (global-set-key (kbd "M-p") (kbd "C-u 1 M-v")))
 #+END_SRC
 
 ** Y or N > Yes or No
+
+Answer by =y= or =n= instead of =yes= of =no=.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package "subr"
@@ -299,6 +305,8 @@ Change keybindings to resize window so I can just keep pressing them.  Also I ch
 
 ** Time mode
 
+Display time on mode line.
+
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package time
   :ensure nil
@@ -306,6 +314,8 @@ Change keybindings to resize window so I can just keep pressing them.  Also I ch
 #+END_SRC
 
 ** Column numbers
+
+Display line numbers in mode line.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package simple
@@ -315,6 +325,8 @@ Change keybindings to resize window so I can just keep pressing them.  Also I ch
 
 ** Display battery level
 
+Display battery level inm mode line.
+
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package battery
   :ensure nil
@@ -322,6 +334,8 @@ Change keybindings to resize window so I can just keep pressing them.  Also I ch
 #+END_SRC
 
 ** Line numbers everywhere
+
+Display line numbers globally.  I only get rid of them for some modes such as Org or Markdown.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package linum
@@ -373,7 +387,7 @@ Replace the active region when typing/yanking text, which is a little handier th
 
 ** No scroll bar
 
-I mean who likes this really?
+I mean who likes this, really?
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package scroll-bar
@@ -382,6 +396,8 @@ I mean who likes this really?
 #+END_SRC
 
 ** Matching Parentheses
+
+Show matching paren, quite useful for every languages especially Lisp!
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package paren
@@ -410,24 +426,41 @@ Auto close quote, parentheses, brackets, etc.
   :hook (prog-mode . electric-pair-mode))
 #+END_SRC
 
-** List buffers
+** Use ibuffer
 
-Switch window right after using list buffers.
+Use ibuffer instead of default list buffer.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package "buff-menu"
-  :ensure nil
-  :preface
-  (defun my-list-buffers (&optional arg)
-    "Wrapper around the `buffer-menu-other-window' function to
-    switch to the newly opened window."
-    (interactive "P")
-    (buffer-menu-other-window)
-    (other-window))
-  :config (global-set-key (kbd "C-x C-b") 'my-list-buffers))
+(use-package "ibuffer"
+  :config
+  ;; Replace command to ibuffer
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
+  ;; Filter groups
+  (setq ibuffer-saved-filter-groups
+        '(("default"
+           ("emacs-config" (filename . ".emacs.d"))
+           ("Org"          (mode . org-mode))
+           ("Magit"        (name . "\*magit"))
+           ("dired"        (mode . dired-mode))
+           ("emacs"        (or
+                            (name . "\*scratch\*")
+                            (name . "\*Messages\*")
+                            (name . "\*Help\*")
+                            (name . "\*Apropos\*")
+                            (name . "\*info\*"))))))
+  ;; Add hook
+  (add-hook 'ibuffer-mode-hook
+            '(lambda ()
+               (ibuffer-switch-to-saved-filter-groups "default")))
+  ;; Do not show groups that are empty
+  (setq ibuffer-show-empty-filter-groups nil)
+  ;; Do not prompt when deleting a new buffer
+  (setq ibuffer-expert t))
 #+END_SRC
 
 ** Compile
+
+Set keybinding for the recompile command.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package compile
@@ -442,17 +475,12 @@ Here are all the packages I require from MELPA.
 
 ** Themes
 
-Spacemacs themes are pretty cool and minimal
+Some themes I ilke to use.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package spacemacs-common
-  :ensure spacemacs-theme)
-#+END_SRC
-
-I also like moe-theme
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package spacemacs-common :ensure spacemacs-theme)
 (use-package moe-theme)
+(use-package color-theme-sanityinc-tomorrow)
 #+END_SRC
 
 ** Ivy
@@ -585,7 +613,9 @@ Handy features for undo/redo
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package undo-tree
-  :config (global-undo-tree-mode))
+  :config 
+  (global-undo-tree-mode)
+  (global-set-key "\C-z" 'advertised-undo))
 #+END_SRC
 
 ** All the icons
@@ -647,16 +677,6 @@ Tide is a great interactive environment for Typescript.
         typescript-indent-level 2))
 #+END_SRC
 
-** LaTeX
-
-I use two packages for LaTeX: =auctex= which is a great environment for Emacs and =latex-preview-pane= which makes enables a preview in a split window with file watching.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package tex
-  :ensure auctex)
-(use-package latex-preview-pane)
-#+END_SRC
-
 ** Docker
 
 To provide support fo docker I use =docker-mode= which is a wrapper for the Docker CLI and =dockerfile-mode= which allows syntax highlighting for Dockerfiles.
@@ -710,14 +730,14 @@ This package allows to toggle a small terminal window on the bottom of the scree
 
 ** [[https://github.com/hmatheisen/theme-switcher][Theme Switcher]]
 
-This allows me to configure a theme for the day and a theme for the night that automatically switches at given time.  I currently have it configure with both =spacemacs-light= and =spacemacs-dark=.
+This allows me to configure a theme for the day and a theme for the night that automatically switches at given time.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package theme-switcher
   :ensure nil
   :init
-  (setq day-theme 'moe-dark)
-  (setq night-theme 'spacemacs-dark))
+  (setq day-theme 'sanityinc-tomorrow-bright)
+  (setq night-theme 'sanityinc-tomorrow-bright))
 #+END_SRC
 
 * Closing files
