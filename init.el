@@ -65,7 +65,15 @@
   (add-to-path ":/Library/TeX/texbin")
   (add-to-path ":~/go/bin")
   ;; Default truncate lines
-  (setq-default truncate-lines t))
+  (setq-default truncate-lines t)
+  ;; Set utf8 everywhere
+  (prefer-coding-system 'utf-8)
+  (setq locale-coding-system 'utf-8)
+  (set-language-environment "UTF-8")
+  (set-default-coding-systems 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+  (set-selection-coding-system 'utf-8))
 
 (use-package custom
   :ensure nil
@@ -82,22 +90,38 @@
 
 (use-package "window"
   :ensure nil
+  :preface
+  (defun my-split-window-right ()
+    "Splits window on the right then focus on that window"
+    (interactive)
+    (split-window-right)
+    (other-window 1))
+  (defun my-split-window-below ()
+    "Splits windmow below then focus on that window"
+    (interactive)
+    (split-window-below)
+    (other-window 1))
   :config
   ;; Resizing
   (global-set-key (kbd "M--") 'shrink-window)
   (global-set-key (kbd "M-+") 'enlarge-window)
   (global-set-key (kbd "C--") 'shrink-window-horizontally)
   (global-set-key (kbd "C-+") 'enlarge-window-horizontally)
-  ;; Other window
+  ;; Other window (windmove is also setup but this can be easier)
   (global-set-key (kbd "M-o") 'other-window)
   (global-set-key (kbd "M-O") '(lambda ()
                                  (interactive)
                                  (other-window -1)))
-  ;;keep cursor at same position when scrolling
-  (setq scroll-preserve-screen-position 1)
-  ;;scroll window up/down by one line
+  ;; scroll window up/down by one line
   (global-set-key (kbd "M-n") (kbd "C-u 1 C-v"))
-  (global-set-key (kbd "M-p") (kbd "C-u 1 M-v")))
+  (global-set-key (kbd "M-p") (kbd "C-u 1 M-v"))
+  ;; Use by own split functions
+  (global-set-key (kbd "C-x 2") 'my-split-window-below)
+  (global-set-key (kbd "C-x 3") 'my-split-window-right))
+
+(use-package windmove
+  :config
+  (windmove-default-keybindings))
 
 (use-package "subr"
   :ensure nil
@@ -109,7 +133,9 @@
 
 (use-package simple
   :ensure nil
-  :config (column-number-mode t))
+  :config 
+  (column-number-mode t)
+  (global-set-key (kbd "C-z") 'advertised-undo))
 
 (use-package battery
   :ensure nil
@@ -180,11 +206,12 @@
   :config
   (global-set-key (kbd "C-c C-k") 'recompile))
 
-(use-package spacemacs-common :ensure spacemacs-theme)
-(use-package moe-theme)
-(use-package color-theme-sanityinc-tomorrow)
+(use-package spacemacs-common :defer t :ensure spacemacs-theme)
+(use-package moe-theme :defer t)
+(use-package color-theme-sanityinc-tomorrow :defer t)
 
 (use-package counsel
+  :defer t
   :diminish ivy-mode counsel-mode
   :bind (("C-s" . swiper-isearch))
   :hook ((after-init . ivy-mode)
@@ -194,6 +221,7 @@
   (setq ivy-count-format "(%d/%d) "))
 
 (use-package lsp-mode
+  :defer t
   :init (setq lsp-keymap-prefix "C-c l")
   :hook ((python-mode . lsp)
          (go-mode . lsp)
@@ -201,6 +229,7 @@
   :commands lsp)
 
 (use-package company-mode
+  :defer t
   :init
   (setq company-selection-wrap-around t)
   (setq company-minimum-prefix-length 1)
@@ -214,19 +243,24 @@
   :hook (after-init . global-company-mode))
 
 (use-package company-lsp
+  :defer t
   :after (company lsp)
   :init
   (push 'company-lsp company-backends)
   :commands company-lsp)
 
 (use-package org
+  :defer t
   :preface
   (defun my-org-mode-hook ()
     (org-indent-mode 1)
     (visual-line-mode 1)
     (linum-mode -1)
     (flyspell-mode 1))
-  :init
+  :config
+  (set-face-attribute 'org-document-title nil :height 250)
+  (set-face-attribute 'org-level-1        nil :height 170)
+  (set-face-attribute 'org-level-2        nil :height 150)
   (add-hook 'org-mode-hook 'my-org-mode-hook))
 
 (use-package org-bullets :hook (org-mode . org-bullets-mode))
@@ -236,22 +270,25 @@
          (markdown-mode . toc-org-mode)))
 
 (use-package magit
-  :ensure t
+  :defer t
   :bind ("C-x g" . 'magit-status))
 
 (use-package flycheck
+  :defer t
   :config (global-flycheck-mode t))
 
 (use-package projectile
+  :defer t
   :config
   (projectile-mode t)
   (setq projectile-completion-system 'ivy)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
-(use-package treemacs
-  :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window)))
+(use-package neotree
+  :defer t
+  :config 
+  (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+  :bind (([f8] . neotree-toggle)))
 
 (use-package which-key
   :diminish which-key-mode
@@ -261,11 +298,11 @@
         which-key-idle-secondary-delay 0.4))
 
 (use-package undo-tree
-  :config 
-  (global-undo-tree-mode)
-  (global-set-key "\C-z" 'advertised-undo))
+  :config
+  (global-undo-tree-mode))
 
-(use-package all-the-icons)
+(use-package all-the-icons
+  :defer t)
 
 (use-package dashboard
   :config
@@ -278,9 +315,11 @@
         dashboard-set-file-icons    t
         dashboard-banner-logo-title "Welcome to He-Macs!"))
 
-(use-package clojure-mode)
+(use-package clojure-mode
+  :defer t)
 
-(use-package cider)
+(use-package cider
+ :defer t)
 
 (use-package tide
   :after (typescript-mode company flycheck)
@@ -293,14 +332,16 @@
         typescript-indent-level 2))
 
 (use-package docker
-  :ensure t
+  :defer t
   :bind ("C-c d" . docker))
 
 (use-package dockerfile-mode)
 
-(use-package yaml-mode)
+(use-package yaml-mode
+  :defer t)
 
 (use-package go-mode
+  :defer t
   :config
   (defun lsp-go-install-save-hooks ()
     (add-hook 'before-save-hook #'lsp-format-buffer t t)

@@ -25,9 +25,10 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#custom][Custom]]
   - [[#terminal-binary][Terminal binary]]
   - [[#window][Window]]
+  - [[#windmove][WindMove]]
   - [[#y-or-n--yes-or-no][Y or N > Yes or No]]
   - [[#time-mode][Time mode]]
-  - [[#column-numbers][Column numbers]]
+  - [[#simple][Simple]]
   - [[#display-battery-level][Display battery level]]
   - [[#line-numbers-everywhere][Line numbers everywhere]]
   - [[#backup-files][Backup files]]
@@ -48,7 +49,7 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#magit][Magit]]
   - [[#flycheck][Flycheck]]
   - [[#projectile][Projectile]]
-  - [[#treemacs][Treemacs]]
+  - [[#neotree][Neotree]]
   - [[#which-key][Which key]]
   - [[#undo-tree][Undo tree]]
   - [[#all-the-icons][All the icons]]
@@ -240,7 +241,15 @@ not related to any Lisp packages, let's put them in a package called
   (add-to-path ":/Library/TeX/texbin")
   (add-to-path ":~/go/bin")
   ;; Default truncate lines
-  (setq-default truncate-lines t))
+  (setq-default truncate-lines t)
+  ;; Set utf8 everywhere
+  (prefer-coding-system 'utf-8)
+  (setq locale-coding-system 'utf-8)
+  (set-language-environment "UTF-8")
+  (set-default-coding-systems 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+  (set-selection-coding-system 'utf-8))
 #+END_SRC
 
 ** Custom
@@ -275,22 +284,44 @@ Change keybindings to resize window so I can just keep pressing them.  Also I ch
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package "window"
   :ensure nil
+  :preface
+  (defun my-split-window-right ()
+    "Splits window on the right then focus on that window"
+    (interactive)
+    (split-window-right)
+    (other-window 1))
+  (defun my-split-window-below ()
+    "Splits windmow below then focus on that window"
+    (interactive)
+    (split-window-below)
+    (other-window 1))
   :config
   ;; Resizing
   (global-set-key (kbd "M--") 'shrink-window)
   (global-set-key (kbd "M-+") 'enlarge-window)
   (global-set-key (kbd "C--") 'shrink-window-horizontally)
   (global-set-key (kbd "C-+") 'enlarge-window-horizontally)
-  ;; Other window
+  ;; Other window (windmove is also setup but this can be easier)
   (global-set-key (kbd "M-o") 'other-window)
   (global-set-key (kbd "M-O") '(lambda ()
                                  (interactive)
                                  (other-window -1)))
-  ;;keep cursor at same position when scrolling
-  (setq scroll-preserve-screen-position 1)
-  ;;scroll window up/down by one line
+  ;; scroll window up/down by one line
   (global-set-key (kbd "M-n") (kbd "C-u 1 C-v"))
-  (global-set-key (kbd "M-p") (kbd "C-u 1 M-v")))
+  (global-set-key (kbd "M-p") (kbd "C-u 1 M-v"))
+  ;; Use by own split functions
+  (global-set-key (kbd "C-x 2") 'my-split-window-below)
+  (global-set-key (kbd "C-x 3") 'my-split-window-right))
+#+END_SRC
+
+** WindMove
+
+Use windmove to move around multiple windows easily
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package windmove
+  :config
+  (windmove-default-keybindings))
 #+END_SRC
 
 ** Y or N > Yes or No
@@ -313,14 +344,16 @@ Display time on mode line.
   :config (display-time-mode t))
 #+END_SRC
 
-** Column numbers
+** Simple
 
-Display line numbers in mode line.
+Display line numbers in mode line and undo keybinding.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package simple
   :ensure nil
-  :config (column-number-mode t))
+  :config 
+  (column-number-mode t)
+  (global-set-key (kbd "C-z") 'advertised-undo))
 #+END_SRC
 
 ** Display battery level
@@ -473,9 +506,9 @@ Here are all the packages I require from MELPA.
 Some themes I ilke to use.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package spacemacs-common :ensure spacemacs-theme)
-(use-package moe-theme)
-(use-package color-theme-sanityinc-tomorrow)
+(use-package spacemacs-common :defer t :ensure spacemacs-theme)
+(use-package moe-theme :defer t)
+(use-package color-theme-sanityinc-tomorrow :defer t)
 #+END_SRC
 
 ** Ivy
@@ -484,6 +517,7 @@ I use Ivy as as a completion frontend, it integrates really well with other supe
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package counsel
+  :defer t
   :diminish ivy-mode counsel-mode
   :bind (("C-s" . swiper-isearch))
   :hook ((after-init . ivy-mode)
@@ -499,6 +533,7 @@ I use =lsp-mode= as my completion tool.  Language Server Protocols allows to use
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package lsp-mode
+  :defer t
   :init (setq lsp-keymap-prefix "C-c l")
   :hook ((python-mode . lsp)
          (go-mode . lsp)
@@ -506,6 +541,7 @@ I use =lsp-mode= as my completion tool.  Language Server Protocols allows to use
   :commands lsp)
 
 (use-package company-mode
+  :defer t
   :init
   (setq company-selection-wrap-around t)
   (setq company-minimum-prefix-length 1)
@@ -519,6 +555,7 @@ I use =lsp-mode= as my completion tool.  Language Server Protocols allows to use
   :hook (after-init . global-company-mode))
 
 (use-package company-lsp
+  :defer t
   :after (company lsp)
   :init
   (push 'company-lsp company-backends)
@@ -531,13 +568,17 @@ I use org mode fo lots of things epacially to write this file.  It's just really
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package org
+  :defer t
   :preface
   (defun my-org-mode-hook ()
     (org-indent-mode 1)
     (visual-line-mode 1)
     (linum-mode -1)
     (flyspell-mode 1))
-  :init
+  :config
+  (set-face-attribute 'org-document-title nil :height 250)
+  (set-face-attribute 'org-level-1        nil :height 170)
+  (set-face-attribute 'org-level-2        nil :height 150)
   (add-hook 'org-mode-hook 'my-org-mode-hook))
 
 (use-package org-bullets :hook (org-mode . org-bullets-mode))
@@ -553,7 +594,7 @@ Magit is an awesome git wrapper, everyone loves it, I love it and I use it every
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package magit
-  :ensure t
+  :defer t
   :bind ("C-x g" . 'magit-status))
 #+END_SRC
 
@@ -563,6 +604,7 @@ Flycheck linter.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package flycheck
+  :defer t
   :config (global-flycheck-mode t))
 #+END_SRC
 
@@ -572,21 +614,23 @@ Testing =Projectile= for project management.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package projectile
+  :defer t
   :config
   (projectile-mode t)
   (setq projectile-completion-system 'ivy)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 #+END_SRC
 
-** Treemacs
+** Neotree
 
 Tree file structure for Emacs
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package treemacs
-  :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window)))
+(use-package neotree
+  :defer t
+  :config 
+  (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+  :bind (([f8] . neotree-toggle)))
 #+END_SRC
 
 ** Which key
@@ -608,22 +652,22 @@ Handy features for undo/redo
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package undo-tree
-  :config 
-  (global-undo-tree-mode)
-  (global-set-key "\C-z" 'advertised-undo))
+  :config
+  (global-undo-tree-mode))
 #+END_SRC
 
 ** All the icons
 
-   Icons support in Emacs
+Icons support in Emacs
 
-   #+BEGIN_SRC emacs-lisp :tangle init.el
-   (use-package all-the-icons)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package all-the-icons
+  :defer t)
+#+END_SRC
 
 ** Dashboard
 
-I am currently testing this, I think I like it :)
+I just think it's neat!
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package dashboard
@@ -645,7 +689,8 @@ I am currently testing this, I think I like it :)
 Install =clojure-mode= for editing.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package clojure-mode)
+(use-package clojure-mode
+  :defer t)
 #+END_SRC
 
 *** CIDER
@@ -653,7 +698,8 @@ Install =clojure-mode= for editing.
 Install =CIDER= for REPL support and other intractive features.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package cider)
+(use-package cider
+ :defer t)
 #+END_SRC
 
 ** Typescript
@@ -678,7 +724,7 @@ To provide support fo docker I use =docker-mode= which is a wrapper for the Dock
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package docker
-  :ensure t
+  :defer t
   :bind ("C-c d" . docker))
 
 (use-package dockerfile-mode)
@@ -687,13 +733,15 @@ To provide support fo docker I use =docker-mode= which is a wrapper for the Dock
 ** yaml
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package yaml-mode)
+(use-package yaml-mode
+  :defer t)
 #+END_SRC
 
 ** Go
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package go-mode
+  :defer t
   :config
   (defun lsp-go-install-save-hooks ()
     (add-hook 'before-save-hook #'lsp-format-buffer t t)
