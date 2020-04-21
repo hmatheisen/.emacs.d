@@ -31,7 +31,7 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#simple][Simple]]
   - [[#display-battery-level][Display battery level]]
   - [[#line-numbers-everywhere][Line numbers everywhere]]
-  - [[#backup-files][Backup files]]
+  - [[#files][Files]]
   - [[#frame-settings][Frame settings]]
   - [[#winner-mode][Winner mode]]
   - [[#modern-region-behavior][Modern region behavior]]
@@ -44,6 +44,7 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
 - [[#third-party-packages][Third-party Packages]]
   - [[#themes][Themes]]
   - [[#ivy][Ivy]]
+  - [[#moodline][MoodLine]]
   - [[#code-completion][Code Completion]]
   - [[#org-mode][Org Mode]]
   - [[#magit][Magit]]
@@ -209,6 +210,14 @@ not related to any Lisp packages, let's put them in a package called
     "Add a path to `exec-path' and Emacs \"PATH\" variable."
     (add-to-list 'exec-path (substring path 1))
     (setenv "PATH" (concat (getenv "PATH") path)))
+  (defun garbage-collect-defer ()
+    "Defer garbage collection."
+    (setq gc-cons-threshold most-positive-fixnum
+          gc-cons-percentage 0.6))
+  (defun garbage-collect-restore ()
+    "Return garbage collection to slightly higher parameter."
+    (setq gc-cons-threshold 100000000
+          gc-cons-percentage 0.1))
   :ensure nil
   :config
   ;; Avoid a few issues on MacOS
@@ -249,7 +258,12 @@ not related to any Lisp packages, let's put them in a package called
   (set-default-coding-systems 'utf-8)
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
-  (set-selection-coding-system 'utf-8))
+  (set-selection-coding-system 'utf-8)
+  ;; Set garbage collection
+  (garbage-collect-defer)
+  (add-hook 'emacs-startup-hook #'garbage-collect-restore)
+  (add-hook 'minibuffer-setup-hook #'garbage-collect-defer)
+  (add-hook 'minibuffer-exit-hook #'garbage-collect-restore))
 #+END_SRC
 
 ** Custom
@@ -376,14 +390,17 @@ Display line numbers globally.  I only get rid of them for some modes such as Or
   :config (global-linum-mode t))
 #+END_SRC
 
-** Backup files 
+** Files
 
-Make sure that all backup files only exist in one place.
+Make sure that all backup files only exist in one place and always ask
+before quitting Emacs.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package files
   :ensure nil
-  :config (setq backup-directory-alist '(("." . "~/.emacs.d/.backups"))))
+  :config 
+  (setq backup-directory-alist '(("." . "~/.emacs.d/.backups")))
+  (setq confirm-kill-emacs #'yes-or-no-p))
 #+END_SRC
 
 ** Frame settings
@@ -503,12 +520,36 @@ Here are all the packages I require from MELPA.
 
 ** Themes
 
-Some themes I ilke to use.
+Some themes I ilke to use.  Currently Modus is my favourite.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package spacemacs-common :defer t :ensure spacemacs-theme)
 (use-package moe-theme :defer t)
 (use-package color-theme-sanityinc-tomorrow :defer t)
+(use-package modus-vivendi-theme
+  :defer t
+  :init
+  (setq modus-vivendi-theme-distinct-org-blocks t
+        modus-vivendi-theme-rainbow-headings t
+        modus-vivendi-theme-section-headings nil
+        modus-vivendi-theme-visible-fringe t
+        modus-vivendi-theme-slanted-constructs t
+        modus-vivendi-theme-bold-constructs t
+        modus-vivendi-theme-3d-modeline nil
+        modus-vivendi-theme-subtle-diff t
+        modus-vivendi-theme-proportional-fonts nil))
+(use-package modus-operandi-theme
+  :defer t
+  :init
+  (setq modus-operandi-theme-distinct-org-blocks t
+        modus-operandi-theme-rainbow-headings t
+        modus-operandi-theme-section-headings nil
+        modus-operandi-theme-visible-fringe t
+        modus-operandi-theme-slanted-constructs t
+        modus-operandi-theme-bold-constructs t
+        modus-operandi-theme-3d-modeline nil
+        modus-operandi-theme-subtle-diff t
+        modus-operandi-theme-proportional-fonts nil))
 #+END_SRC
 
 ** Ivy
@@ -527,6 +568,15 @@ I use Ivy as as a completion frontend, it integrates really well with other supe
   (setq ivy-count-format "(%d/%d) "))
 #+END_SRC
 
+** MoodLine
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package mood-line
+  :defer t
+  :init
+  (mood-line-mode))
+#+END_SRC
+
 ** Code Completion
 
 I use =lsp-mode= as my completion tool.  Language Server Protocols allows to use the most modern code completions since they use servers as completion engines and =lsp-mode= is a great Emacs client for it.  I also use =company-mode= for the frontend completion.
@@ -537,7 +587,10 @@ I use =lsp-mode= as my completion tool.  Language Server Protocols allows to use
   :init (setq lsp-keymap-prefix "C-c l")
   :hook ((python-mode . lsp)
          (go-mode . lsp)
-         (ruby-mode . lsp))
+         (ruby-mode . lsp)
+         (typescript-mode . lsp)
+         (web-mode . lsp)
+         (rjsx-mode . lsp))
   :commands lsp)
 
 (use-package company-mode
@@ -567,25 +620,29 @@ I use =lsp-mode= as my completion tool.  Language Server Protocols allows to use
 I use org mode fo lots of things epacially to write this file.  It's just really great!
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package org
-  :defer t
-  :preface
-  (defun my-org-mode-hook ()
-    (org-indent-mode 1)
-    (visual-line-mode 1)
-    (linum-mode -1)
-    (flyspell-mode 1))
-  :config
-  (set-face-attribute 'org-document-title nil :height 250)
-  (set-face-attribute 'org-level-1        nil :height 170)
-  (set-face-attribute 'org-level-2        nil :height 150)
-  (add-hook 'org-mode-hook 'my-org-mode-hook))
+  (use-package org
+    :defer t
+    :preface
+    (defun my-org-mode-hook ()
+      (org-indent-mode 1)
+      (visual-line-mode 1)
+      (linum-mode -1)
+      (flyspell-mode 1))
+    :config
+    ;; (set-face-attribute 'org-document-title nil :height 200)
+    ;; (set-face-attribute 'org-level-1        nil :height 160)
+    ;; (set-face-attribute 'org-level-2        nil :height 150)
+    ;; (add
+     -hook 'org-mode-hook 'my-org-mode-hook))
 
-(use-package org-bullets :hook (org-mode . org-bullets-mode))
+  (use-package org-bullets 
+    :defer t
+    :hook (org-mode . org-bullets-mode))
 
-(use-package toc-org
-  :hook ((org-mode      . toc-org-mode)
-         (markdown-mode . toc-org-mode)))
+  (use-package toc-org
+    :defer t
+    :hook ((org-mode      . toc-org-mode)
+           (markdown-mode . toc-org-mode)))
 #+END_SRC
 
 ** Magit
@@ -704,18 +761,14 @@ Install =CIDER= for REPL support and other intractive features.
 
 ** Typescript
 
-Tide is a great interactive environment for Typescript.
+I use typescript mode instead of tide since I am already using lsp as
+a completion engine.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package tide
-  :after (typescript-mode company flycheck)
-  :hook
-  ((typescript-mode . tide-setup)
-   (typescript-mode . tide-hl-identifier-mode)
-   (before-save . tide-format-before-save))
+(use-package typescript-mode
+  :defer t
   :config
-  (setq tide-format-options '(:indentSize 2 :tabSize 2)
-        typescript-indent-level 2))
+  (setq typescript-mode-indent-size 2))
 #+END_SRC
 
 ** Docker
@@ -779,8 +832,8 @@ This allows me to configure a theme for the day and a theme for the night that a
 (use-package theme-switcher
   :ensure nil
   :init
-  (setq day-theme 'sanityinc-tomorrow-bright)
-  (setq night-theme 'sanityinc-tomorrow-bright))
+  (setq day-theme 'modus-operandi)
+  (setq night-theme 'modus-vivendi))
 #+END_SRC
 
 * Closing files
@@ -790,4 +843,3 @@ This allows me to configure a theme for the day and a theme for the night that a
 #+BEGIN_SRC emacs-lisp :tangle init.el
 ;;; init.el ends here
 #+END_SRC
-

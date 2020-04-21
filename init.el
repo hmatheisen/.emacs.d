@@ -33,6 +33,14 @@
     "Add a path to `exec-path' and Emacs \"PATH\" variable."
     (add-to-list 'exec-path (substring path 1))
     (setenv "PATH" (concat (getenv "PATH") path)))
+  (defun garbage-collect-defer ()
+    "Defer garbage collection."
+    (setq gc-cons-threshold most-positive-fixnum
+          gc-cons-percentage 0.6))
+  (defun garbage-collect-restore ()
+    "Return garbage collection to slightly higher parameter."
+    (setq gc-cons-threshold 100000000
+          gc-cons-percentage 0.1))
   :ensure nil
   :config
   ;; Avoid a few issues on MacOS
@@ -73,7 +81,12 @@
   (set-default-coding-systems 'utf-8)
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
-  (set-selection-coding-system 'utf-8))
+  (set-selection-coding-system 'utf-8)
+  ;; Set garbage collection
+  (garbage-collect-defer)
+  (add-hook 'emacs-startup-hook #'garbage-collect-restore)
+  (add-hook 'minibuffer-setup-hook #'garbage-collect-defer)
+  (add-hook 'minibuffer-exit-hook #'garbage-collect-restore))
 
 (use-package custom
   :ensure nil
@@ -147,7 +160,9 @@
 
 (use-package files
   :ensure nil
-  :config (setq backup-directory-alist '(("." . "~/.emacs.d/.backups"))))
+  :config 
+  (setq backup-directory-alist '(("." . "~/.emacs.d/.backups")))
+  (setq confirm-kill-emacs #'yes-or-no-p))
 
 (use-package frame
   :ensure nil
@@ -209,6 +224,30 @@
 (use-package spacemacs-common :defer t :ensure spacemacs-theme)
 (use-package moe-theme :defer t)
 (use-package color-theme-sanityinc-tomorrow :defer t)
+(use-package modus-vivendi-theme
+  :defer t
+  :init
+  (setq modus-vivendi-theme-distinct-org-blocks t
+        modus-vivendi-theme-rainbow-headings t
+        modus-vivendi-theme-section-headings nil
+        modus-vivendi-theme-visible-fringe t
+        modus-vivendi-theme-slanted-constructs t
+        modus-vivendi-theme-bold-constructs t
+        modus-vivendi-theme-3d-modeline nil
+        modus-vivendi-theme-subtle-diff t
+        modus-vivendi-theme-proportional-fonts nil))
+(use-package modus-operandi-theme
+  :defer t
+  :init
+  (setq modus-operandi-theme-distinct-org-blocks t
+        modus-operandi-theme-rainbow-headings t
+        modus-operandi-theme-section-headings nil
+        modus-operandi-theme-visible-fringe t
+        modus-operandi-theme-slanted-constructs t
+        modus-operandi-theme-bold-constructs t
+        modus-operandi-theme-3d-modeline nil
+        modus-operandi-theme-subtle-diff t
+        modus-operandi-theme-proportional-fonts nil))
 
 (use-package counsel
   :defer t
@@ -220,12 +259,20 @@
   (setq ivy-use-virtual-buffers t)
   (setq ivy-count-format "(%d/%d) "))
 
+(use-package mood-line
+  :defer t
+  :init
+  (mood-line-mode))
+
 (use-package lsp-mode
   :defer t
   :init (setq lsp-keymap-prefix "C-c l")
   :hook ((python-mode . lsp)
          (go-mode . lsp)
-         (ruby-mode . lsp))
+         (ruby-mode . lsp)
+         (typescript-mode . lsp)
+         (web-mode . lsp)
+         (rjsx-mode . lsp))
   :commands lsp)
 
 (use-package company-mode
@@ -258,14 +305,17 @@
     (linum-mode -1)
     (flyspell-mode 1))
   :config
-  (set-face-attribute 'org-document-title nil :height 250)
-  (set-face-attribute 'org-level-1        nil :height 170)
+  (set-face-attribute 'org-document-title nil :height 200)
+  (set-face-attribute 'org-level-1        nil :height 160)
   (set-face-attribute 'org-level-2        nil :height 150)
   (add-hook 'org-mode-hook 'my-org-mode-hook))
 
-(use-package org-bullets :hook (org-mode . org-bullets-mode))
+(use-package org-bullets 
+  :defer t
+  :hook (org-mode . org-bullets-mode))
 
 (use-package toc-org
+  :defer t
   :hook ((org-mode      . toc-org-mode)
          (markdown-mode . toc-org-mode)))
 
@@ -321,15 +371,10 @@
 (use-package cider
  :defer t)
 
-(use-package tide
-  :after (typescript-mode company flycheck)
-  :hook
-  ((typescript-mode . tide-setup)
-   (typescript-mode . tide-hl-identifier-mode)
-   (before-save . tide-format-before-save))
+(use-package typescript-mode
+  :defer t
   :config
-  (setq tide-format-options '(:indentSize 2 :tabSize 2)
-        typescript-indent-level 2))
+  (setq typescript-mode-indent-size 2))
 
 (use-package docker
   :defer t
@@ -363,7 +408,7 @@
 (use-package theme-switcher
   :ensure nil
   :init
-  (setq day-theme 'sanityinc-tomorrow-bright)
-  (setq night-theme 'sanityinc-tomorrow-bright))
+  (setq day-theme 'modus-operandi)
+  (setq night-theme 'modus-vivendi))
 
 ;;; init.el ends here
