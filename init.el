@@ -80,8 +80,23 @@
   (add-hook 'minibuffer-setup-hook #'garbage-collect-defer)
   (add-hook 'minibuffer-exit-hook #'garbage-collect-restore))
 
+;; Resolve path issues
+(use-package emacs
+  :preface
+  (defun add-to-path (path)
+    "Add a path to `exec-path' and Emacs \"PATH\" variable."
+    (add-to-list 'exec-path (substring path 1))
+    (setenv "PATH" (concat (getenv "PATH") path)))
+  :ensure nil
+  :config
+  ;; Add useful path to exec-path and PATH
+  (add-to-path ":/usr/local/bin")
+  (add-to-path ":/Library/TeX/texbin")
+  (add-to-path ":~/go/bin"))
+
 (use-package emacs
   :ensure nil
+  :config
   ;; Set utf8 everywhere
   (prefer-coding-system 'utf-8)
   (setq locale-coding-system 'utf-8)
@@ -90,6 +105,32 @@
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
   (set-selection-coding-system 'utf-8))
+
+(use-package emacs
+  :ensure nil
+  :preface
+  (defun zz-scroll-half-page (direction)
+    "Scrolls half page up if `direction' is non-nil, otherwise will scroll half page down."
+    (let ((opos (cdr (nth 6 (posn-at-point)))))
+      ;; opos = original position line relative to window
+      (move-to-window-line nil)  ;; Move cursor to middle line
+      (if direction
+          (recenter-top-bottom -1)  ;; Current line becomes last
+        (recenter-top-bottom 0))  ;; Current line becomes first
+      (move-to-window-line opos)))  ;; Restore cursor/point position
+
+  (defun zz-scroll-half-page-down ()
+    "Scrolls exactly half page down keeping cursor/point position."
+    (interactive)
+    (zz-scroll-half-page nil))
+
+  (defun zz-scroll-half-page-up ()
+    "Scrolls exactly half page up keeping cursor/point position."
+    (interactive)
+    (zz-scroll-half-page t))
+  :config
+  (global-set-key (kbd "C-v") 'zz-scroll-half-page-down)
+  (global-set-key (kbd "M-v") 'zz-scroll-half-page-up))
 
 (use-package custom
   :ensure nil
@@ -129,8 +170,12 @@
                                  (interactive)
                                  (other-window -1)))
   ;; scroll window up/down by one line
-  (global-set-key (kbd "M-n") (kbd "C-u 1 C-v"))
-  (global-set-key (kbd "M-p") (kbd "C-u 1 M-v"))
+  (global-set-key (kbd "M-n") '(lambda ()
+                                 (interactive)
+                                 (scroll-up-command 1)))
+  (global-set-key (kbd "M-p") '(lambda ()
+                                 (interactive)
+                                 (scroll-down-command 1)))
   ;; Use by own split functions
   (global-set-key (kbd "C-x 2") 'my-split-window-below)
   (global-set-key (kbd "C-x 3") 'my-split-window-right))
