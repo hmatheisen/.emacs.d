@@ -44,7 +44,6 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
 - [[#third-party-packages][Third-party Packages]]
   - [[#themes][Themes]]
   - [[#ivy][Ivy]]
-  - [[#moodline][MoodLine]]
   - [[#code-completion][Code Completion]]
   - [[#org-mode][Org Mode]]
   - [[#magit][Magit]]
@@ -568,18 +567,12 @@ I use Ivy as as a completion frontend, it integrates really well with other supe
   (setq ivy-count-format "(%d/%d) "))
 #+END_SRC
 
-** MoodLine
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package mood-line
-  :defer t
-  :init
-  (mood-line-mode))
-#+END_SRC
-
 ** Code Completion
 
-I use =lsp-mode= as my completion tool.  Language Server Protocols allows to use the most modern code completions since they use servers as completion engines and =lsp-mode= is a great Emacs client for it.  I also use =company-mode= for the frontend completion.
+I use =lsp-mode= as my completion tool.  Language Server Protocols
+allows to use the most modern code completions since they use servers
+as completion engines and =lsp-mode= is a great Emacs client for it.
+I also use =company-mode= for the frontend completion.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package lsp-mode
@@ -620,29 +613,29 @@ I use =lsp-mode= as my completion tool.  Language Server Protocols allows to use
 I use org mode fo lots of things epacially to write this file.  It's just really great!
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  (use-package org
-    :defer t
-    :preface
-    (defun my-org-mode-hook ()
-      (org-indent-mode 1)
-      (visual-line-mode 1)
-      (linum-mode -1)
-      (flyspell-mode 1))
-    :config
-    ;; (set-face-attribute 'org-document-title nil :height 200)
-    ;; (set-face-attribute 'org-level-1        nil :height 160)
-    ;; (set-face-attribute 'org-level-2        nil :height 150)
-    ;; (add
-     -hook 'org-mode-hook 'my-org-mode-hook))
+(use-package org
+  :defer t
+  :preface
+  (defun my-org-mode-hook ()
+    (org-indent-mode 1)
+    (visual-line-mode 1)
+    (linum-mode -1)
+    (flyspell-mode 1))
+  :config
+  ;; (set-face-attribute 'org-document-title nil :height 200)
+  ;; (set-face-attribute 'org-level-1        nil :height 160)
+  ;; (set-face-attribute 'org-level-2        nil :height 150)
+  ;; (add
+   -hook 'org-mode-hook 'my-org-mode-hook))
 
-  (use-package org-bullets 
-    :defer t
-    :hook (org-mode . org-bullets-mode))
+(use-package org-bullets 
+  :defer t
+  :hook (org-mode . org-bullets-mode))
 
-  (use-package toc-org
-    :defer t
-    :hook ((org-mode      . toc-org-mode)
-           (markdown-mode . toc-org-mode)))
+(use-package toc-org
+  :defer t
+  :hook ((org-mode      . toc-org-mode)
+         (markdown-mode . toc-org-mode)))
 #+END_SRC
 
 ** Magit
@@ -843,3 +836,4 @@ This allows me to configure a theme for the day and a theme for the night that a
 #+BEGIN_SRC emacs-lisp :tangle init.el
 ;;; init.el ends here
 #+END_SRC
+

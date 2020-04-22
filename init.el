@@ -259,11 +259,6 @@
   (setq ivy-use-virtual-buffers t)
   (setq ivy-count-format "(%d/%d) "))
 
-(use-package mood-line
-  :defer t
-  :init
-  (mood-line-mode))
-
 (use-package lsp-mode
   :defer t
   :init (setq lsp-keymap-prefix "C-c l")
@@ -305,10 +300,11 @@
     (linum-mode -1)
     (flyspell-mode 1))
   :config
-  (set-face-attribute 'org-document-title nil :height 200)
-  (set-face-attribute 'org-level-1        nil :height 160)
-  (set-face-attribute 'org-level-2        nil :height 150)
-  (add-hook 'org-mode-hook 'my-org-mode-hook))
+  ;; (set-face-attribute 'org-document-title nil :height 200)
+  ;; (set-face-attribute 'org-level-1        nil :height 160)
+  ;; (set-face-attribute 'org-level-2        nil :height 150)
+  ;; (add
+   -hook 'org-mode-hook 'my-org-mode-hook))
 
 (use-package org-bullets 
   :defer t
