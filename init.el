@@ -28,11 +28,43 @@
 (add-to-list 'load-path "~/.emacs.d/site-lisp/new-term")
 
 (use-package emacs
+  :ensure nil
+  :config
+  ;; Avoid a few issues on MacOS
+  (when *is-a-mac*
+    (setq mac-option-modifier nil
+          mac-command-modifier 'meta
+          select-enable-clipboard t))
+  ;; Title Bar Settings
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+  (add-to-list 'default-frame-alist '(ns-appearance . dark))
+  (setq ns-use-proxy-icon  nil)
+  (setq frame-title-format nil))
+
+(use-package emacs
+  :ensure nil
+  :config
+  ;; Remove Toolbar
+  (tool-bar-mode -1)
+  ;; Disable menu bar
+  (menu-bar-mode -1)
+  ;; Enable downcase/upcase region
+  (put 'downcase-region 'disabled nil)
+  (put 'upcase-region 'disabled nil)
+  ;; Trash can support
+  (setq delete-by-moving-to-trash t)
+  ;; Indent using spaces
+  (setq-default indent-tabs-mode nil)
+  ;; Set tabs to 2
+  (setq-default tab-width 2)
+  ;; Make that damn bell shut up
+  (setq ring-bell-function 'ignore)
+  ;; Default truncate lines
+  (setq-default truncate-lines t))
+
+(use-package emacs
+  :ensure nil
   :preface
-  (defun add-to-path (path)
-    "Add a path to `exec-path' and Emacs \"PATH\" variable."
-    (add-to-list 'exec-path (substring path 1))
-    (setenv "PATH" (concat (getenv "PATH") path)))
   (defun garbage-collect-defer ()
     "Defer garbage collection."
     (setq gc-cons-threshold most-positive-fixnum
@@ -41,39 +73,15 @@
     "Return garbage collection to slightly higher parameter."
     (setq gc-cons-threshold 100000000
           gc-cons-percentage 0.1))
-  :ensure nil
   :config
-  ;; Avoid a few issues on MacOS
-  (when *is-a-mac*
-    (setq mac-option-modifier nil
-          mac-command-modifier 'meta
-          select-enable-clipboard t))
-  ;; Enable downcase/upcase region
-  (put 'downcase-region 'disabled nil)
-  (put 'upcase-region 'disabled nil)
-  ;; Remove Toolbar
-  (tool-bar-mode -1)
-  ;; Disable menu bar
-  (menu-bar-mode -1)
-  ;; Trash can support
-  (setq delete-by-moving-to-trash t)
-  ;; Indent using spaces
-  (setq-default indent-tabs-mode nil)
-  ;; Set tabs to 2
-  (setq-default tab-width 2)
-  ;; Title Bar Settings
-  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-  (add-to-list 'default-frame-alist '(ns-appearance . dark))
-  (setq ns-use-proxy-icon  nil)
-  (setq frame-title-format nil)
-  ;; Make that damn bell shut up
-  (setq ring-bell-function 'ignore)
-  ;; Add useful path to exec-path and PATH
-  (add-to-path ":/usr/local/bin")
-  (add-to-path ":/Library/TeX/texbin")
-  (add-to-path ":~/go/bin")
-  ;; Default truncate lines
-  (setq-default truncate-lines t)
+  ;; Set garbage collection
+  (garbage-collect-defer)
+  (add-hook 'emacs-startup-hook #'garbage-collect-restore)
+  (add-hook 'minibuffer-setup-hook #'garbage-collect-defer)
+  (add-hook 'minibuffer-exit-hook #'garbage-collect-restore))
+
+(use-package emacs
+  :ensure nil
   ;; Set utf8 everywhere
   (prefer-coding-system 'utf-8)
   (setq locale-coding-system 'utf-8)
@@ -81,12 +89,7 @@
   (set-default-coding-systems 'utf-8)
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
-  (set-selection-coding-system 'utf-8)
-  ;; Set garbage collection
-  (garbage-collect-defer)
-  (add-hook 'emacs-startup-hook #'garbage-collect-restore)
-  (add-hook 'minibuffer-setup-hook #'garbage-collect-defer)
-  (add-hook 'minibuffer-exit-hook #'garbage-collect-restore))
+  (set-selection-coding-system 'utf-8))
 
 (use-package custom
   :ensure nil
