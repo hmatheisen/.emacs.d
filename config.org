@@ -167,7 +167,9 @@ are made.
 
 ** Install use-package
 
-=use-package= is quite handy and will allow us to require and install packages in a tidy way, we install it here and make sure it installs the packages we want by default.
+=use-package= is quite handy and will allow us to require and install
+packages in a tidy way, we install it here and make sure it installs
+the packages we want by default.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (unless (package-installed-p 'use-package)
@@ -180,7 +182,9 @@ are made.
 
 ** Require personal packages
 
-Those packages are installed with git submodules.  They are isolated packages written by me so they don't need any description here.  We just add them to load path so that =use-package= can do the job later.
+Those packages are installed with git submodules.  They are isolated
+packages written by me so they don't need any description here.  We
+just add them to load path so that =use-package= can do the job later.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (add-to-list 'load-path "~/.emacs.d/site-lisp/theme-switcher")
@@ -267,7 +271,8 @@ not related to any Lisp packages, let's put them in a package called
 
 ** Custom
 
-The custom file is not really useful here since every parameter is set using elisp.
+The custom file is not really useful here since every parameter is set
+using elisp.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package custom
@@ -279,7 +284,9 @@ The custom file is not really useful here since every parameter is set using eli
 
 ** Terminal binary
 
-On MacOS, I use a new version of =bash= installed with =brew= since I can't update the default one. Therefore the path is changed to =/usr/local/bin/bash=.
+On MacOS, I use a new version of =bash= installed with =brew= since I
+can't update the default one. Therefore the path is changed to
+=/usr/local/bin/bash=.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package term
@@ -292,7 +299,9 @@ On MacOS, I use a new version of =bash= installed with =brew= since I can't upda
 
 ** Window
 
-Change keybindings to resize window so I can just keep pressing them.  Also I change the default keybindings to go to another window since =C-x o= is a little too long in my opinion.
+Change keybindings to resize window so I can just keep pressing them.
+Also I change the default keybindings to go to another window since
+=C-x o= is a little too long in my opinion.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package "window"
@@ -381,7 +390,8 @@ Display battery level inm mode line.
 
 ** Line numbers everywhere
 
-Display line numbers globally.  I only get rid of them for some modes such as Org or Markdown.
+Display line numbers globally.  I only get rid of them for some modes
+such as Org or Markdown.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package linum
@@ -426,7 +436,8 @@ Allows to revert changes on the window configuration.
 
 ** Modern region behavior
 
-Replace the active region when typing/yanking text, which is a little handier than the default behaviour.
+Replace the active region when typing/yanking text, which is a little
+handier than the default behaviour.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package delsel
@@ -457,7 +468,8 @@ Show matching paren, quite useful for every languages especially Lisp!
 
 ** Ediff
 
-Enter ediff with side-by-side buffers to better compare the differences.
+Enter ediff with side-by-side buffers to better compare the
+differences.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package ediff
@@ -553,7 +565,10 @@ Some themes I ilke to use.  Currently Modus is my favourite.
 
 ** Ivy
 
-I use Ivy as as a completion frontend, it integrates really well with other super cool tools such as Swiper and Counsel.  There are other choices for this such as Helm that I don't really like or the default Ido mode that I should try one day.
+I use Ivy as as a completion frontend, it integrates really well with
+other super cool tools such as Swiper and Counsel.  There are other
+choices for this such as Helm that I don't really like or the default
+Ido mode that I should try one day.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package counsel
@@ -610,7 +625,8 @@ I also use =company-mode= for the frontend completion.
 
 ** Org Mode
 
-I use org mode fo lots of things epacially to write this file.  It's just really great!
+I use org mode fo lots of things epacially to write this file.  It's
+just really great!
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package org
@@ -640,7 +656,8 @@ I use org mode fo lots of things epacially to write this file.  It's just really
 
 ** Magit
 
-Magit is an awesome git wrapper, everyone loves it, I love it and I use it everyday.
+Magit is an awesome git wrapper, everyone loves it, I love it and I
+use it everyday.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package magit
@@ -685,7 +702,8 @@ Tree file structure for Emacs
 
 ** Which key
 
-This is great to get a list of available commands while typing a key chord.
+This is great to get a list of available commands while typing a key
+chord.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package which-key
@@ -766,7 +784,9 @@ a completion engine.
 
 ** Docker
 
-To provide support fo docker I use =docker-mode= which is a wrapper for the Docker CLI and =dockerfile-mode= which allows syntax highlighting for Dockerfiles.
+To provide support fo docker I use =docker-mode= which is a wrapper
+for the Docker CLI and =dockerfile-mode= which allows syntax
+highlighting for Dockerfiles.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package docker
@@ -797,11 +817,17 @@ To provide support fo docker I use =docker-mode= which is a wrapper for the Dock
 
 * Personal Packages
 
-This part is about configuring packages that are not part of GNU Emacs but written by me.  I chose not to upload them on MELPA since similar version of thos packages already exists, I just didn't like them :)
+This part is about configuring packages that are not part of GNU Emacs
+but written by me.  I chose not to upload them on MELPA since similar
+version of thos packages already exists, I just didn't like them :)
 
 ** [[https://github.com/hmatheisen/new-term][New Term]]
 
-This package allows to toggle a small terminal window on the bottom of the screen.  It has a few other features like making it bigger or smaller and quitting by closing the shell process and killing the window.  It is somewhat similar to what you would find in more modern editors such as VS Code.
+This package allows to toggle a small terminal window on the bottom of
+the screen.  It has a few other features like making it bigger or
+smaller and quitting by closing the shell process and killing the
+window.  It is somewhat similar to what you would find in more modern
+editors such as VS Code.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package new-term
@@ -819,7 +845,8 @@ This package allows to toggle a small terminal window on the bottom of the scree
 
 ** [[https://github.com/hmatheisen/theme-switcher][Theme Switcher]]
 
-This allows me to configure a theme for the day and a theme for the night that automatically switches at given time.
+This allows me to configure a theme for the day and a theme for the
+night that automatically switches at given time.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package theme-switcher
