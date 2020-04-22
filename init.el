@@ -249,6 +249,10 @@
         modus-operandi-theme-subtle-diff t
         modus-operandi-theme-proportional-fonts nil))
 
+(use-package diminish
+  :defer t
+  :after use-package)
+
 (use-package counsel
   :defer t
   :diminish ivy-mode counsel-mode
@@ -266,12 +270,12 @@
          (go-mode . lsp)
          (ruby-mode . lsp)
          (typescript-mode . lsp)
-         (web-mode . lsp)
-         (rjsx-mode . lsp))
+         (web-mode . lsp))
   :commands lsp)
 
 (use-package company-mode
   :defer t
+  :diminish company-mode
   :init
   (setq company-selection-wrap-around t)
   (setq company-minimum-prefix-length 1)
@@ -282,7 +286,9 @@
     (define-key company-active-map (kbd "C-n") 'company-select-next)
     (define-key company-active-map (kbd "C-p") 'company-select-previous))
   :ensure company
-  :hook (after-init . global-company-mode))
+  :hook ((after-init . global-company-mode)
+          (company-mode . (lambda ()
+                            (diminish 'company-mode)))))
 
 (use-package company-lsp
   :defer t
@@ -293,18 +299,21 @@
 
 (use-package org
   :defer t
+  :diminish visual-line-mode
   :preface
   (defun my-org-mode-hook ()
     (org-indent-mode 1)
     (visual-line-mode 1)
     (linum-mode -1)
     (flyspell-mode 1))
+  :hook ((org-mode . my-org-mode-hook)
+         (org-indent-mode . (lambda ()
+                              "Only way I found to make diminish work"
+                              (diminish 'org-indent-mode))))
   :config
-  ;; (set-face-attribute 'org-document-title nil :height 200)
-  ;; (set-face-attribute 'org-level-1        nil :height 160)
-  ;; (set-face-attribute 'org-level-2        nil :height 150)
-  ;; (add
-   -hook 'org-mode-hook 'my-org-mode-hook))
+  (set-face-attribute 'org-document-title nil :height 200)
+  (set-face-attribute 'org-level-1        nil :height 160)
+  (set-face-attribute 'org-level-2        nil :height 150))
 
 (use-package org-bullets 
   :defer t
@@ -321,6 +330,7 @@
 
 (use-package flycheck
   :defer t
+  :diminish
   :config (global-flycheck-mode t))
 
 (use-package projectile
@@ -344,6 +354,7 @@
         which-key-idle-secondary-delay 0.4))
 
 (use-package undo-tree
+  :diminish undo-tree-mode
   :config
   (global-undo-tree-mode))
 
@@ -351,6 +362,7 @@
   :defer t)
 
 (use-package dashboard
+  :diminish page-break-lines-mode
   :config
   (dashboard-setup-startup-hook)
   (setq dashboard-startup-banner 'official
@@ -404,6 +416,8 @@
 (use-package theme-switcher
   :ensure nil
   :init
+  (setq day-hour 09)
+  (setq night-hour 16)
   (setq day-theme 'modus-operandi)
   (setq night-theme 'modus-vivendi))
 

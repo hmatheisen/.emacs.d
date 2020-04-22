@@ -43,6 +43,7 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#compile][Compile]]
 - [[#third-party-packages][Third-party Packages]]
   - [[#themes][Themes]]
+  - [[#diminish][Diminish]]
   - [[#ivy][Ivy]]
   - [[#code-completion][Code Completion]]
   - [[#org-mode][Org Mode]]
@@ -563,6 +564,14 @@ Some themes I ilke to use.  Currently Modus is my favourite.
         modus-operandi-theme-proportional-fonts nil))
 #+END_SRC
 
+** Diminish
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package diminish
+  :defer t
+  :after use-package)
+#+END_SRC
+
 ** Ivy
 
 I use Ivy as as a completion frontend, it integrates really well with
@@ -597,12 +606,12 @@ I also use =company-mode= for the frontend completion.
          (go-mode . lsp)
          (ruby-mode . lsp)
          (typescript-mode . lsp)
-         (web-mode . lsp)
-         (rjsx-mode . lsp))
+         (web-mode . lsp))
   :commands lsp)
 
 (use-package company-mode
   :defer t
+  :diminish company-mode
   :init
   (setq company-selection-wrap-around t)
   (setq company-minimum-prefix-length 1)
@@ -613,7 +622,9 @@ I also use =company-mode= for the frontend completion.
     (define-key company-active-map (kbd "C-n") 'company-select-next)
     (define-key company-active-map (kbd "C-p") 'company-select-previous))
   :ensure company
-  :hook (after-init . global-company-mode))
+  :hook ((after-init . global-company-mode)
+          (company-mode . (lambda ()
+                            (diminish 'company-mode)))))
 
 (use-package company-lsp
   :defer t
@@ -631,18 +642,21 @@ just really great!
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package org
   :defer t
+  :diminish visual-line-mode
   :preface
   (defun my-org-mode-hook ()
     (org-indent-mode 1)
     (visual-line-mode 1)
     (linum-mode -1)
     (flyspell-mode 1))
+  :hook ((org-mode . my-org-mode-hook)
+         (org-indent-mode . (lambda ()
+                              "Only way I found to make diminish work"
+                              (diminish 'org-indent-mode))))
   :config
-  ;; (set-face-attribute 'org-document-title nil :height 200)
-  ;; (set-face-attribute 'org-level-1        nil :height 160)
-  ;; (set-face-attribute 'org-level-2        nil :height 150)
-  ;; (add
-   -hook 'org-mode-hook 'my-org-mode-hook))
+  (set-face-attribute 'org-document-title nil :height 200)
+  (set-face-attribute 'org-level-1        nil :height 160)
+  (set-face-attribute 'org-level-2        nil :height 150))
 
 (use-package org-bullets 
   :defer t
@@ -672,6 +686,7 @@ Flycheck linter.
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package flycheck
   :defer t
+  :diminish
   :config (global-flycheck-mode t))
 #+END_SRC
 
@@ -720,6 +735,7 @@ Handy features for undo/redo
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package undo-tree
+  :diminish undo-tree-mode
   :config
   (global-undo-tree-mode))
 #+END_SRC
@@ -739,6 +755,7 @@ I just think it's neat!
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package dashboard
+  :diminish page-break-lines-mode
   :config
   (dashboard-setup-startup-hook)
   (setq dashboard-startup-banner 'official
@@ -852,6 +869,8 @@ night that automatically switches at given time.
 (use-package theme-switcher
   :ensure nil
   :init
+  (setq day-hour 09)
+  (setq night-hour 16)
   (setq day-theme 'modus-operandi)
   (setq night-theme 'modus-vivendi))
 #+END_SRC
