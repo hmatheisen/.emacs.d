@@ -373,6 +373,10 @@
         dashboard-set-file-icons    t
         dashboard-banner-logo-title "Welcome to He-Macs!"))
 
+(use-package yasnippet
+  :diminish yas-minor-mode
+  :config (yas-global-mode t))
+
 (use-package clojure-mode
   :defer t)
 

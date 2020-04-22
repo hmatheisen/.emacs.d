@@ -55,10 +55,11 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#undo-tree][Undo tree]]
   - [[#all-the-icons][All the icons]]
   - [[#dashboard][Dashboard]]
+  - [[#snippets][Snippets]]
   - [[#clojure][Clojure]]
   - [[#typescript][Typescript]]
   - [[#docker][Docker]]
-  - [[#yaml][yaml]]
+  - [[#yaml][YAML]]
   - [[#go][Go]]
 - [[#personal-packages][Personal Packages]]
   - [[#new-term][New Term]]
@@ -767,6 +768,14 @@ I just think it's neat!
         dashboard-banner-logo-title "Welcome to He-Macs!"))
 #+END_SRC
 
+** Snippets
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package yasnippet
+  :diminish yas-minor-mode
+  :config (yas-global-mode t))
+#+END_SRC
+
 ** Clojure
 
 *** Clojure mode
@@ -813,7 +822,7 @@ highlighting for Dockerfiles.
 (use-package dockerfile-mode)
 #+END_SRC
 
-** yaml
+** YAML
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package yaml-mode
