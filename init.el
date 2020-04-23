@@ -282,8 +282,13 @@
         modus-vivendi-theme-slanted-constructs t
         modus-vivendi-theme-bold-constructs t
         modus-vivendi-theme-3d-modeline nil
-        modus-vivendi-theme-subtle-diff t
-        modus-vivendi-theme-proportional-fonts nil))
+        modus-vivendi-theme-subtle-diff nil
+        modus-vivendi-theme-proportional-fonts nil
+        modus-vivendi-theme-scale-headings t
+        modus-vivendi-theme-scale-1 1.05
+        modus-vivendi-theme-scale-2 1.1
+        modus-vivendi-theme-scale-3 1.15
+        modus-vivendi-theme-scale-4 1.2))
 (use-package modus-operandi-theme
   :defer t
   :init
@@ -294,8 +299,13 @@
         modus-operandi-theme-slanted-constructs t
         modus-operandi-theme-bold-constructs t
         modus-operandi-theme-3d-modeline nil
-        modus-operandi-theme-subtle-diff t
-        modus-operandi-theme-proportional-fonts nil))
+        modus-operandi-theme-subtle-diff nil
+        modus-operandi-theme-proportional-fonts nil
+        modus-operandi-theme-scale-headings t
+        modus-operandi-theme-scale-1 1.05
+        modus-operandi-theme-scale-2 1.1
+        modus-operandi-theme-scale-3 1.15
+        modus-operandi-theme-scale-4 1.2))
 
 (use-package diminish
   :defer t
@@ -356,12 +366,16 @@
     (flyspell-mode 1))
   :hook ((org-mode . my-org-mode-hook)
          (org-indent-mode . (lambda ()
-                              "Only way I found to make diminish work"
+                              "Only way I found to make diminish work for this mode"
                               (diminish 'org-indent-mode))))
   :config
+  ;; Do not set headings face attributes if onve of the modus themes
+  ;; is enabled since they already set this up.
   (set-face-attribute 'org-document-title nil :height 200)
-  (set-face-attribute 'org-level-1        nil :height 160)
-  (set-face-attribute 'org-level-2        nil :height 150))
+  (unless (or (member 'modus-operandi custom-enabled-themes)
+              (member 'modus-vivendi custom-enabled-themes))
+    (set-face-attribute 'org-level-1        nil :height 160)
+    (set-face-attribute 'org-level-2        nil :height 150)))
 
 (use-package org-bullets 
   :defer t
