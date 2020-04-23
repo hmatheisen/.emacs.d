@@ -31,6 +31,7 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#simple][Simple]]
   - [[#display-battery-level][Display battery level]]
   - [[#line-numbers-everywhere][Line numbers everywhere]]
+  - [[#fringe][Fringe]]
   - [[#files][Files]]
   - [[#frame-settings][Frame settings]]
   - [[#winner-mode][Winner mode]]
@@ -466,9 +467,24 @@ Display line numbers globally.  I only get rid of them for some modes
 such as Org or Markdown.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package linum
+(use-package display-line-numbers
   :ensure nil
-  :config (global-linum-mode t))
+  :config
+  (set-face-background 'line-number (face-background 'default))
+  (global-display-line-numbers-mode))
+#+END_SRC
+
+** Fringe
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package fringe
+  :ensure nil
+  :config
+  (fringe-mode nil)
+  (setq-default fringes-outside-margins nil)
+  (setq-default indicate-buffer-boundaries nil)
+  (setq-default indicate-empty-lines nil)
+  (setq-default overflow-newline-into-fringe t))
 #+END_SRC
 
 ** Files
@@ -728,12 +744,13 @@ just really great!
   (defun my-org-mode-hook ()
     (org-indent-mode 1)
     (visual-line-mode 1)
-    (linum-mode -1)
+    (display-line-numbers-mode -1)
     (flyspell-mode 1))
   :hook ((org-mode . my-org-mode-hook)
          (org-indent-mode . (lambda ()
-                              "Only way I found to make diminish work for this mode"
-                              (diminish 'org-indent-mode))))
+                              (diminish 'org-indent-mode)))
+         (flyspell-mode . (lambda ()
+                            (diminish 'flyspell-mode))))
   :config
   ;; Do not set headings face attributes if onve of the modus themes
   ;; is enabled since they already set this up.
@@ -770,7 +787,6 @@ Flycheck linter.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package flycheck
-  :defer t
   :diminish
   :config (global-flycheck-mode t))
 #+END_SRC
@@ -795,7 +811,9 @@ Tree file structure for Emacs
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package neotree
   :defer t
-  :config 
+  :hook (neotree-mode . (lambda ()
+                          (display-line-numbers-mode -1)))
+  :config
   (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
   :bind (([f8] . neotree-toggle)))
 #+END_SRC

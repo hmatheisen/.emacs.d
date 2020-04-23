@@ -202,9 +202,20 @@
   :ensure nil
   :config (display-battery-mode t))
 
-(use-package linum
+(use-package display-line-numbers
   :ensure nil
-  :config (global-linum-mode t))
+  :config
+  (set-face-background 'line-number (face-background 'default))
+  (global-display-line-numbers-mode))
+
+(use-package fringe
+  :ensure nil
+  :config
+  (fringe-mode nil)
+  (setq-default fringes-outside-margins nil)
+  (setq-default indicate-buffer-boundaries nil)
+  (setq-default indicate-empty-lines nil)
+  (setq-default overflow-newline-into-fringe t))
 
 (use-package files
   :ensure nil
@@ -362,12 +373,13 @@
   (defun my-org-mode-hook ()
     (org-indent-mode 1)
     (visual-line-mode 1)
-    (linum-mode -1)
+    (display-line-numbers-mode -1)
     (flyspell-mode 1))
   :hook ((org-mode . my-org-mode-hook)
          (org-indent-mode . (lambda ()
-                              "Only way I found to make diminish work for this mode"
-                              (diminish 'org-indent-mode))))
+                              (diminish 'org-indent-mode)))
+         (flyspell-mode . (lambda ()
+                            (diminish 'flyspell-mode))))
   :config
   ;; Do not set headings face attributes if onve of the modus themes
   ;; is enabled since they already set this up.
@@ -391,7 +403,6 @@
   :bind ("C-x g" . 'magit-status))
 
 (use-package flycheck
-  :defer t
   :diminish
   :config (global-flycheck-mode t))
 
@@ -404,7 +415,9 @@
 
 (use-package neotree
   :defer t
-  :config 
+  :hook (neotree-mode . (lambda ()
+                          (display-line-numbers-mode -1)))
+  :config
   (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
   :bind (([f8] . neotree-toggle)))
 
