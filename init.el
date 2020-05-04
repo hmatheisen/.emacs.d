@@ -204,18 +204,7 @@
 
 (use-package display-line-numbers
   :ensure nil
-  :config
-  (set-face-background 'line-number (face-background 'default))
-  (global-display-line-numbers-mode))
-
-(use-package fringe
-  :ensure nil
-  :config
-  (fringe-mode nil)
-  (setq-default fringes-outside-margins nil)
-  (setq-default indicate-buffer-boundaries nil)
-  (setq-default indicate-empty-lines nil)
-  (setq-default overflow-newline-into-fringe t))
+  :hook (prog-mode . display-line-numbers-mode))
 
 (use-package files
   :ensure nil
@@ -262,9 +251,12 @@
   (setq ibuffer-saved-filter-groups
         '(("default"
            ("dashboard"    (name . "\*dashboard\*"))
-           ("Magit"        (name . "\magit*"))
+           ("clojure"      (or (mode . clojure-mode)
+                               (name . "\*cider")
+                               (name . "\*nrepl")))
+           ("magit"        (name . "magit*"))
            ("emacs-config" (filename . ".emacs.d"))
-           ("Org"          (mode . org-mode))
+           ("org"          (mode . org-mode))
            ("dired"        (mode . dired-mode)))))
   ;; Add hook
   (add-hook 'ibuffer-mode-hook
@@ -280,21 +272,25 @@
   :config
   (global-set-key (kbd "C-c C-k") 'recompile))
 
-(use-package spacemacs-common :defer t :ensure spacemacs-theme)
-(use-package moe-theme :defer t)
-(use-package color-theme-sanityinc-tomorrow :defer t)
+(use-package info
+  :ensure nil
+  :config
+  (define-key Info-mode-map (kbd "M-n") '(lambda ()
+                                           (interactive)
+                                           (scroll-up-command 1))))
+
+(use-package js
+  :ensure nil
+  :config
+  (setq js-indent-level 2))
+
 (use-package modus-vivendi-theme
   :defer t
   :init
   (setq modus-vivendi-theme-distinct-org-blocks t
         modus-vivendi-theme-rainbow-headings t
-        modus-vivendi-theme-section-headings nil
-        modus-vivendi-theme-visible-fringe t
         modus-vivendi-theme-slanted-constructs t
         modus-vivendi-theme-bold-constructs t
-        modus-vivendi-theme-3d-modeline nil
-        modus-vivendi-theme-subtle-diff nil
-        modus-vivendi-theme-proportional-fonts nil
         modus-vivendi-theme-scale-headings t
         modus-vivendi-theme-scale-1 1.05
         modus-vivendi-theme-scale-2 1.1
@@ -305,13 +301,8 @@
   :init
   (setq modus-operandi-theme-distinct-org-blocks t
         modus-operandi-theme-rainbow-headings t
-        modus-operandi-theme-section-headings nil
-        modus-operandi-theme-visible-fringe t
         modus-operandi-theme-slanted-constructs t
         modus-operandi-theme-bold-constructs t
-        modus-operandi-theme-3d-modeline nil
-        modus-operandi-theme-subtle-diff nil
-        modus-operandi-theme-proportional-fonts nil
         modus-operandi-theme-scale-headings t
         modus-operandi-theme-scale-1 1.05
         modus-operandi-theme-scale-2 1.1
@@ -368,13 +359,13 @@
 
 (use-package org
   :defer t
-  :diminish visual-line-mode
+  :diminish visual-line-mode auto-fill-function
   :preface
   (defun my-org-mode-hook ()
     (org-indent-mode 1)
     (visual-line-mode 1)
-    (display-line-numbers-mode -1)
-    (flyspell-mode 1))
+    (flyspell-mode 1)
+    (auto-fill-mode 1))
   :hook ((org-mode . my-org-mode-hook)
          (org-indent-mode . (lambda ()
                               (diminish 'org-indent-mode)))
@@ -408,6 +399,7 @@
 
 (use-package projectile
   :defer t
+  :diminish
   :config
   (projectile-mode t)
   (setq projectile-completion-system 'ivy)
@@ -415,8 +407,6 @@
 
 (use-package neotree
   :defer t
-  :hook (neotree-mode . (lambda ()
-                          (display-line-numbers-mode -1)))
   :config
   (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
   :bind (([f8] . neotree-toggle)))
@@ -442,6 +432,7 @@
   (dashboard-setup-startup-hook)
   (setq dashboard-startup-banner 'official
         dashboard-items '((bookmarks . 10)
+                          (projects . 5)
                           (recents . 5))
         dashboard-center-content t
         dashboard-set-heading-icons t
@@ -456,12 +447,12 @@
   :defer t)
 
 (use-package cider
- :defer t)
+  :defer t)
 
 (use-package typescript-mode
   :defer t
   :config
-  (setq typescript-mode-indent-size 2))
+  (setq typescript-indent-level 2))
 
 (use-package docker
   :defer t

@@ -1,0 +1,58 @@
+#+TITLE: TODOS
+#+DATE: <2020-04-21 Tue>
+#+AUTHOR: Henry MATHEISEN
+#+LANGUAGE: en
+
+* DONE Defer Loading
+
+- Checkout =:defer t= in =use=package=
+
+* DONE Ask before quit
+* DONE Garbage Collection
+
+- Checkout that garbage collection thing from farlado
+
+* DONE Moodline
+* DONE LSP
+
+** DONE Solve Typescript LSP not working
+
+- Shoud I get rid of tide?
+- Try to set up LSP without Tide
+
+** DONE Checkout other lsp features
+
+* DONE Snippets
+* DONE Half scroll à la Evil
+* DONE Reorganize the emacs use-package
+* TODO Diminish
+
+** DONE Set it up
+
+Actually, I like the default modeline but it can get way too crowded
+when adding minor modes, so let's get rid of some of them.
+
+** TODO ARev
+** TODO Eldoc
+
+* TODO Paredit
+* TODO Gnus
+* TODO Theme Switcher
+
+** DONE Toggle command
+
+Create a toggle command between day and night theme.
+
+** DONE Other ideas
+
+- Maybe make it more as a theme swithing bunch of utilities instead of
+  just the switch
+- So maybe create a user settable variable to say whether he wants the
+  theme switch at given time.  If not he can still define day and
+  night themes and make easy switches
+
+** TODO Built a toggle for the switcher
+
+- minor mode maybe?
+
+* TODO Defer built-in packages?
