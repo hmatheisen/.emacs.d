@@ -159,12 +159,14 @@ are made.
 #+END_SRC
 
 ** Add package archives
-<
+
+Setup MELPA repositories.
+
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (require 'package)
-(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
+(add-to-list 'package-archives '("gnu"   . "https://elpa.gnu.org/packages/"))
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/"))
+(add-to-list 'package-archives '("org"   . "https://orgmode.org/elpa/"))
 (setq package-enable-at-startup nil)
 (package-initialize)
 #+END_SRC

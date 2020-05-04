@@ -56,3 +56,4 @@ Create a toggle command between day and night theme.
 - minor mode maybe?
 
 * TODO Defer built-in packages?
+* TODO Indent level global variables
