@@ -24,6 +24,7 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#settings-without-packages][Settings without packages]]
   - [[#custom][Custom]]
   - [[#mail][Mail]]
+  - [[#gnus][Gnus]]
   - [[#terminal-binary][Terminal binary]]
   - [[#window][Window]]
   - [[#windmove][WindMove]]
@@ -416,19 +417,23 @@ use Emacs Minibuffer for GPG pinentry.
   (setq epa-pinentry-mode 'loopback))
 #+END_SRC
 
+** Gnus
+
 Gnus early configuration.  Only reads mail from my Gmail account for
-now. (needs an entire section)
+now.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package gnus
   :defer t
   :ensure nil
   :config
-  (setq gnus-select-method
-        '(nnimap "GMAIL"
+  (setq gnus-select-method '(nnnil))
+  (setq gnus-secondary-select-methods
+        '((nnimap "GMAIL"
                  (nnimap-address "imap.gmail.com")
                  (nnimap-server-port "imaps")
-                 (nnimap-stream ssl)))
+                 (nnimap-stream ssl))
+          (nntp "news.gwene.org")))
   ;; Make Gnus NOT ignore [Gmail] mailboxes
   (setq gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"))
 #+END_SRC

@@ -175,11 +175,13 @@
   :defer t
   :ensure nil
   :config
-  (setq gnus-select-method
-        '(nnimap "GMAIL"
+  (setq gnus-select-method '(nnnil))
+  (setq gnus-secondary-select-methods
+        '((nnimap "GMAIL"
                  (nnimap-address "imap.gmail.com")
                  (nnimap-server-port "imaps")
-                 (nnimap-stream ssl)))
+                 (nnimap-stream ssl))
+          (nntp "news.gwene.org")))
   ;; Make Gnus NOT ignore [Gmail] mailboxes
   (setq gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"))
 
