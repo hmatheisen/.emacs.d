@@ -9,6 +9,8 @@
 
 (defconst *is-a-mac* (eq system-type 'darwin)
   "Check whether system is mac.")
+(defconst *mono-font* "JetBrains Mono"
+  "Mono font to be used")
 
 (require 'package)
 (add-to-list 'package-archives '("gnu"   . "https://elpa.gnu.org/packages/"))
@@ -138,6 +140,49 @@
   (setq custom-safe-themes t)
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory)))
 
+(use-package auth-source
+  :ensure nil
+  :config
+  (setq auth-sources '("~/.authinfo.gpg" "~/.authinfo"))
+  (setq user-full-name "Henry MATHEISEN")
+  (setq user-mail-address "henry.mthsn@gmail.com")
+  ;; Disable external pin entry
+  (setenv "GPG_AGENT_INFO" nil)
+  ;; Solve ioctl common error with GPG
+  (setenv "GPG_TTY" "$(tty)"))
+
+(use-package smtpmail
+  :config 
+  (setq smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-service 465
+        smtpmail-stream-type 'ssl
+        ;; Set smtp method for sending mail
+        send-mail-function 'smtpmail-send-it
+        message-send-mail-function 'message-smtpmail-send-it))
+
+(use-package message
+  :ensure nil
+  :config
+  (setq mail-signature "Henry MATHEISEN\nhenry.mthsn@gmail.com\n"
+        message-signature "Henry MATHEISEN\nhenry.mthsn@gmail.com\n"))
+
+(use-package "epa-file"
+  :ensure nil
+  :config
+  (setq epa-pinentry-mode 'loopback))
+
+(use-package gnus
+  :defer t
+  :ensure nil
+  :config
+  (setq gnus-select-method
+        '(nnimap "GMAIL"
+                 (nnimap-address "imap.gmail.com")
+                 (nnimap-server-port "imaps")
+                 (nnimap-stream ssl)))
+  ;; Make Gnus NOT ignore [Gmail] mailboxes
+  (setq gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"))
+
 (use-package term
   :ensure nil
   :config
@@ -181,6 +226,7 @@
   (global-set-key (kbd "C-x 3") 'my-split-window-right))
 
 (use-package windmove
+  :ensure nil
   :config
   (windmove-default-keybindings))
 
@@ -204,7 +250,8 @@
 
 (use-package display-line-numbers
   :ensure nil
-  :hook (prog-mode . display-line-numbers-mode))
+  :hook (prog-mode . display-line-numbers-mode)
+        (yaml-mode . display-line-numbers-mode))
 
 (use-package files
   :ensure nil
@@ -215,8 +262,25 @@
 (use-package frame
   :ensure nil
   :config
-  (add-hook 'after-init-hook 'toggle-frame-fullscreen)
-  (set-frame-font "JetBrains Mono-13"))
+  (add-hook 'after-init-hook 'toggle-frame-fullscreen))
+
+(use-package faces
+  :ensure nil
+  :config
+  (set-face-attribute 'default
+                      nil
+                      :family *mono-font*
+                      :height 130)
+
+  (set-face-attribute 'fixed-pitch
+                      nil
+                      :family *mono-font*
+                      :height 130)
+
+  (set-face-attribute 'variable-pitch
+                      nil
+                      :family *mono-font*
+                      :height 130))
 
 (use-package winner
   :ensure nil
@@ -244,6 +308,7 @@
   :hook (prog-mode . electric-pair-mode))
 
 (use-package "ibuffer"
+  :ensure nil
   :config
   ;; Replace command to ibuffer
   (global-set-key (kbd "C-x C-b") 'ibuffer)
@@ -487,7 +552,7 @@
   :ensure nil
   :init
   (setq day-hour 09)
-  (setq night-hour 16)
+  (setq night-hour 15)
   (setq day-theme 'modus-operandi)
   (setq night-theme 'modus-vivendi))
 

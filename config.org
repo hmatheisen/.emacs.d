@@ -23,6 +23,7 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
 - [[#global-settings][Global settings]]
   - [[#settings-without-packages][Settings without packages]]
   - [[#custom][Custom]]
+  - [[#mail][Mail]]
   - [[#terminal-binary][Terminal binary]]
   - [[#window][Window]]
   - [[#windmove][WindMove]]
@@ -33,6 +34,7 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#line-numbers][Line numbers]]
   - [[#files][Files]]
   - [[#frame-settings][Frame settings]]
+  - [[#faces][Faces]]
   - [[#winner-mode][Winner mode]]
   - [[#modern-region-behavior][Modern region behavior]]
   - [[#no-scroll-bar][No scroll bar]]
@@ -156,6 +158,8 @@ are made.
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (defconst *is-a-mac* (eq system-type 'darwin)
   "Check whether system is mac.")
+(defconst *mono-font* "JetBrains Mono"
+  "Mono font to be used")
 #+END_SRC
 
 ** Add package archives
@@ -354,6 +358,81 @@ using elisp.
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory)))
 #+END_SRC
 
+** Mail
+
+Setup auth information.  =.authinfo.gpg= file is the encrypted
+authentication source file used by different backends.  We tell Emacs
+to use this file for authentication.  Then setup user full name and
+mail address.  Two GPG related environment variables are created to
+make decryption work inside Emacs.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package auth-source
+  :ensure nil
+  :config
+  (setq auth-sources '("~/.authinfo.gpg" "~/.authinfo"))
+  (setq user-full-name "Henry MATHEISEN")
+  (setq user-mail-address "henry.mthsn@gmail.com")
+  ;; Disable external pin entry
+  (setenv "GPG_AGENT_INFO" nil)
+  ;; Solve ioctl common error with GPG
+  (setenv "GPG_TTY" "$(tty)"))
+#+END_SRC
+
+Configure default SMTP server.  This allows Emacs to look for the
+right line in the =.authinfo.gpg= when it needs credentials.  We use
+SSL to encrypt sent mails.  And set Emacs to use SMTP as the main mail
+sending method.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package smtpmail
+  :config 
+  (setq smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-service 465
+        smtpmail-stream-type 'ssl
+        ;; Set smtp method for sending mail
+        send-mail-function 'smtpmail-send-it
+        message-send-mail-function 'message-smtpmail-send-it))
+#+END_SRC
+
+Message mode is the mode I use to send mails.  Here, we tell it to
+sign mail with my name and mail address.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package message
+  :ensure nil
+  :config
+  (setq mail-signature "Henry MATHEISEN\nhenry.mthsn@gmail.com\n"
+        message-signature "Henry MATHEISEN\nhenry.mthsn@gmail.com\n"))
+#+END_SRC
+
+Using Emacs GUI, I want an internal pinentry program.  EPA allows to
+use Emacs Minibuffer for GPG pinentry.
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package "epa-file"
+  :ensure nil
+  :config
+  (setq epa-pinentry-mode 'loopback))
+#+END_SRC
+
+Gnus early configuration.  Only reads mail from my Gmail account for
+now. (needs an entire section)
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package gnus
+  :defer t
+  :ensure nil
+  :config
+  (setq gnus-select-method
+        '(nnimap "GMAIL"
+                 (nnimap-address "imap.gmail.com")
+                 (nnimap-server-port "imaps")
+                 (nnimap-stream ssl)))
+  ;; Make Gnus NOT ignore [Gmail] mailboxes
+  (setq gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"))
+#+END_SRC
+
 ** Terminal binary
 
 On MacOS, I use a new version of =bash= installed with =brew= since I
@@ -418,6 +497,7 @@ Use windmove to move around multiple windows easily
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package windmove
+  :ensure nil
   :config
   (windmove-default-keybindings))
 #+END_SRC
@@ -471,7 +551,8 @@ Display line numbers every =prog-mode=.
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package display-line-numbers
   :ensure nil
-  :hook (prog-mode . display-line-numbers-mode))
+  :hook (prog-mode . display-line-numbers-mode)
+        (yaml-mode . display-line-numbers-mode))
 #+END_SRC
 
 ** Files
@@ -489,14 +570,37 @@ before quitting Emacs.
 
 ** Frame settings
 
-Enable full frame on Emacs startup and set font.
+Enable full frame on Emacs startup.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package frame
   :ensure nil
   :config
-  (add-hook 'after-init-hook 'toggle-frame-fullscreen)
-  (set-frame-font "JetBrains Mono-13"))
+  (add-hook 'after-init-hook 'toggle-frame-fullscreen))
+#+END_SRC
+
+** Faces
+
+Set the different fonts
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package faces
+  :ensure nil
+  :config
+  (set-face-attribute 'default
+                      nil
+                      :family *mono-font*
+                      :height 130)
+
+  (set-face-attribute 'fixed-pitch
+                      nil
+                      :family *mono-font*
+                      :height 130)
+
+  (set-face-attribute 'variable-pitch
+                      nil
+                      :family *mono-font*
+                      :height 130))
 #+END_SRC
 
 ** Winner mode
@@ -568,6 +672,7 @@ Use ibuffer instead of default list buffer.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package "ibuffer"
+  :ensure nil
   :config
   ;; Replace command to ibuffer
   (global-set-key (kbd "C-x C-b") 'ibuffer)
@@ -982,7 +1087,7 @@ night that automatically switches at given time.
   :ensure nil
   :init
   (setq day-hour 09)
-  (setq night-hour 16)
+  (setq night-hour 15)
   (setq day-theme 'modus-operandi)
   (setq night-theme 'modus-vivendi))
 #+END_SRC
