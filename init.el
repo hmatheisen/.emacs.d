@@ -195,12 +195,12 @@
 (use-package "window"
   :ensure nil
   :preface
-  (defun my-split-window-right ()
+  (defun hma/split-window-right ()
     "Splits window on the right then focus on that window"
     (interactive)
     (split-window-right)
     (other-window 1))
-  (defun my-split-window-below ()
+  (defun hma/split-window-below ()
     "Splits windmow below then focus on that window"
     (interactive)
     (split-window-below)
@@ -224,8 +224,8 @@
                                  (interactive)
                                  (scroll-down-command 1)))
   ;; Use by own split functions
-  (global-set-key (kbd "C-x 2") 'my-split-window-below)
-  (global-set-key (kbd "C-x 3") 'my-split-window-right))
+  (global-set-key (kbd "C-x 2") 'hma/split-window-below)
+  (global-set-key (kbd "C-x 3") 'hma/split-window-right))
 
 (use-package windmove
   :ensure nil
@@ -428,12 +428,12 @@
   :defer t
   :diminish visual-line-mode auto-fill-function
   :preface
-  (defun my-org-mode-hook ()
+  (defun hma/org-mode-hook ()
     (org-indent-mode 1)
     (visual-line-mode 1)
     (flyspell-mode 1)
     (auto-fill-mode 1))
-  :hook ((org-mode . my-org-mode-hook)
+  :hook ((org-mode . hma/org-mode-hook)
          (org-indent-mode . (lambda ()
                               (diminish 'org-indent-mode)))
          (flyspell-mode . (lambda ()
@@ -482,8 +482,8 @@
   :diminish which-key-mode
   :config
   (which-key-mode +1)
-  (setq which-key-idle-delay 0.4
-        which-key-idle-secondary-delay 0.4))
+  (setq which-key-idle-delay 0.2
+        which-key-idle-secondary-delay 0.2))
 
 (use-package undo-tree
   :diminish undo-tree-mode
@@ -499,7 +499,6 @@
   (dashboard-setup-startup-hook)
   (setq dashboard-startup-banner 'official
         dashboard-items '((bookmarks . 10)
-                          (projects . 5)
                           (recents . 5))
         dashboard-center-content t
         dashboard-set-heading-icons t
@@ -540,7 +539,7 @@
 
 (use-package new-term
   :preface
-  (defun my-new-term-hook ()
+  (defun hma/new-term-hook ()
     (define-key term-raw-map (kbd "C-c <up>") 'bigger-term-window)
     (define-key term-raw-map (kbd "C-c <down>") 'smaller-term-window)
     (define-key term-raw-map (kbd "C-c q") 'quit-term))
@@ -548,7 +547,7 @@
   :init
   (setq new-shell "/usr/local/bin/bash")
   (global-set-key (kbd "C-x t") 'toggle-term-window)
-  (add-hook 'term-mode-hook 'my-new-term-hook))
+  (add-hook 'term-mode-hook 'hma/new-term-hook))
 
 (use-package theme-switcher
   :ensure nil
