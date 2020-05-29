@@ -46,6 +46,7 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#compile][Compile]]
   - [[#info][Info]]
   - [[#js][JS]]
+  - [[#shell-script][Shell script]]
 - [[#third-party-packages][Third-party Packages]]
   - [[#themes][Themes]]
   - [[#diminish][Diminish]]
@@ -66,6 +67,7 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#docker][Docker]]
   - [[#yaml][YAML]]
   - [[#go][Go]]
+  - [[#latex][LaTeX]]
 - [[#personal-packages][Personal Packages]]
   - [[#new-term][New Term]]
   - [[#theme-switcher][Theme Switcher]]
@@ -73,7 +75,7 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#initel-1][=init.el=]]
 
 * What is this?
-  
+
 Let's forget about this dumb play on words between my name and a
 cartoon from the 80's and actually explain what this file is.
 
@@ -126,9 +128,13 @@ elpa/
 games/
 ido.last
 nov-places
+network-security.data
+newsticker
 projectile-bookmarks.eld
 projectile.cache
 recentf
+todos.org
+tramp
 transient/
 #+END_SRC
 
@@ -159,7 +165,7 @@ are made.
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (defconst *is-a-mac* (eq system-type 'darwin)
   "Check whether system is mac.")
-(defconst *mono-font* "JetBrains Mono"
+(defconst *mono-font* "Hack"
   "Mono font to be used")
 #+END_SRC
 
@@ -354,7 +360,7 @@ using elisp.
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package custom
   :ensure nil
-  :config 
+  :config
   (setq custom-safe-themes t)
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory)))
 #+END_SRC
@@ -387,7 +393,7 @@ sending method.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package smtpmail
-  :config 
+  :config
   (setq smtpmail-smtp-server "smtp.gmail.com"
         smtpmail-smtp-service 465
         smtpmail-stream-type 'ssl
@@ -534,7 +540,7 @@ Display line numbers in mode line and undo keybinding.
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package simple
   :ensure nil
-  :config 
+  :config
   (column-number-mode t)
   (global-set-key (kbd "C-z") 'advertised-undo))
 #+END_SRC
@@ -568,7 +574,7 @@ before quitting Emacs.
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package files
   :ensure nil
-  :config 
+  :config
   (setq backup-directory-alist '(("." . "~/.emacs.d/.backups")))
   (setq confirm-kill-emacs #'yes-or-no-p))
 #+END_SRC
@@ -684,14 +690,16 @@ Use ibuffer instead of default list buffer.
   ;; Filter groups
   (setq ibuffer-saved-filter-groups
         '(("default"
-           ("dashboard"    (name . "\*dashboard\*"))
+           ("buffers"      (or (name . "\*dashboard\*")
+                               (name . "\*scratch\*")))
            ("clojure"      (or (mode . clojure-mode)
                                (name . "\*cider")
                                (name . "\*nrepl")))
            ("magit"        (name . "magit*"))
-           ("emacs-config" (filename . ".emacs.d"))
+           ("he-macs"      (filename . ".emacs.d"))
            ("org"          (mode . org-mode))
-           ("dired"        (mode . dired-mode)))))
+           ("dired"        (mode . dired-mode))
+           ("code"         (filename . "Projets")))))
   ;; Add hook
   (add-hook 'ibuffer-mode-hook
             '(lambda ()
@@ -735,6 +743,14 @@ Set indent level for javascript/json files.
   :ensure nil
   :config
   (setq js-indent-level 2))
+#+END_SRC
+
+** Shell script
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+(use-package sh-script
+  :ensure nil
+  :config (setq sh-basic-offset 2))
 #+END_SRC
 
 * Third-party Packages
@@ -788,15 +804,15 @@ choices for this such as Helm that I don't really like or the default
 Ido mode that I should try one day.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package counsel
-  :defer t
-  :diminish ivy-mode counsel-mode
-  :bind (("C-s" . swiper-isearch))
-  :hook ((after-init . ivy-mode)
-         (ivy-mode . counsel-mode))
-  :init
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-count-format "(%d/%d) "))
+ (use-package counsel
+   :defer t
+   :diminish ivy-mode counsel-mode
+   :bind (("C-s" . swiper-isearch))
+   :hook ((after-init . ivy-mode)
+          (ivy-mode . counsel-mode))
+   :init
+   (setq ivy-use-virtual-buffers t)
+   (setq ivy-count-format "(%d/%d) "))
 #+END_SRC
 
 ** Code Completion
@@ -871,7 +887,7 @@ just really great!
     (set-face-attribute 'org-level-1        nil :height 160)
     (set-face-attribute 'org-level-2        nil :height 150)))
 
-(use-package org-bullets 
+(use-package org-bullets
   :defer t
   :hook (org-mode . org-bullets-mode))
 
@@ -925,6 +941,7 @@ Tree file structure for Emacs
   :defer t
   :config
   (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+  (setq neo-hidden-regexp-list '("\\.git$"))
   :bind (([f8] . neotree-toggle)))
 #+END_SRC
 
@@ -1051,6 +1068,20 @@ highlighting for Dockerfiles.
     (add-hook 'before-save-hook #'lsp-format-buffer t t)
     (add-hook 'before-save-hook #'lsp-organize-imports t t))
   (add-hook 'go-mode-hook #'lsp-go-install-save-hooks))
+#+END_SRC
+
+** LaTeX
+
+#+BEGIN_SRC emacs-lisp :tangle init.el
+  (use-package tex
+    :defer t
+    :ensure auctex
+    :config
+    (setq TeX-auto-save t)
+    ;; Set TEXINPUTS to recognize classes in custom directory on MacOS
+    (when *is-a-mac*
+      (setenv "TEXINPUTS" (concat (getenv "TEXINPUTS")
+                                  ":$HOME/Documents/tex/classes"))))
 #+END_SRC
 
 * Personal Packages

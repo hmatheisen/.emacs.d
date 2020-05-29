@@ -1,0 +1,24 @@
+# -*- mode: snippet -*-
+# name: template
+# key: tplt
+# --
+
+#+TITLE: $2
+#+AUTHOR: Henry MATHEISEN
+#+LANGUAGE: $4
+#+OPTIONS: \n\n:t toc:${5:$$(yas-choose-value '("nil" "t"))} date:nil
+# -*- ispell-dictionary: "${1:$$(yas-choose-value '("french-lrg" "english"))}" -*-
+
+#+LATEX_CLASS_OPTIONS: [12pt]
+
+#+LATEX_HEADER: \usepackage[french]{babel}
+#+LATEX_HEADER: \usepackage{fullpage}
+#+LATEX_HEADER: \usepackage[default]{raleway}
+#+LATEX_HEADER: \usepackage{parskip}
+#+LATEX_HEADER: \setcounter{secnumdepth}{0}
+#+LATEX_HEADER: \renewcommand{\baselinestretch}{1.2}
+#+LATEX_HEADER: \setlength{\parindent}{0em}
+
+#+LATEX: \newpage
+
+$0

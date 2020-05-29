@@ -9,7 +9,7 @@
 
 (defconst *is-a-mac* (eq system-type 'darwin)
   "Check whether system is mac.")
-(defconst *mono-font* "JetBrains Mono"
+(defconst *mono-font* "Hack"
   "Mono font to be used")
 
 (require 'package)
@@ -136,7 +136,7 @@
 
 (use-package custom
   :ensure nil
-  :config 
+  :config
   (setq custom-safe-themes t)
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory)))
 
@@ -152,7 +152,7 @@
   (setenv "GPG_TTY" "$(tty)"))
 
 (use-package smtpmail
-  :config 
+  :config
   (setq smtpmail-smtp-server "smtp.gmail.com"
         smtpmail-smtp-service 465
         smtpmail-stream-type 'ssl
@@ -242,7 +242,7 @@
 
 (use-package simple
   :ensure nil
-  :config 
+  :config
   (column-number-mode t)
   (global-set-key (kbd "C-z") 'advertised-undo))
 
@@ -257,7 +257,7 @@
 
 (use-package files
   :ensure nil
-  :config 
+  :config
   (setq backup-directory-alist '(("." . "~/.emacs.d/.backups")))
   (setq confirm-kill-emacs #'yes-or-no-p))
 
@@ -317,14 +317,16 @@
   ;; Filter groups
   (setq ibuffer-saved-filter-groups
         '(("default"
-           ("dashboard"    (name . "\*dashboard\*"))
+           ("buffers"      (or (name . "\*dashboard\*")
+                               (name . "\*scratch\*")))
            ("clojure"      (or (mode . clojure-mode)
                                (name . "\*cider")
                                (name . "\*nrepl")))
            ("magit"        (name . "magit*"))
-           ("emacs-config" (filename . ".emacs.d"))
+           ("he-macs"      (filename . ".emacs.d"))
            ("org"          (mode . org-mode))
-           ("dired"        (mode . dired-mode)))))
+           ("dired"        (mode . dired-mode))
+           ("code"         (filename . "Projets")))))
   ;; Add hook
   (add-hook 'ibuffer-mode-hook
             '(lambda ()
@@ -350,6 +352,10 @@
   :ensure nil
   :config
   (setq js-indent-level 2))
+
+(use-package sh-script
+  :ensure nil
+  :config (setq sh-basic-offset 2))
 
 (use-package modus-vivendi-theme
   :defer t
@@ -447,7 +453,7 @@
     (set-face-attribute 'org-level-1        nil :height 160)
     (set-face-attribute 'org-level-2        nil :height 150)))
 
-(use-package org-bullets 
+(use-package org-bullets
   :defer t
   :hook (org-mode . org-bullets-mode))
 
@@ -476,6 +482,7 @@
   :defer t
   :config
   (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+  (setq neo-hidden-regexp-list '("\\.git$"))
   :bind (([f8] . neotree-toggle)))
 
 (use-package which-key
@@ -536,6 +543,16 @@
     (add-hook 'before-save-hook #'lsp-format-buffer t t)
     (add-hook 'before-save-hook #'lsp-organize-imports t t))
   (add-hook 'go-mode-hook #'lsp-go-install-save-hooks))
+
+(use-package tex
+  :defer t
+  :ensure auctex
+  :config
+  (setq TeX-auto-save t)
+  ;; Set TEXINPUTS to recognize classes in custom directory on MacOS
+  (when *is-a-mac*
+    (setenv "TEXINPUTS" (concat (getenv "TEXINPUTS")
+                                ":$HOME/Documents/tex/classes"))))
 
 (use-package new-term
   :preface
