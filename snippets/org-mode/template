@@ -3,13 +3,13 @@
 # key: tplt
 # --
 
+# -*- ispell-dictionary: "${1:$$(yas-choose-value '("french-lrg" "english"))}" -*-
 #+TITLE: $2
 #+AUTHOR: Henry MATHEISEN
 #+LANGUAGE: $4
 #+OPTIONS: \n\n:t toc:${5:$$(yas-choose-value '("nil" "t"))} date:nil
-# -*- ispell-dictionary: "${1:$$(yas-choose-value '("french-lrg" "english"))}" -*-
 
-#+LATEX_CLASS_OPTIONS: [12pt]
+#+LATEX_CLASS_OPTIONS: [${6:11}pt]
 
 #+LATEX_HEADER: \usepackage[french]{babel}
 #+LATEX_HEADER: \usepackage{fullpage}
