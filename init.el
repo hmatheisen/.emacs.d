@@ -36,10 +36,11 @@
   :config
   ;; Avoid a few issues on MacOS
   (when *is-a-mac*
-    (setq mac-option-modifier nil
-          mac-command-modifier 'meta
+    (setq mac-option-modifier 'meta
+          mac-command-modifier 'super
+          mac-right-option-modifier 'nil
           select-enable-clipboard t))
-  ;; Title Bar Settings
+  ;; title bar settings
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
   (add-to-list 'default-frame-alist '(ns-appearance . dark))
   (setq ns-use-proxy-icon  nil)
@@ -370,6 +371,7 @@
   :ensure nil
   :config
   (defun hma/align-equals (beg end)
+    "Align `=' signs in a given region."
     (interactive "r")
     (align-regexp beg
                   end
