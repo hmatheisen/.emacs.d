@@ -9,8 +9,10 @@
 
 (defconst *is-a-mac* (eq system-type 'darwin)
   "Check whether system is mac.")
-(defconst *mono-font* "Hack"
+(defconst *mono-font* "JetBrains Mono"
   "Mono font to be used")
+(defconst *font-size* 12
+  "Font size in points")
 
 (require 'package)
 (add-to-list 'package-archives '("gnu"   . "https://elpa.gnu.org/packages/"))
@@ -54,6 +56,8 @@
   (put 'downcase-region 'disabled nil)
   (put 'upcase-region 'disabled nil)
   ;; Trash can support
+  (when *is-a-mac*
+    (setq trash-directory "~/.Trash"))
   (setq delete-by-moving-to-trash t)
   ;; Indent using spaces
   (setq-default indent-tabs-mode nil)
@@ -87,14 +91,15 @@
   :preface
   (defun add-to-path (path)
     "Add a path to `exec-path' and Emacs \"PATH\" variable."
-    (add-to-list 'exec-path (substring path 1))
-    (setenv "PATH" (concat (getenv "PATH") path)))
+    (add-to-list 'exec-path path)
+    (setenv "PATH" (concat (getenv "PATH") ":" path)))
   :ensure nil
   :config
   ;; Add useful path to exec-path and PATH
-  (add-to-path ":/usr/local/bin")
-  (add-to-path ":/Library/TeX/texbin")
-  (add-to-path ":~/go/bin"))
+  (add-to-path "/usr/local/bin")
+  (add-to-path "/Library/TeX/texbin")
+  (add-to-path "~/go/bin")
+  (add-to-path "~/.cargo/bin"))
 
 (use-package emacs
   :ensure nil
@@ -180,8 +185,7 @@
         '((nnimap "GMAIL"
                  (nnimap-address "imap.gmail.com")
                  (nnimap-server-port "imaps")
-                 (nnimap-stream ssl))
-          (nntp "news.gwene.org")))
+                 (nnimap-stream ssl))))
   ;; Make Gnus NOT ignore [Gmail] mailboxes
   (setq gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"))
 
@@ -225,7 +229,12 @@
                                  (scroll-down-command 1)))
   ;; Use by own split functions
   (global-set-key (kbd "C-x 2") 'hma/split-window-below)
-  (global-set-key (kbd "C-x 3") 'hma/split-window-right))
+  (global-set-key (kbd "C-x 3") 'hma/split-window-right)
+  (global-set-key (kbd "C-<tab>") 'next-buffer)
+  (global-set-key (kbd "C-S-<tab>") 'previous-buffer))
+
+(use-package ace-window
+  :config (global-set-key (kbd "C-x o") 'ace-window))
 
 (use-package windmove
   :ensure nil
@@ -272,17 +281,17 @@
   (set-face-attribute 'default
                       nil
                       :family *mono-font*
-                      :height 130)
+                      :height (* *font-size* 10))
 
   (set-face-attribute 'fixed-pitch
                       nil
                       :family *mono-font*
-                      :height 130)
+                      :height (* *font-size* 10))
 
   (set-face-attribute 'variable-pitch
                       nil
-                      :family *mono-font*
-                      :height 130))
+                      :family "Raleway"
+                      :height (* *font-size* 12)))
 
 (use-package winner
   :ensure nil
@@ -357,6 +366,15 @@
   :ensure nil
   :config (setq sh-basic-offset 2))
 
+(use-package align
+  :ensure nil
+  :config
+  (defun hma/align-equals (beg end)
+    (interactive "r")
+    (align-regexp beg
+                  end
+                  "\\(\\s-*\\)=")))
+
 (use-package modus-vivendi-theme
   :defer t
   :init
@@ -403,8 +421,12 @@
          (go-mode . lsp)
          (ruby-mode . lsp)
          (typescript-mode . lsp)
+         (rust-mdoe . lsp)
          (web-mode . lsp))
-  :commands lsp)
+  :commands lsp
+  :config
+  ;; Do not use lsp for linting
+  (setq lsp-diagnostic-package :none))
 
 (use-package company-mode
   :defer t
@@ -438,7 +460,8 @@
     (org-indent-mode 1)
     (visual-line-mode 1)
     (flyspell-mode 1)
-    (auto-fill-mode 1))
+    (auto-fill-mode 1)
+    (variable-pitch-mode))
   :hook ((org-mode . hma/org-mode-hook)
          (org-indent-mode . (lambda ()
                               (diminish 'org-indent-mode)))
@@ -451,7 +474,9 @@
   (unless (or (member 'modus-operandi custom-enabled-themes)
               (member 'modus-vivendi custom-enabled-themes))
     (set-face-attribute 'org-level-1        nil :height 160)
-    (set-face-attribute 'org-level-2        nil :height 150)))
+    (set-face-attribute 'org-level-2        nil :height 150))
+  ;; Unbind C-<tab> to use 'next-buffer
+  (define-key org-mode-map (kbd "C-<tab>") nil))
 
 (use-package org-bullets
   :defer t
@@ -461,6 +486,11 @@
   :defer t
   :hook ((org-mode      . toc-org-mode)
          (markdown-mode . toc-org-mode)))
+
+(use-package markdown-mode
+  :ensure
+  :config
+  (setq markdown-fontify-code-blocks-natively t))
 
 (use-package magit
   :defer t
@@ -548,11 +578,29 @@
   :defer t
   :ensure auctex
   :config
-  (setq TeX-auto-save t)
+  ;; Disable auto locale
+  (setq TeX-auto-local nil)
   ;; Set TEXINPUTS to recognize classes in custom directory on MacOS
   (when *is-a-mac*
     (setenv "TEXINPUTS" (concat (getenv "TEXINPUTS")
-                                ":$HOME/Documents/tex/classes"))))
+                                ":$HOME/Documents/Notes/classes"))))
+
+(use-package rvm
+  :config
+  ;; Unset BUNDLE_PATH set by rvm because somehow it causes bundler to
+  ;; install gems in another path than the default one
+  (rvm-use-default)
+  (setenv "BUNDLE_PATH"))
+
+;; Auto close for ruby
+(use-package ruby-electric
+  :hook (ruby-mode . ruby-electric-mode))
+
+(use-package olivetti
+  :config (setq olivetti-body-width 110))
+
+(use-package terraform-mode
+  :bind (("C-c SPC" . hma/align-equals)))
 
 (use-package new-term
   :preface
