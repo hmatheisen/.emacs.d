@@ -67,7 +67,10 @@
   ;; Make that damn bell shut up
   (setq ring-bell-function 'ignore)
   ;; Default truncate lines
-  (setq-default truncate-lines t))
+  (setq-default truncate-lines t)
+  ;; Unbind suspend keys
+  (global-unset-key (kbd "C-z"))
+  (global-unset-key (kbd "C-x C-z")))
 
 (use-package emacs
   :ensure nil
@@ -254,7 +257,10 @@
   :ensure nil
   :config
   (column-number-mode t)
-  (global-set-key (kbd "C-z") 'advertised-undo))
+  (global-set-key (kbd "s-<backspace>")
+                  (lambda ()
+                    (interactive)
+                    (kill-line 0))))
 
 (use-package battery
   :ensure nil

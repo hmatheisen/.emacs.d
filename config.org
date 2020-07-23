@@ -274,7 +274,10 @@ not related to any Lisp packages, let's put them in a package called
   ;; Make that damn bell shut up
   (setq ring-bell-function 'ignore)
   ;; Default truncate lines
-  (setq-default truncate-lines t))
+  (setq-default truncate-lines t)
+  ;; Unbind suspend keys
+  (global-unset-key (kbd "C-z"))
+  (global-unset-key (kbd "C-x C-z")))
 #+END_SRC
 
 *** Garbage collection
@@ -559,7 +562,10 @@ Display line numbers in mode line and undo keybinding.
   :ensure nil
   :config
   (column-number-mode t)
-  (global-set-key (kbd "C-z") 'advertised-undo))
+  (global-set-key (kbd "s-<backspace>")
+                  (lambda ()
+                    (interactive)
+                    (kill-line 0))))
 #+END_SRC
 
 ** Display battery level
