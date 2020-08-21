@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: image
+# key: img
+# --
+
+\begin{figure}[${1:H}]
+  \centering
+  \includegraphics[scale=$2]{images/$3}
+  \caption{$4}
+\end{figure}
+
+$0

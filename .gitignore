@@ -5,6 +5,7 @@ auto-save-list/
 bookmarks
 custom.el
 elpa/
+eshell/
 games/
 ido.last
 nov-places
@@ -16,3 +17,4 @@ recentf
 todos.org
 tramp
 transient/
+xkcd/
