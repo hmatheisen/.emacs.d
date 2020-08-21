@@ -383,6 +383,11 @@
                   end
                   "\\(\\s-*\\)=")))
 
+(use-package mwheel
+  :ensure nil
+  :config (setq mouse-wheel-progressive-speed nil
+                mouse-wheel-scroll-amount '(1 ((shift) . 1))))
+
 (use-package modus-vivendi-theme
   :defer t
   :init
@@ -496,7 +501,7 @@
          (markdown-mode . toc-org-mode)))
 
 (use-package markdown-mode
-  :ensure
+  :defer t
   :config
   (setq markdown-fontify-code-blocks-natively t))
 
@@ -584,6 +589,7 @@
 
 (use-package tex
   :defer t
+  :diminish auto-fill-function
   :ensure auctex
   :config
   ;; Disable auto locale
@@ -591,7 +597,9 @@
   ;; Set TEXINPUTS to recognize classes in custom directory on MacOS
   (when *is-a-mac*
     (setenv "TEXINPUTS" (concat (getenv "TEXINPUTS")
-                                ":$HOME/Documents/Notes/classes"))))
+                                ":$HOME/Documents/Notes/classes")))
+  :hook (LaTeX-mode . (lambda () (auto-fill-mode 1)
+                                 (set-fill-column 80))))
 
 (use-package rvm
   :config
@@ -602,13 +610,32 @@
 
 ;; Auto close for ruby
 (use-package ruby-electric
+  :diminish ruby-electric-mode
+  :defer t
   :hook (ruby-mode . ruby-electric-mode))
 
 (use-package olivetti
+  :defer t
   :config (setq olivetti-body-width 110))
 
 (use-package terraform-mode
+  :defer t
   :bind (("C-c SPC" . hma/align-equals)))
+
+(use-package beacon
+  :diminish beacon-mode
+  :config (beacon-mode t))
+
+(use-package imenu-list
+  :config (global-set-key (kbd "C-:") #'imenu-list-smart-toggle))
+
+(use-package evil  
+  :config
+  ;; Switch on Evil mode
+  (evil-mode t)
+  ;; Default state is emacs so Evil is only active when toggling it
+  ;; with `C-z'
+  (setq evil-default-state 'emacs))
 
 (use-package new-term
   :preface
