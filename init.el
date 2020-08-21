@@ -524,6 +524,7 @@
 (use-package neotree
   :defer t
   :config
+  (setq neo-window-fixed-size nil)
   (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
   (setq neo-hidden-regexp-list '("\\.git$"))
   :bind (([f8] . neotree-toggle)))
