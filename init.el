@@ -9,9 +9,9 @@
 
 (defconst *is-a-mac* (eq system-type 'darwin)
   "Check whether system is mac.")
-(defconst *mono-font* "JetBrains Mono"
+(defconst *mono-font* "Iosevka Term"
   "Mono font to be used")
-(defconst *font-size* 12
+(defconst *font-size* 9
   "Font size in points")
 
 (require 'package)
@@ -539,6 +539,7 @@
 (use-package undo-tree
   :diminish undo-tree-mode
   :config
+  (global-set-key "\C-z" 'undo)
   (global-undo-tree-mode))
 
 (use-package all-the-icons
@@ -630,12 +631,14 @@
 (use-package imenu-list
   :config (global-set-key (kbd "C-:") #'imenu-list-smart-toggle))
 
-(use-package evil  
+(use-package evil
+  :init
+  ;; Default state is emacs so Evil is only active when toggling it
+  ;; with `C-!'
+  (setq evil-toggle-key "C-x C-z")
   :config
   ;; Switch on Evil mode
   (evil-mode t)
-  ;; Default state is emacs so Evil is only active when toggling it
-  ;; with `C-z'
   (setq evil-default-state 'emacs))
 
 (use-package new-term

@@ -177,9 +177,9 @@ are made.
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (defconst *is-a-mac* (eq system-type 'darwin)
   "Check whether system is mac.")
-(defconst *mono-font* "JetBrains Mono"
+(defconst *mono-font* "Iosevka Term"
   "Mono font to be used")
-(defconst *font-size* 12
+(defconst *font-size* 9
   "Font size in points")
 #+END_SRC
 
@@ -1038,6 +1038,7 @@ Handy features for undo/redo
 (use-package undo-tree
   :diminish undo-tree-mode
   :config
+  (global-set-key "\C-z" 'undo)
   (global-undo-tree-mode))
 #+END_SRC
 
@@ -1222,12 +1223,14 @@ Creates a side buffer with the a list of imenu.
 It is treason then...
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package evil  
+(use-package evil
+  :init
+  ;; Default state is emacs so Evil is only active when toggling it
+  ;; with `C-!'
+  (setq evil-toggle-key "C-x C-z")
   :config
   ;; Switch on Evil mode
   (evil-mode t)
-  ;; Default state is emacs so Evil is only active when toggling it
-  ;; with `C-z'
   (setq evil-default-state 'emacs))
 #+END_SRC
 
