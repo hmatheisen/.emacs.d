@@ -11,20 +11,10 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
 - [[#what-is-this][What is this?]]
   - [[#abstract][Abstract]]
   - [[#why-though][Why though?]]
-  - [[#installation][Installation]]
-- [[#creating-the-files][Creating the files]]
-  - [[#files-to-ignore][Files to ignore]]
-  - [[#initel][=init.el=]]
 - [[#initialization][Initialization]]
-  - [[#custom-constantsvariables][Custom constants/variables]]
-  - [[#add-package-archives][Add package archives]]
-  - [[#install-use-package][Install use-package]]
-  - [[#require-personal-packages][Require personal packages]]
-- [[#global-settings][Global settings]]
+- [[#editor-settings][Editor settings]]
   - [[#settings-without-packages][Settings without packages]]
   - [[#custom][Custom]]
-  - [[#mail][Mail]]
-  - [[#gnus][Gnus]]
   - [[#terminal-binary][Terminal binary]]
   - [[#window][Window]]
   - [[#windmove][WindMove]]
@@ -35,6 +25,7 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#line-numbers][Line numbers]]
   - [[#files][Files]]
   - [[#frame-settings][Frame settings]]
+  - [[#startup][Startup]]
   - [[#faces][Faces]]
   - [[#winner-mode][Winner mode]]
   - [[#modern-region-behavior][Modern region behavior]]
@@ -43,46 +34,29 @@ I have the power! - [[https://www.youtube.com/watch?v=4zIoElk3r2c][He-Man]]
   - [[#ediff][Ediff]]
   - [[#auto-pair][Auto-pair]]
   - [[#use-ibuffer][Use ibuffer]]
-  - [[#compile][Compile]]
-  - [[#info][Info]]
   - [[#js][JS]]
   - [[#shell-script][Shell script]]
-  - [[#align][Align]]
-  - [[#mwheel][MWheel]]
-- [[#third-party-packages][Third-party Packages]]
+- [[#third-party-packages][Third Party Packages]]
   - [[#themes][Themes]]
   - [[#diminish][Diminish]]
-  - [[#ivy][Ivy]]
-  - [[#code-completion][Code Completion]]
-  - [[#org-mode][Org Mode]]
-  - [[#markdown-mode][Markdown mode]]
-  - [[#magit][Magit]]
-  - [[#flycheck][Flycheck]]
-  - [[#projectile][Projectile]]
-  - [[#neotree][Neotree]]
+  - [[#evil-mode][Evil Mode]]
+  - [[#completion-frameworks][Completion Frameworks]]
+  - [[#undo][Undo]]
   - [[#which-key][Which key]]
-  - [[#undo-tree][Undo tree]]
-  - [[#all-the-icons][All the icons]]
+  - [[#magit][Magit]]
+  - [[#org][Org]]
   - [[#dashboard][Dashboard]]
+  - [[#neotree][Neotree]]
+  - [[#code-completion][Code Completion]]
+  - [[#projectile][Projectile]]
+  - [[#all-the-icons][All the icons]]
   - [[#snippets][Snippets]]
-  - [[#clojure][Clojure]]
-  - [[#typescript][Typescript]]
-  - [[#docker][Docker]]
   - [[#yaml][YAML]]
-  - [[#go][Go]]
   - [[#latex][LaTeX]]
-  - [[#rvm][RVM]]
   - [[#ruby][Ruby]]
   - [[#olivetty][Olivetty]]
-  - [[#terraform][Terraform]]
   - [[#beacon][Beacon]]
   - [[#imenu-list][IMenu-list]]
-  - [[#evil][Evil]]
-- [[#personal-packages][Personal Packages]]
-  - [[#new-term][New Term]]
-  - [[#theme-switcher][Theme Switcher]]
-- [[#closing-files][Closing files]]
-  - [[#initel-1][=init.el=]]
 
 * What is this?
 
@@ -106,130 +80,24 @@ Mode makes it easy to manage.  Documentation is also a huge plus since
 I usually get lost in the maze of Emacs Lisp that is my current
 config.
 
-** Installation
-
-All you need to do is to clone this repository, I added the tangled
-file to git so the =init.el= is already here.  Since I use submodules,
-you need to clone recursively this repository.
-
-#+BEGIN_SRC bash
-# Maybe backup you files first
-mv ~/.emacs.d ~/.emacs.bak
-#+END_SRC
-
-#+BEGIN_SRC bash
-git clone --recursive https://github.com/hmatheisen/.emacs.d.git ~/.emacs.d
-#+END_SRC
-
-* Creating the files
-
-** Files to ignore
-
-This is my =.gitignore= file.
-
-#+BEGIN_SRC text :tangle .gitignore
-.backups/
-.cache/
-.lsp-session-v1
-auto-save-list/
-bookmarks
-custom.el
-elpa/
-eshell/
-games/
-ido.last
-nov-places
-network-security.data
-newsticker
-projectile-bookmarks.eld
-projectile.cache
-recentf
-todos.org
-tramp
-transient/
-xkcd/
-#+END_SRC
-
-** =init.el=
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-;;; init.el --- Emacs Init File
-
-;;; Commentary:
-;;; My Emacs Init File
-;;; This file is generted by `config.org', since there are no comments in here,
-;;; you should go have a look there for more information.
-
-;;; Code:
-#+END_SRC
-
 * Initialization
 
-These are the first few lines of code that start it all.  They go into
-=init.el= and will be added to git since they are needed to install
-Org on a new system and therefore read this file ton install the rest
-of the configuration.  I will keep maintaining =init.el= in this file
-since =org-babel-tangle= just rewrites the file if new modifications
-are made.
+Some useful constants that will be used later in this file.
 
-** Custom constants/variables
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(defconst *is-a-mac* (eq system-type 'darwin)
-  "Check whether system is mac.")
-(defconst *mono-font* "Iosevka Term"
-  "Mono font to be used")
-(defconst *font-size* 9
-  "Font size in points")
+#+BEGIN_SRC emacs-lisp
+  (defconst *is-a-mac* (eq system-type 'darwin)
+    "Check whether system is mac.")
+  (defconst *mono-font* "Iosevka"
+    "Default mono font to be used.")
+  (defconst *font-size* 13
+    "Font size un points.")
 #+END_SRC
 
-** Add package archives
-
-Setup MELPA repositories.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(require 'package)
-(add-to-list 'package-archives '("gnu"   . "https://elpa.gnu.org/packages/"))
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-(add-to-list 'package-archives '("org"   . "https://orgmode.org/elpa/"))
-(setq package-enable-at-startup nil)
-(package-initialize)
-#+END_SRC
-
-** Install use-package
-
-=use-package= is quite handy and will allow us to require and install
-packages in a tidy way, we install it here and make sure it installs
-the packages we want by default.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(eval-and-compile
-  (require 'use-package-ensure)
-  (setq use-package-always-ensure t))
-#+END_SRC
-
-** Require personal packages
-
-Those packages are installed with git submodules.  They are isolated
-packages written by me so they don't need any description here.  We
-just add them to load path so that =use-package= can do the job later.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(add-to-list 'load-path "~/.emacs.d/site-lisp/theme-switcher")
-(add-to-list 'load-path "~/.emacs.d/site-lisp/new-term")
-#+END_SRC
-
-* Global settings
+* Editor settings
 
 These are settings to change the look/behavior of Emacs using only
-native options.  I regroup them by their package using =use-package=.
-There is nothing really fancy happening here, just cleaning up the UI
-and setting some variables.  Since I always ensure packages by
-default, I make sure to add =:ensure nil= on native packages so
-=use-package= does not try to look for them in MELPA.
+native options.  There is nothing really fancy happening here, just
+cleaning up the UI and setting some variables.
 
 ** Settings without packages
 
@@ -239,29 +107,24 @@ not related to any Lisp packages, let's put them in a package called
 
 *** Macos
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package emacs
-  :ensure nil
-  :config
+#+BEGIN_SRC emacs-lisp
   ;; Avoid a few issues on MacOS
   (when *is-a-mac*
     (setq mac-option-modifier 'meta
           mac-command-modifier 'super
           mac-right-option-modifier 'nil
           select-enable-clipboard t))
+
   ;; title bar settings
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
   (add-to-list 'default-frame-alist '(ns-appearance . dark))
   (setq ns-use-proxy-icon  nil)
-  (setq frame-title-format nil))
+  (setq frame-title-format nil)
 #+END_SRC
 
 *** UI/UX
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package emacs
-  :ensure nil
-  :config
+#+BEGIN_SRC emacs-lisp
   ;; Remove Toolbar
   (tool-bar-mode -1)
   ;; Disable menu bar
@@ -283,56 +146,12 @@ not related to any Lisp packages, let's put them in a package called
   (setq-default truncate-lines t)
   ;; Unbind suspend keys
   (global-unset-key (kbd "C-z"))
-  (global-unset-key (kbd "C-x C-z")))
-#+END_SRC
-
-*** Garbage collection
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package emacs
-  :ensure nil
-  :preface
-  (defun garbage-collect-defer ()
-    "Defer garbage collection."
-    (setq gc-cons-threshold most-positive-fixnum
-          gc-cons-percentage 0.6))
-  (defun garbage-collect-restore ()
-    "Return garbage collection to slightly higher parameter."
-    (setq gc-cons-threshold 100000000
-          gc-cons-percentage 0.1))
-  :config
-  ;; Set garbage collection
-  (garbage-collect-defer)
-  (add-hook 'emacs-startup-hook #'garbage-collect-restore)
-  (add-hook 'minibuffer-setup-hook #'garbage-collect-defer)
-  (add-hook 'minibuffer-exit-hook #'garbage-collect-restore))
-#+END_SRC
-
-*** Path
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-;; Resolve path issues
-(use-package emacs
-  :preface
-  (defun add-to-path (path)
-    "Add a path to `exec-path' and Emacs \"PATH\" variable."
-    (add-to-list 'exec-path path)
-    (setenv "PATH" (concat (getenv "PATH") ":" path)))
-  :ensure nil
-  :config
-  ;; Add useful path to exec-path and PATH
-  (add-to-path "/usr/local/bin")
-  (add-to-path "/Library/TeX/texbin")
-  (add-to-path "~/go/bin")
-  (add-to-path "~/.cargo/bin"))
+  (global-unset-key (kbd "C-x C-z"))
 #+END_SRC
 
 *** UTF-8
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package emacs
-  :ensure nil
-  :config
+#+BEGIN_SRC emacs-lisp
   ;; Set utf8 everywhere
   (prefer-coding-system 'utf-8)
   (setq locale-coding-system 'utf-8)
@@ -340,259 +159,102 @@ not related to any Lisp packages, let's put them in a package called
   (set-default-coding-systems 'utf-8)
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
-  (set-selection-coding-system 'utf-8))
-#+END_SRC
-
-*** Half scroll
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package emacs
-  :ensure nil
-  :preface
-  (defun zz-scroll-half-page (direction)
-    "Scrolls half page up if `direction' is non-nil, otherwise will scroll half page down."
-    (let ((opos (cdr (nth 6 (posn-at-point)))))
-      ;; opos = original position line relative to window
-      (move-to-window-line nil)  ;; Move cursor to middle line
-      (if direction
-          (recenter-top-bottom -1)  ;; Current line becomes last
-        (recenter-top-bottom 0))  ;; Current line becomes first
-      (move-to-window-line opos)))  ;; Restore cursor/point position
-
-  (defun zz-scroll-half-page-down ()
-    "Scrolls exactly half page down keeping cursor/point position."
-    (interactive)
-    (zz-scroll-half-page nil))
-
-  (defun zz-scroll-half-page-up ()
-    "Scrolls exactly half page up keeping cursor/point position."
-    (interactive)
-    (zz-scroll-half-page t))
-  :config
-  (global-set-key (kbd "C-v") 'zz-scroll-half-page-down)
-  (global-set-key (kbd "M-v") 'zz-scroll-half-page-up))
+  (set-selection-coding-system 'utf-8)
 #+END_SRC
 
 ** Custom
 
-The custom file is not really useful here since every parameter is set
-using elisp.
+The custom file is not really useful here since every parameter is
+set using elisp.  I still want to keep it in case a parameter is
+set using `custom' I will know where to find it.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package custom
-  :ensure nil
-  :config
+#+BEGIN_SRC emacs-lisp
   (setq custom-safe-themes t)
-  (setq custom-file (expand-file-name "custom.el" user-emacs-directory)))
-#+END_SRC
-
-** Mail
-
-Setup auth information.  =.authinfo.gpg= file is the encrypted
-authentication source file used by different backends.  We tell Emacs
-to use this file for authentication.  Then setup user full name and
-mail address.  Two GPG related environment variables are created to
-make decryption work inside Emacs.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package auth-source
-  :ensure nil
-  :config
-  (setq auth-sources '("~/.authinfo.gpg" "~/.authinfo"))
-  (setq user-full-name "Henry MATHEISEN")
-  (setq user-mail-address "henry.mthsn@gmail.com")
-  ;; Disable external pin entry
-  (setenv "GPG_AGENT_INFO" nil)
-  ;; Solve ioctl common error with GPG
-  (setenv "GPG_TTY" "$(tty)"))
-#+END_SRC
-
-Configure default SMTP server.  This allows Emacs to look for the
-right line in the =.authinfo.gpg= when it needs credentials.  We use
-SSL to encrypt sent mails.  And set Emacs to use SMTP as the main mail
-sending method.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package smtpmail
-  :config
-  (setq smtpmail-smtp-server "smtp.gmail.com"
-        smtpmail-smtp-service 465
-        smtpmail-stream-type 'ssl
-        ;; Set smtp method for sending mail
-        send-mail-function 'smtpmail-send-it
-        message-send-mail-function 'message-smtpmail-send-it))
-#+END_SRC
-
-Message mode is the mode I use to send mails.  Here, we tell it to
-sign mail with my name and mail address.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package message
-  :ensure nil
-  :config
-  (setq mail-signature "Henry MATHEISEN\nhenry.mthsn@gmail.com\n"
-        message-signature "Henry MATHEISEN\nhenry.mthsn@gmail.com\n"))
-#+END_SRC
-
-Using Emacs GUI, I want an internal pinentry program.  EPA allows to
-use Emacs Minibuffer for GPG pinentry.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package "epa-file"
-  :ensure nil
-  :config
-  (setq epa-pinentry-mode 'loopback))
-#+END_SRC
-
-** Gnus
-
-Gnus early configuration.  Only reads mail from my Gmail account for
-now.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package gnus
-  :defer t
-  :ensure nil
-  :config
-  (setq gnus-select-method '(nnnil))
-  (setq gnus-secondary-select-methods
-        '((nnimap "GMAIL"
-                 (nnimap-address "imap.gmail.com")
-                 (nnimap-server-port "imaps")
-                 (nnimap-stream ssl))))
-  ;; Make Gnus NOT ignore [Gmail] mailboxes
-  (setq gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"))
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 #+END_SRC
 
 ** Terminal binary
 
-On MacOS, I use a new version of =bash= installed with =brew= since I
-can't update the default one. Therefore the path is changed to
-=/usr/local/bin/bash=.
+On MacOS, I now use =zsh=, so it is set here so that I don't have to
+type it everytime.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package term
-  :ensure nil
-  :config
+#+BEGIN_SRC emacs-lisp
   (if *is-a-mac*
-      (setq explicit-shell-file-name "/usr/local/bin/bash")
-    (setq explicit-shell-file-name "/bin/bash")))
+      (setq explicit-shell-file-name "/bin/zsh"))
 #+END_SRC
 
 ** Window
 
-Change keybindings to resize window so I can just keep pressing them.
-Also I change the default keybindings to go to another window since
-=C-x o= is a little too long in my opinion.  It is now remapped to
-=ace-window= which is handy when the number of windows starts to grow.
+Better keys for resizing windows and moving around in buffers.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-  (use-package "window"
-    :ensure nil
-    :preface
-    (defun hma/split-window-right ()
-      "Splits window on the right then focus on that window"
-      (interactive)
-      (split-window-right)
-      (other-window 1))
-    (defun hma/split-window-below ()
-      "Splits windmow below then focus on that window"
-      (interactive)
-      (split-window-below)
-      (other-window 1))
-    :config
-    ;; Resizing
-    (global-set-key (kbd "M--") 'shrink-window)
-    (global-set-key (kbd "M-+") 'enlarge-window)
-    (global-set-key (kbd "C--") 'shrink-window-horizontally)
-    (global-set-key (kbd "C-+") 'enlarge-window-horizontally)
-    ;; Other window (windmove is also setup but this can be easier)
-    (global-set-key (kbd "M-o") 'other-window)
-    (global-set-key (kbd "M-O") '(lambda ()
-                                   (interactive)
-                                   (other-window -1)))
-    ;; scroll window up/down by one line
-    (global-set-key (kbd "M-n") '(lambda ()
-                                   (interactive)
-                                   (scroll-up-command 1)))
-    (global-set-key (kbd "M-p") '(lambda ()
-                                   (interactive)
-                                   (scroll-down-command 1)))
-    ;; Use by own split functions
-    (global-set-key (kbd "C-x 2") 'hma/split-window-below)
-    (global-set-key (kbd "C-x 3") 'hma/split-window-right)
-    (global-set-key (kbd "C-<tab>") 'next-buffer)
-    (global-set-key (kbd "C-S-<tab>") 'previous-buffer))
+#+BEGIN_SRC emacs-lisp
+  ;; Resizing
+  (global-set-key (kbd "M--") 'shrink-window)
+  (global-set-key (kbd "M-+") 'enlarge-window)
+  (global-set-key (kbd "C--") 'shrink-window-horizontally)
+  (global-set-key (kbd "C-+") 'enlarge-window-horizontally)
 
-  (use-package ace-window
-    :config (global-set-key (kbd "C-x o") 'ace-window))
+  ;; Move between buffers
+  (global-set-key (kbd "C-<tab>") 'next-buffer)
+  (global-set-key (kbd "C-S-<tab>") 'previous-buffer)
 #+END_SRC
 
 ** WindMove
 
 Use windmove to move around multiple windows easily
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package windmove
-  :ensure nil
-  :config
-  (windmove-default-keybindings))
+#+BEGIN_SRC emacs-lisp
+  (windmove-default-keybindings)
 #+END_SRC
 
 ** Y or N > Yes or No
 
 Answer by =y= or =n= instead of =yes= of =no=.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package "subr"
-  :ensure nil
-  :config (fset 'yes-or-no-p 'y-or-n-p))
+#+BEGIN_SRC emacs-lisp
+  (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
 ** Time mode
 
 Display time on mode line.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package time
-  :ensure nil
-  :config (display-time-mode t))
+#+BEGIN_SRC emacs-lisp
+  (display-time-mode t)
 #+END_SRC
 
 ** Simple
 
 Display line numbers in mode line and undo keybinding.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package simple
-  :ensure nil
-  :config
+#+BEGIN_SRC emacs-lisp
+  ;; Displqy column number
   (column-number-mode t)
+
+  ;; Kill to end of line
   (global-set-key (kbd "s-<backspace>")
                   (lambda ()
                     (interactive)
-                    (kill-line 0))))
+                    (kill-line 0)))
+
+  ;; Do what escape should do (keep C-g behaviour)
+  (global-set-key (kbd "<escape>") 'keyboard-quit)
 #+END_SRC
 
 ** Display battery level
 
 Display battery level inm mode line.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package battery
-  :ensure nil
-  :config (display-battery-mode t))
+#+BEGIN_SRC emacs-lisp
+  (display-battery-mode t)
 #+END_SRC
 
 ** Line numbers
 
 Display line numbers every =prog-mode=.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package display-line-numbers
-  :ensure nil
-  :hook (prog-mode . display-line-numbers-mode)
-        (yaml-mode . display-line-numbers-mode))
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 #+END_SRC
 
 ** Files
@@ -600,33 +262,32 @@ Display line numbers every =prog-mode=.
 Make sure that all backup files only exist in one place and always ask
 before quitting Emacs.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package files
-  :ensure nil
-  :config
+#+BEGIN_SRC emacs-lisp
   (setq backup-directory-alist '(("." . "~/.emacs.d/.backups")))
-  (setq confirm-kill-emacs #'yes-or-no-p))
+  (setq confirm-kill-emacs #'yes-or-no-p)
 #+END_SRC
 
 ** Frame settings
 
 Enable full frame on Emacs startup.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package frame
-  :ensure nil
-  :config
-  (add-hook 'after-init-hook 'toggle-frame-fullscreen))
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'after-init-hook 'toggle-frame-fullscreen)
+#+END_SRC
+
+** Startup
+
+Do not display startup splash screen since I use dashboard.
+
+#+BEGIN_SRC emacs-lisp
+  (setq inhibit-startup-screen t)
 #+END_SRC
 
 ** Faces
 
-Set the different fonts
+Explicitly set the different fonts.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package faces
-  :ensure nil
-  :config
+#+BEGIN_SRC emacs-lisp
   (set-face-attribute 'default
                       nil
                       :family *mono-font*
@@ -640,17 +301,15 @@ Set the different fonts
   (set-face-attribute 'variable-pitch
                       nil
                       :family "Raleway"
-                      :height (* *font-size* 12)))
+                      :height (* *font-size* 12))
 #+END_SRC
 
 ** Winner mode
 
 Allows to revert changes on the window configuration.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package winner
-  :ensure nil
-  :config (winner-mode t))
+#+BEGIN_SRC emacs-lisp
+  (winner-mode t)
 #+END_SRC
 
 ** Modern region behavior
@@ -658,31 +317,25 @@ Allows to revert changes on the window configuration.
 Replace the active region when typing/yanking text, which is a little
 handier than the default behaviour.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package delsel
-  :ensure nil
-  :config (delete-selection-mode +1))
+#+BEGIN_SRC emacs-lisp
+  (delete-selection-mode +1)
 #+END_SRC
 
 ** No scroll bar
 
 I mean who likes this, really?
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package scroll-bar
-  :ensure nil
-  :config (scroll-bar-mode -1))
+#+BEGIN_SRC emacs-lisp
+  (scroll-bar-mode -1)
 #+END_SRC
 
 ** Matching Parentheses
 
 Show matching paren, quite useful for every languages especially Lisp!
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package paren
-  :ensure nil
-  :init (setq show-paren-delay 0)
-  :config (show-paren-mode t))
+#+BEGIN_SRC emacs-lisp
+  (setq show-paren-delay 0)
+  (show-paren-mode t)
 #+END_SRC
 
 ** Ediff
@@ -690,30 +343,23 @@ Show matching paren, quite useful for every languages especially Lisp!
 Enter ediff with side-by-side buffers to better compare the
 differences.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package ediff
-  :ensure nil
-  :config (setq ediff-split-window-function 'split-window-horizontally))
+#+BEGIN_SRC emacs-lisp
+  (setq ediff-split-window-function 'split-window-horizontally)
 #+END_SRC
 
 ** Auto-pair
 
 Auto close quote, parentheses, brackets, etc.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package elec-pair
-  :ensure nil
-  :hook (prog-mode . electric-pair-mode))
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'prog-mode-hook 'electric-pair-mode)
 #+END_SRC
 
 ** Use ibuffer
 
 Use ibuffer instead of default list buffer.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package "ibuffer"
-  :ensure nil
-  :config
+#+BEGIN_SRC emacs-lisp
   ;; Replace command to ibuffer
   (global-set-key (kbd "C-x C-b") 'ibuffer)
   ;; Filter groups
@@ -721,14 +367,11 @@ Use ibuffer instead of default list buffer.
         '(("default"
            ("buffers"      (or (name . "\*dashboard\*")
                                (name . "\*scratch\*")))
-           ("clojure"      (or (mode . clojure-mode)
-                               (name . "\*cider")
-                               (name . "\*nrepl")))
            ("magit"        (name . "magit*"))
            ("he-macs"      (filename . ".emacs.d"))
            ("org"          (mode . org-mode))
            ("dired"        (mode . dired-mode))
-           ("code"         (filename . "Projets")))))
+           ("code"         (filename . "Code")))))
   ;; Add hook
   (add-hook 'ibuffer-mode-hook
             '(lambda ()
@@ -736,235 +379,127 @@ Use ibuffer instead of default list buffer.
   ;; Do not show groups that are empty
   (setq ibuffer-show-empty-filter-groups nil)
   ;; Do not prompt when deleting a new buffer
-  (setq ibuffer-expert t))
-#+END_SRC
-
-** Compile
-
-Set keybinding for the recompile command.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package compile
-  :ensure nil
-  :config
-  (global-set-key (kbd "C-c C-k") 'recompile))
-#+END_SRC
-
-** Info
-
-Change one =info-mode= keybinding to my scroll command.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package info
-  :ensure nil
-  :config
-  (define-key Info-mode-map (kbd "M-n") '(lambda ()
-                                           (interactive)
-                                           (scroll-up-command 1))))
+  (setq ibuffer-expert t)
 #+END_SRC
 
 ** JS
 
 Set indent level for javascript/json files.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package js
-  :ensure nil
-  :config
-  (setq js-indent-level 2))
+#+BEGIN_SRC emacs-lisp
+  (setq js-indent-level 2)
 #+END_SRC
 
 ** Shell script
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package sh-script
-  :ensure nil
-  :config (setq sh-basic-offset 2))
+#+BEGIN_SRC emacs-lisp
+  (setq sh-basic-offset 2)
 #+END_SRC
 
-** Align
+* Third Party Packages
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package align
-  :ensure nil
-  :config
-  (defun hma/align-equals (beg end)
-    "Align `=' signs in a given region."
-    (interactive "r")
-    (align-regexp beg
-                  end
-                  "\\(\\s-*\\)=")))
-#+END_SRC
-
-** MWheel
-
-Settings concerning mouse scroll in GUI
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package mwheel
-  :ensure nil
-  :config (setq mouse-wheel-progressive-speed nil
-                mouse-wheel-scroll-amount '(1 ((shift) . 1))))
-#+END_SRC
-
-* Third-party Packages
-
-Here are all the packages I require from MELPA.
+Now this is wher the fun begins...
 
 ** Themes
 
-Currently using the perfect Modus themes.
+Some of the themes I like
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package modus-vivendi-theme
-  :defer t
-  :init
-  (setq modus-vivendi-theme-distinct-org-blocks t
-        modus-vivendi-theme-rainbow-headings t
-        modus-vivendi-theme-slanted-constructs t
-        modus-vivendi-theme-bold-constructs t
-        modus-vivendi-theme-scale-headings t
-        modus-vivendi-theme-scale-1 1.05
-        modus-vivendi-theme-scale-2 1.1
-        modus-vivendi-theme-scale-3 1.15
-        modus-vivendi-theme-scale-4 1.2))
-(use-package modus-operandi-theme
-  :defer t
-  :init
-  (setq modus-operandi-theme-distinct-org-blocks t
-        modus-operandi-theme-rainbow-headings t
-        modus-operandi-theme-slanted-constructs t
-        modus-operandi-theme-bold-constructs t
-        modus-operandi-theme-scale-headings t
-        modus-operandi-theme-scale-1 1.05
-        modus-operandi-theme-scale-2 1.1
-        modus-operandi-theme-scale-3 1.15
-        modus-operandi-theme-scale-4 1.2))
+#+BEGIN_SRC emacs-lisp
+  (use-package modus-vivendi-theme
+    :defer t
+    :init
+    (setq modus-vivendi-theme-distinct-org-blocks t
+          modus-vivendi-theme-rainbow-headings t
+          modus-vivendi-theme-slanted-constructs t
+          modus-vivendi-theme-bold-constructs t
+          modus-vivendi-theme-scale-headings t
+          modus-vivendi-theme-scale-1 1.05
+          modus-vivendi-theme-scale-2 1.1
+          modus-vivendi-theme-scale-3 1.15
+          modus-vivendi-theme-scale-4 1.2))
+  (use-package modus-operandi-theme
+    :defer t
+    :init
+    (setq modus-operandi-theme-distinct-org-blocks t
+          modus-operandi-theme-rainbow-headings t
+          modus-operandi-theme-slanted-constructs t
+          modus-operandi-theme-bold-constructs t
+          modus-operandi-theme-scale-headings t
+          modus-operandi-theme-scale-1 1.05
+          modus-operandi-theme-scale-2 1.1
+          modus-operandi-theme-scale-3 1.15
+          modus-operandi-theme-scale-4 1.2))
+
+  (load-theme 'modus-vivendi)
 #+END_SRC
 
 ** Diminish
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package diminish
-  :defer t
-  :after use-package)
+#+BEGIN_SRC emacs-lisp
+  (use-package diminish
+    :defer t
+    :after use-package)
 #+END_SRC
 
-** Ivy
+** Evil Mode
+
+So it is treason then...
+Yes, I know but let's face it, Vi editing is just really good ¯\_(ツ)_/¯
+
+#+BEGIN_SRC emacs-lisp
+  (use-package evil
+    :init
+    ;; Default state is emacs so Evil is only active when toggling it
+    ;; with `C-!'
+    (setq evil-toggle-key "C-x C-z")
+    (setq evil-want-C-u-scroll t)
+    :config
+    ;; Switch on Evil mode
+    (evil-mode t)
+    (setq evil-default-state 'emacs))
+#+END_SRC
+
+** Completion Frameworks
 
 I use Ivy as as a completion frontend, it integrates really well with
 other super cool tools such as Swiper and Counsel.  There are other
 choices for this such as Helm that I don't really like or the default
 Ido mode that I should try one day.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
- (use-package counsel
-   :defer t
-   :diminish ivy-mode counsel-mode
-   :bind (("C-s" . swiper-isearch))
-   :hook ((after-init . ivy-mode)
-          (ivy-mode . counsel-mode))
-   :init
-   (setq ivy-use-virtual-buffers t)
-   (setq ivy-count-format "(%d/%d) "))
+#+BEGIN_SRC emacs-lisp
+  (use-package counsel
+    :defer t
+    :diminish ivy-mode counsel-mode
+    :bind (("C-s" . swiper-isearch))
+    :hook ((after-init . ivy-mode)
+           (ivy-mode . counsel-mode))
+    :init
+    (setq ivy-use-virtual-buffers t)
+    (setq ivy-count-format "(%d/%d) "))
 #+END_SRC
 
-** Code Completion
+** Undo
 
-I use =lsp-mode= as my completion tool.  Language Server Protocols
-allows to use the most modern code completions since they use servers
-as completion engines and =lsp-mode= is a great Emacs client for it.
-I also use =company-mode= for the frontend completion.
+Use undo tree to visualize the powerful Emacs undo system.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package lsp-mode
-  :defer t
-  :init (setq lsp-keymap-prefix "C-c l")
-  :hook ((python-mode . lsp)
-         (go-mode . lsp)
-         (ruby-mode . lsp)
-         (typescript-mode . lsp)
-         (rust-mdoe . lsp)
-         (web-mode . lsp))
-  :commands lsp
-  :config
-  ;; Do not use lsp for linting
-  (setq lsp-diagnostic-package :none))
-
-(use-package company-mode
-  :defer t
-  :diminish company-mode
-  :init
-  (setq company-selection-wrap-around t)
-  (setq company-minimum-prefix-length 1)
-  (setq company-idle-delay 0)
-  (with-eval-after-load 'company
-    (define-key company-active-map (kbd "M-n") nil)
-    (define-key company-active-map (kbd "M-p") nil)
-    (define-key company-active-map (kbd "C-n") 'company-select-next)
-    (define-key company-active-map (kbd "C-p") 'company-select-previous))
-  :ensure company
-  :hook ((after-init . global-company-mode)
-          (company-mode . (lambda ()
-                            (diminish 'company-mode)))))
-
-(use-package company-lsp
-  :defer t
-  :after (company lsp)
-  :init
-  (push 'company-lsp company-backends)
-  :commands company-lsp)
+#+BEGIN_SRC emacs-lisp
+  (use-package undo-tree
+    :diminish undo-tree-mode
+    :config
+    (global-undo-tree-mode))
 #+END_SRC
 
-** Org Mode
+** Which key
 
-I use org mode fo lots of things epacially to write this file.  It's
-just really great!
+This is great to get a list of available commands while typing a key chord.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package org
-  :defer t
-  :diminish visual-line-mode auto-fill-function
-  :preface
-  (defun hma/org-mode-hook ()
-    (org-indent-mode 1)
-    (visual-line-mode 1)
-    (flyspell-mode 1)
-    (auto-fill-mode 1)
-    (variable-pitch-mode))
-  :hook ((org-mode . hma/org-mode-hook)
-         (org-indent-mode . (lambda ()
-                              (diminish 'org-indent-mode)))
-         (flyspell-mode . (lambda ()
-                            (diminish 'flyspell-mode))))
-  :config
-  ;; Do not set headings face attributes if onve of the modus themes
-  ;; is enabled since they already set this up.
-  (set-face-attribute 'org-document-title nil :height 200)
-  (unless (or (member 'modus-operandi custom-enabled-themes)
-              (member 'modus-vivendi custom-enabled-themes))
-    (set-face-attribute 'org-level-1        nil :height 160)
-    (set-face-attribute 'org-level-2        nil :height 150))
-  ;; Unbind C-<tab> to use 'next-buffer
-  (define-key org-mode-map (kbd "C-<tab>") nil))
-
-(use-package org-bullets
-  :defer t
-  :hook (org-mode . org-bullets-mode))
-
-(use-package toc-org
-  :defer t
-  :hook ((org-mode      . toc-org-mode)
-         (markdown-mode . toc-org-mode)))
-#+END_SRC
-
-** Markdown mode
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package markdown-mode
-  :defer t
-  :config
-  (setq markdown-fontify-code-blocks-natively t))
+#+BEGIN_SRC emacs-lisp
+  (use-package which-key
+    :diminish which-key-mode
+    :config
+    (which-key-mode)
+    (setq which-key-idle-delay 0.2
+          which-key-idle-secondary-delay 0.2))
 #+END_SRC
 
 ** Magit
@@ -972,179 +507,148 @@ just really great!
 Magit is an awesome git wrapper, everyone loves it, I love it and I
 use it everyday.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package magit
-  :defer t
-  :bind ("C-x g" . 'magit-status))
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :defer t
+    :bind ("C-x g" . 'magit-status))
 #+END_SRC
 
-** Flycheck
+** Org
 
-Flycheck linter.
+#+BEGIN_SRC emacs-lisp
+  (use-package org
+    :defer t
+    :diminish visual-line-mode auto-fill-function
+    :preface
+    (defun he/org-mode-hook ()
+      (org-indent-mode 1)
+      (visual-line-mode 1)
+      (auto-fill-mode 1))
+    :hook ((org-mode . he/org-mode-hook)
+           (org-indent-mode . (lambda ()
+                                (diminish 'org-indent-mode)))
+           (flyspell-mode . (lambda ()
+                              (diminish 'flyspell-mode)))
+           (buffer-face-mode . (lambda ()
+                                 (diminish 'buffer-face-mode))))
+    :config
+    ;; Do not set headings face attributes if onve of the modus themes
+    ;; is enabled since they already set this up.
+    (set-face-attribute 'org-document-title nil :height 300)
+    (set-face-attribute 'org-level-1        nil :height 200)
+    (set-face-attribute 'org-level-2        nil :height 170)
+    ;; Unbind C-<tab> to use 'next-buffer
+    (define-key org-mode-map (kbd "C-<tab>") nil))
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package flycheck
-  :diminish
-  :config (global-flycheck-mode t))
+  (use-package org-bullets
+    :defer t
+    :hook (org-mode . org-bullets-mode))
+
+  (use-package toc-org
+    :defer t
+    :hook ((org-mode      . toc-org-mode)
+           (markdown-mode . toc-org-mode)))
+#+END_SRC
+
+** Dashboard
+
+#+BEGIN_SRC emacs-lisp
+  (use-package dashboard
+    :config
+    (dashboard-setup-startup-hook)
+    (setq dashboard-startup-banner 'official
+          dashboard-items '((bookmarks . 10)
+                            (recents . 5))
+          dashboard-center-content t
+          dashboard-set-heading-icons t
+          dashboard-set-file-icons t
+          ;; Page break is now optional so this adds them back
+          dashboard-page-separator "\n\f\n"
+          dashboard-banner-logo-title "Welcome to He-Macs!"))
+#+END_SRC
+
+** Neotree
+
+It's always handy having a file tree on the side !
+
+#+BEGIN_SRC emacs-lisp
+  (use-package neotree
+    :defer t
+    :config
+    (setq neo-window-fixed-size nil)
+    (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+    (setq neo-hidden-regexp-list '("\\.git$"))
+    :bind (([f8] . neotree-toggle)))
+#+END_SRC
+
+** Code Completion
+
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-mode
+    :init
+    (setq lsp-keymap-prefix "C-c l")
+    :hook ((ruby-mode . lsp)
+           (lsp-mode . lsp-enable-which-key-integration))
+    :commands lsp)
+
+  (use-package company-mode
+    :defer t
+    :init
+    (setq company-selection-wrap-around t)
+    (setq company-minimum-prefix-length 1)
+    (setq company-idle-delay 0)
+    (with-eval-after-load 'company
+      (define-key company-active-map (kbd "M-n") nil)
+      (define-key company-active-map (kbd "M-p") nil)
+      (define-key company-active-map (kbd "C-n") 'company-select-next)
+      (define-key company-active-map (kbd "C-p") 'company-select-previous))
+    :ensure company
+    :hook (after-init . (lambda ()
+                          (global-company-mode)
+                          (diminish 'company-mode))))
+
+  (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 #+END_SRC
 
 ** Projectile
 
 Testing =Projectile= for project management.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package projectile
-  :defer t
-  :diminish
-  :config
-  (projectile-mode t)
-  (setq projectile-completion-system 'ivy)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
-#+END_SRC
-
-** Neotree
-
-Tree file structure for Emacs
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package neotree
-  :defer t
-  :config
-  (setq neo-window-fixed-size nil)
-  (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
-  (setq neo-hidden-regexp-list '("\\.git$"))
-  :bind (([f8] . neotree-toggle)))
-#+END_SRC
-
-** Which key
-
-This is great to get a list of available commands while typing a key
-chord.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package which-key
-  :diminish which-key-mode
-  :config
-  (which-key-mode +1)
-  (setq which-key-idle-delay 0.2
-        which-key-idle-secondary-delay 0.2))
-#+END_SRC
-
-** Undo tree
-
-Handy features for undo/redo
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package undo-tree
-  :diminish undo-tree-mode
-  :config
-  (global-set-key "\C-z" 'undo)
-  (global-undo-tree-mode))
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :init
+    (projectile-mode +1)
+    :bind (:map projectile-mode-map
+                ("C-c p" . projectile-command-map)))
 #+END_SRC
 
 ** All the icons
 
 Icons support in Emacs
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package all-the-icons
-  :defer t)
-#+END_SRC
-
-** Dashboard
-
-I just think it's neat!
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package dashboard
-  :diminish page-break-lines-mode
-  :config
-  (dashboard-setup-startup-hook)
-  (setq dashboard-startup-banner 'official
-        dashboard-items '((bookmarks . 10)
-                          (recents . 5))
-        dashboard-center-content t
-        dashboard-set-heading-icons t
-        dashboard-set-file-icons    t
-        dashboard-banner-logo-title "Welcome to He-Macs!"))
+#+BEGIN_SRC emacs-lisp
+  (use-package all-the-icons
+    :defer t)
 #+END_SRC
 
 ** Snippets
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package yasnippet
-  :diminish yas-minor-mode
-  :config (yas-global-mode t))
-#+END_SRC
-
-** Clojure
-
-*** Clojure mode
-
-Install =clojure-mode= for editing.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package clojure-mode
-  :defer t)
-#+END_SRC
-
-*** CIDER
-
-Install =CIDER= for REPL support and other intractive features.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package cider
-  :defer t)
-#+END_SRC
-
-** Typescript
-
-I use typescript mode instead of tide since I am already using lsp as
-a completion engine.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package typescript-mode
-  :defer t
-  :config
-  (setq typescript-indent-level 2))
-#+END_SRC
-
-** Docker
-
-To provide support fo docker I use =docker-mode= which is a wrapper
-for the Docker CLI and =dockerfile-mode= which allows syntax
-highlighting for Dockerfiles.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package docker
-  :defer t
-  :bind ("C-c d" . docker))
-
-(use-package dockerfile-mode)
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :diminish yas-minor-mode
+    :config (yas-global-mode t))
 #+END_SRC
 
 ** YAML
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package yaml-mode
-  :defer t)
-#+END_SRC
-
-** Go
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package go-mode
-  :defer t
-  :config
-  (defun lsp-go-install-save-hooks ()
-    (add-hook 'before-save-hook #'lsp-format-buffer t t)
-    (add-hook 'before-save-hook #'lsp-organize-imports t t))
-  (add-hook 'go-mode-hook #'lsp-go-install-save-hooks))
+#+BEGIN_SRC emacs-lisp
+  (use-package yaml-mode
+    :defer t)
 #+END_SRC
 
 ** LaTeX
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
+#+BEGIN_SRC emacs-lisp
   (use-package tex
     :defer t
     :diminish auto-fill-function
@@ -1157,131 +661,44 @@ highlighting for Dockerfiles.
       (setenv "TEXINPUTS" (concat (getenv "TEXINPUTS")
                                   ":$HOME/Documents/Notes/classes")))
     :hook (LaTeX-mode . (lambda () (auto-fill-mode 1)
-                                   (set-fill-column 80))))
-#+END_SRC
- 
-** RVM
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package rvm
-  :config
-  ;; Unset BUNDLE_PATH set by rvm because somehow it causes bundler to
-  ;; install gems in another path than the default one
-  (rvm-use-default)
-  (setenv "BUNDLE_PATH"))
+                          (set-fill-column 80))))
 #+END_SRC
 
 ** Ruby
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-;; Auto close for ruby
-(use-package ruby-electric
-  :diminish ruby-electric-mode
-  :defer t
-  :hook (ruby-mode . ruby-electric-mode))
+#+BEGIN_SRC emacs-lisp
+  ;; Auto close for ruby
+  (use-package ruby-electric
+    :diminish ruby-electric-mode
+    :defer t
+    :hook (ruby-mode . ruby-electric-mode))
 #+END_SRC
 
 ** Olivetty
 
 Useful when writing prose.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package olivetti
-  :defer t
-  :config (setq olivetti-body-width 110))
-#+END_SRC
-
-** Terraform
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package terraform-mode
-  :defer t
-  :bind (("C-c SPC" . hma/align-equals)))
+#+BEGIN_SRC emacs-lisp
+  (use-package olivetti
+    :defer t
+    :config (setq olivetti-body-width 110))
 #+END_SRC
 
 ** Beacon
 
 Never lose the cursor again.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package beacon
-  :diminish beacon-mode
-  :config (beacon-mode t))
+#+BEGIN_SRC emacs-lisp
+  (use-package beacon
+    :diminish beacon-mode
+    :config (beacon-mode t))
 #+END_SRC
 
 ** IMenu-list
 
 Creates a side buffer with the a list of imenu.
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package imenu-list
-  :config (global-set-key (kbd "C-:") #'imenu-list-smart-toggle))
+#+BEGIN_SRC emacs-lisp
+  (use-package imenu-list
+    :config (global-set-key (kbd "C-:") #'imenu-list-smart-toggle))
 #+END_SRC
-
-** Evil
-
-It is treason then...
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package evil
-  :init
-  ;; Default state is emacs so Evil is only active when toggling it
-  ;; with `C-!'
-  (setq evil-toggle-key "C-x C-z")
-  :config
-  ;; Switch on Evil mode
-  (evil-mode t)
-  (setq evil-default-state 'emacs))
-#+END_SRC
-
-* Personal Packages
-
-This part is about configuring packages that are not part of GNU Emacs
-but written by me.  I chose not to upload them on MELPA since similar
-version of thos packages already exists, I just didn't like them :)
-
-** [[https://github.com/hmatheisen/new-term][New Term]]
-
-This package allows to toggle a small terminal window on the bottom of
-the screen.  It has a few other features like making it bigger or
-smaller and quitting by closing the shell process and killing the
-window.  It is somewhat similar to what you would find in more modern
-editors such as VS Code.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package new-term
-  :preface
-  (defun hma/new-term-hook ()
-    (define-key term-raw-map (kbd "C-c <up>") 'bigger-term-window)
-    (define-key term-raw-map (kbd "C-c <down>") 'smaller-term-window)
-    (define-key term-raw-map (kbd "C-c q") 'quit-term))
-  :ensure nil
-  :init
-  (setq new-shell "/usr/local/bin/bash")
-  (global-set-key (kbd "C-x t") 'toggle-term-window)
-  (add-hook 'term-mode-hook 'hma/new-term-hook))
-#+END_SRC
-
-** [[https://github.com/hmatheisen/theme-switcher][Theme Switcher]]
-
-This allows me to configure a theme for the day and a theme for the
-night that automatically switches at given time.
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-(use-package theme-switcher
-  :ensure nil
-  :init
-  (setq day-hour 09)
-  (setq night-hour 15)
-  (setq day-theme 'modus-operandi)
-  (setq night-theme 'modus-vivendi))
-#+END_SRC
-
-* Closing files
-
-** =init.el=
-
-#+BEGIN_SRC emacs-lisp :tangle init.el
-;;; init.el ends here
-#+END_SRC
-

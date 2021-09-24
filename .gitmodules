@@ -1,6 +1,0 @@
-[submodule "site-lisp/new-term"]
-	path = site-lisp/new-term
-	url = https://github.com/hmatheisen/new-term.git
-[submodule "site-lisp/theme-switcher"]
-	path = site-lisp/theme-switcher
-	url = https://github.com/hmatheisen/theme-switcher.git
