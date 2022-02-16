@@ -1,9 +1,8 @@
-;;; he-align.el --- Align stuff                      -*- lexical-binding: t; -*-
+;;; macos.el --- MacOS Specific Options              -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2021  Henry MATHEISEN
+;; Copyright (C) 2022  Henry MATHEISEN
 
-;; Author: Henry MATHEISEN <henry.mthsn@gmail.com>
-;; Keywords: 
+;; Author: Henry MATHEISEN <henry@macbook>
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -20,18 +19,20 @@
 
 ;;; Commentary:
 
-;; Make use of the align function to target specific
-;; regions/characters
+;; 
 
 ;;; Code:
 
-(defun he/align-equals (beg end)
-  "Align `=' signs in a given region."
-  (interactive "r")
-  (align-regexp beg
-                end
-                "\\(\\s-*\\)="))
+;; Keyboard options 
+(setq mac-option-modifier 'meta
+      mac-command-modifier 'super
+      mac-right-option-modifier 'nil)
 
-(provide 'he-align)
+;; Title bar appearance
+(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+(add-to-list 'default-frame-alist '(ns-appearance . dark))
+(setq ns-use-proxy-icon  nil)
+(setq frame-title-format nil)
 
-;;; he-align.el ends here
+(provide 'macos)
+;;; macos.el ends here

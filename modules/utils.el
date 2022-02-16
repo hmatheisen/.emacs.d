@@ -1,9 +1,9 @@
-;;; he-path.el --- Add new paths to Emacs PATH       -*- lexical-binding: t; -*-
+;;; utils.el --- Function utils for Emacs init       -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2021  Henry MATHEISEN
 
-;; Author: Henry MATHEISEN <henry.mthsn@gmail.com>
-;; Keywords: 
+;; Author: Henry MATHEISEN <haineriz@posteo.de>
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -26,14 +26,14 @@
 
 ;;; Code:
 
-(defun he/add-to-path (path)
-  "Add a path to `exec-path' and Emacs \"PATH\" variable."
+(defun add-to-path (path)
+  "Add a path to variable `exec-path' and Emacs \"PATH\" variable."
   (add-to-list 'exec-path path)
   (setenv "PATH" (concat (getenv "PATH") ":" path)))
 
-(he/add-to-path "/usr/local/bin")
-(he/add-to-path "/Library/TeX/texbin")
-(he/add-to-path "~/.rbenv/shims")
+(add-to-path "/usr/local/bin")
+(add-to-path "/Library/TeX/texbin")
+(add-to-path "/Users/henry/.rbenv/shims")
 
-(provide 'he-path)
-;;; he-path.el ends here
+(provide 'utils)
+;;; utils.el ends here

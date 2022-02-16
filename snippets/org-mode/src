@@ -3,6 +3,6 @@
 # key: src
 # --
 
-#+BEGIN_SRC ${1:emacs-lisp} :tangle ${init.el}
+#+BEGIN_SRC ${1:emacs-lisp}
 $0
 #+END_SRC

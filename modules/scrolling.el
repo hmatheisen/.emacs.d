@@ -1,8 +1,8 @@
-;;; he-scroll.el --- Scroll utilities for Emacs      -*- lexical-binding: t; -*-
+;;; scrolling.el --- My take in scroll in Emacs      -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2021  Henry MATHEISEN
 
-;; Author: Henry MATHEISEN <henry.mthsn@gmail.com>
+;; Author: Henry MATHEISEN <haineriz@posteo.de>
 ;; Keywords: 
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 
 ;; Half page scroll instead of whole page
 
-(defun he/scroll-half-page (direction)
+(defun scroll-half-page (direction)
   "Scrolls half page up if `direction' is non-nil, otherwise
   will scroll half page down."
   (let ((opos (cdr (nth 6 (posn-at-point)))))
@@ -38,36 +38,44 @@
       (recenter-top-bottom 0))  ;; Current line becomes first
     (move-to-window-line opos)))  ;; Restore cursor/point position
 
-(defun he/scroll-half-page-down ()
+(defun scroll-half-page-down ()
   "Scrolls exactly half page down keeping cursor/point position."
   (interactive)
-  (he/scroll-half-page nil))
+  (scroll-half-page nil))
 
-(defun he/scroll-half-page-up ()
+(defun scroll-half-page-up ()
   "Scrolls exactly half page up keeping cursor/point position."
   (interactive)
-  (he/scroll-half-page t))
+  (scroll-half-page t))
 
-(global-set-key (kbd "C-v") 'he/scroll-half-page-down)
-(global-set-key (kbd "M-v") 'he/scroll-half-page-up)
+(global-set-key (kbd "C-v") 'scroll-half-page-down)
+(global-set-key (kbd "M-v") 'scroll-half-page-up)
 
 
 ;; Scoll line by line.
 
-(defun he/scroll-one-line-up ()
+(defun scroll-one-line-up ()
   (interactive)
   (scroll-up-command 1))
 
-(defun he/scroll-one-line-down ()
+(defun scroll-one-line-down ()
   (interactive)
   (scroll-down-command 1))
 
 ;; scroll window up/down by one line
-(global-set-key (kbd "M-n") 'he/scroll-one-line-up)
-(global-set-key (kbd "M-p") 'he/scroll-one-line-down)
+(global-set-key (kbd "M-n") 'scroll-one-line-up)
+(global-set-key (kbd "M-p") 'scroll-one-line-down)
 
 ;; Somehow Info mode overrides the globally set key
-(define-key Info-mode-map (kbd "M-n") 'he/scroll-one-line-up)
+(define-key Info-mode-map (kbd "M-n") 'scroll-one-line-up)
 
-(provide 'he-scroll)
-;;; he-scroll.el ends here
+
+;; Mouse scrolling
+
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
+(setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+(setq scroll-step 1) ;; keyboard scroll one line at a time
+
+(provide 'scrolling)
+;;; scrolling.el ends here

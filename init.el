@@ -25,37 +25,31 @@
 
 ;;; Code:
 
-;; Load package manager and add sources
-(require 'package)
-(setq package-archives
-   '(("org" . "https://orgmode.org/elpa/")
-    ("melpa" . "https://melpa.org/packages/")
-    ("melpa-stable" . "https://stable.melpa.org/packages/")
-    ("gnu" . "http://elpa.gnu.org/packages/")))
-(setq package-enable-at-startup nil)
-(package-initialize)
+(defconst *is-a-mac* (eq system-type 'darwin)
+  "Check whether system is mac.")
 
-;; Install `use-package' if not here
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(eval-and-compile
-  (require 'use-package-ensure)
-  (setq use-package-always-ensure t))
+(defun load-module (file)
+  "Load FILE in the modules directory"
+  (load (concat
+         (expand-file-name "modules/" user-emacs-directory)
+         file)))
 
-;; Load personal function and utilities
-(add-to-list 'load-path
-             (expand-file-name "he-lisp" user-emacs-directory))
+(load-module "packages") ;; Must be loaded before others
 
-(require 'he-align)
-(require 'he-path)
-(require 'he-scroll)
-(require 'he-window)
+(load-module "completion")
+(load-module "keys")
+(load-module "lang")
+(when *is-a-mac*
+  (load-module "macos"))
+(load-module "misc")
+(load-module "scrolling")
+(load-module "text")
+(load-module "themes")
+(load-module "tools")
+(load-module "ui")
+(load-module "utils")
+(load-module "window")
 
-;; Install org mode to load config
-(use-package org :ensure org-plus-contrib)
-
-;; Tangle configuration
-(org-babel-load-file (expand-file-name "config.org" user-emacs-directory))
+(provide 'init)
 
 ;;; init.el ends here
