@@ -159,7 +159,7 @@ Otherwise apply the default theme."
         ;; or a list of properties that may include any of those symbols:
         ;; `neutral-underline' OR `no-underline', `faint' OR `no-color',
         ;; `bold', `italic', `background'
-        modus-themes-links '(neutral-underline background)
+        modus-themes-links '(neutral-underline)
 
         ;; Options for `modus-themes-box-buttons' are either nil (the
         ;; default), or a list that can combine any of `flat', `accented',
@@ -217,7 +217,7 @@ Otherwise apply the default theme."
   (modus-themes-load-themes))
 
 ;; Set when to change
-(setq day-hour 11)
+(setq day-hour 9)
 (setq night-hour 16)
 
 ;; Set themes

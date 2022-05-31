@@ -44,6 +44,9 @@
   :bind (:map projectile-mode-map
               ("C-c p" . projectile-command-map)))
 
+(use-package vterm
+  :load-path  "~/.emacs.d/emacs-libvterm/")
+
 (use-package yasnippet
   :diminish yas-minor-mode
   :config (yas-global-mode t))
