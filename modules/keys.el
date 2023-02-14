@@ -6,7 +6,7 @@
   (setq evil-want-C-u-scroll t)
   :config
   ;; Only start evil in prog-mode
-  (add-hook 'prog-mode-hook 'evil-local-mode)
+  ;; (add-hook 'prog-mode-hook 'evil-local-mode)
   ;; Customize undo system
   (evil-set-undo-system 'undo-tree)
   ;; Use SPC instead of : for commands

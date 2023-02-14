@@ -31,14 +31,14 @@
   :hook ((after-init . ivy-mode)
          (ivy-mode . counsel-mode))
   :init
-  (setq ivy-use-virtual-buffers t)
   (setq ivy-count-format "(%d/%d) "))
 
 (use-package lsp-mode
   :init
   (setq lsp-keymap-prefix "C-c l")
   :hook ((lsp-mode . lsp-enable-which-key-integration))
-  :commands lsp)
+  :commands lsp
+  :config (setq lsp-headerline-breadcrumb-enable nil))
 
 (use-package company-mode
   :defer t

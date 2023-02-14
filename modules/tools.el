@@ -1,7 +1,16 @@
+;; Git goodness
 (use-package magit
   :defer t
   :bind ("C-x g" . 'magit-status))
 
+;; Git gutter to track changes
+(use-package git-gutter
+  :diminish git-gutter-mode
+  :config
+  (global-git-gutter-mode t)
+  (setq git-gutter:hide-gutter t))
+
+;; Org mode goodness
 (use-package org
   :defer t
   :diminish visual-line-mode auto-fill-function
@@ -35,18 +44,22 @@
   :hook ((org-mode      . toc-org-mode)
          (markdown-mode . toc-org-mode)))
 
+;; Quick search
 (use-package ripgrep
   :defer t)
 
+;; project commands
 (use-package projectile
   :init
   (projectile-mode +1)
   :bind (:map projectile-mode-map
               ("C-c p" . projectile-command-map)))
 
+;; Vterm integration
 (use-package vterm
   :load-path  "~/.emacs.d/emacs-libvterm/")
 
+;; Snippets
 (use-package yasnippet
   :diminish yas-minor-mode
   :config (yas-global-mode t))

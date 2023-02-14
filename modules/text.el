@@ -34,7 +34,7 @@
 (put 'upcase-region 'disabled nil)
 
 ;; Replace active region when typing
-(delete-selection-mode +1)
+(delete-selection-mode t)
 
 ;; Show matching parens
 (setq show-paren-delay 0)
@@ -57,6 +57,7 @@
 (use-package undo-tree
   :diminish undo-tree-mode
   :config
+  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
   (global-undo-tree-mode))
 
 (provide 'text)

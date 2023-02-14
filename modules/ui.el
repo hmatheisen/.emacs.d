@@ -24,10 +24,10 @@
 
 ;;; Code:
 
-(defconst *mono-font* "Iosevka Fixed"
+(defconst *mono-font* "Iosevka Term"
   "Default mono font to be used.")
 
-(defconst *font-size* 14
+(defconst *font-size* 16
   "Font size un points.")
 
 ;; Display column number
@@ -42,8 +42,9 @@
 
 ;; Full screen on init
 (add-hook 'after-init-hook 'toggle-frame-fullscreen)
-;; Disable startup screen
-(setq inhibit-startup-screen t)
+
+;; Set fringes
+(fringe-mode 0) ;; no fringes
 
 ;; Fonts
 (set-face-attribute 'default
@@ -86,7 +87,6 @@
 (setq ibuffer-show-empty-filter-groups nil)
 ;; Do not prompt when deleting a new buffer
 (setq ibuffer-expert t)
-
 
 (use-package which-key
   :diminish which-key-mode
@@ -95,32 +95,13 @@
   (setq which-key-idle-delay 0.2
         which-key-idle-secondary-delay 0.2))
 
-(use-package dashboard
-  :config
-  (dashboard-setup-startup-hook)
-  (setq dashboard-startup-banner 'official
-        dashboard-items '((bookmarks . 10)
-                          (recents . 5))
-        dashboard-center-content t
-        dashboard-set-heading-icons t
-        dashboard-set-file-icons t
-        ;; Page break is now optional so this adds them back
-        dashboard-page-separator "\n\f\n"
-        dashboard-banner-logo-title "Welcome to He-Macs!"))
-
 (use-package treemacs
   :defer t
   :config (setq treemacs-no-png-images t))
 
-(use-package all-the-icons
-  :defer t)
-
 (use-package olivetti
   :defer t
   :config (setq olivetti-body-width 110))
-
-(use-package imenu-list
-  :config (global-set-key (kbd "C-:") #'imenu-list-smart-toggle))
 
 (use-package page-break-lines
   :diminish page-break-lines-mode

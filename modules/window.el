@@ -59,12 +59,15 @@
 (global-set-key (kbd "C--") 'shrink-window-horizontally)
 (global-set-key (kbd "C-+") 'enlarge-window-horizontally)
 
-;; Move between buffers
-(global-set-key (kbd "C-<tab>") 'next-buffer)
-(global-set-key (kbd "C-S-<tab>") 'previous-buffer)
-
 ;; Winner mode to revert window conf
 (winner-mode t)
+
+;; Tab bar
+
+(setq tab-bar-show nil)
+(tab-bar-mode t)
+(define-key global-map (kbd "C-x t v") 'toggle-frame-tab-bar)
+(define-key global-map (kbd "C-x t s") 'tab-switcher)
 
 
 (use-package ace-window
