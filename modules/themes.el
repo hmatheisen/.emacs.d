@@ -106,16 +106,13 @@ Otherwise apply the default theme."
 
 ;; My own config
 
-(use-package moe-theme
-  :ensure t)
-
 ;; Set when to change
 (setq day-hour 9)
 (setq night-hour 16)
 
 ;; Set themes
-(setq day-theme 'moe-dark)
-(setq night-theme 'moe-dark)
+(setq day-theme 'modus-operandi)
+(setq night-theme 'modus-vivendi)
 
 (provide 'themes)
 

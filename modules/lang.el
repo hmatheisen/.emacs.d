@@ -5,3 +5,6 @@
   :diminish ruby-electric-mode
   :defer t
   :hook (ruby-mode . ruby-electric-mode))
+
+;; Shell settings
+(setq sh-basic-offset 2)

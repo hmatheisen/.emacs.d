@@ -27,8 +27,6 @@
          (buffer-face-mode . (lambda ()
                                (diminish 'buffer-face-mode))))
   :config
-  ;; Do not set headings face attributes if onve of the modus themes
-  ;; is enabled since they already set this up.
   (set-face-attribute 'org-document-title nil :height 250)
   ;; Unbind C-<tab> to use 'next-buffer
   (define-key org-mode-map (kbd "C-<tab>") nil)
@@ -46,7 +44,16 @@
 
 ;; Quick search
 (use-package ripgrep
-  :defer t)
+  :config
+  (global-set-key (kbd "C-c s") #'rg-menu)
+  ;; Quick regexp search in project
+  (rg-define-search rg-search-all
+    :format regexp
+    :files "everything"
+    :dir project)
+  (global-set-key (kbd "C-c C-s") #'rg-search-all)
+  ;; Customization
+  (setq ))
 
 ;; project commands
 (use-package projectile
@@ -63,3 +70,4 @@
 (use-package yasnippet
   :diminish yas-minor-mode
   :config (yas-global-mode t))
+

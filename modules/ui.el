@@ -71,11 +71,11 @@
          ("buffers" (or (name . "\*dashboard\*")
                         (name . "\*scratch\*")))
          ("magit" (name . "magit*"))
+         ("elevo" (filename . "Code/elevo-rails"))
          ("emacs" (filename . ".emacs.d"))
          ("org" (mode . org-mode))
          ("dired" (mode . dired-mode))
          ("code" (filename . "Code"))
-         ("elevo" (filename . "Code/elevo-rails"))
          ("manuals" (mode . man-mode)))))
 
 ;; Add hook
@@ -97,7 +97,9 @@
 
 (use-package treemacs
   :defer t
-  :config (setq treemacs-no-png-images t))
+  :config (setq treemacs-no-png-images t)
+  :bind (:map global-map
+              ("C-x t t" . treemacs)))
 
 (use-package olivetti
   :defer t
