@@ -8,3 +8,6 @@
 
 ;; Shell settings
 (setq sh-basic-offset 2)
+
+;; JS indent
+(setq js-indent-level 2)

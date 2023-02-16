@@ -3,7 +3,7 @@
   :defer t
   :bind ("C-x g" . 'magit-status))
 
-;; Git gutter to track changes
+;; git gutter to track changes
 (use-package git-gutter
   :diminish git-gutter-mode
   :config
@@ -16,9 +16,18 @@
   :diminish visual-line-mode auto-fill-function
   :preface
   (defun he/org-mode-hook ()
+    ;; Useful writing modes
     (org-indent-mode 1)
     (visual-line-mode 1)
-    (auto-fill-mode 1))
+    (auto-fill-mode 1)
+    ;; Override faces
+    (set-face-attribute 'org-document-title nil :height 2.0)
+    (custom-set-faces
+     '(org-level-1 ((t (:inherit outline-1 :height 1.8))))
+     '(org-level-2 ((t (:inherit outline-2 :height 1.6))))
+     '(org-level-3 ((t (:inherit outline-3 :height 1.4))))
+     '(org-level-4 ((t (:inherit outline-4 :height 1.2))))
+     '(org-level-5 ((t (:inherit outline-5 :height 1.0))))))
   :hook ((org-mode . he/org-mode-hook)
          (org-indent-mode . (lambda ()
                               (diminish 'org-indent-mode)))
@@ -27,8 +36,7 @@
          (buffer-face-mode . (lambda ()
                                (diminish 'buffer-face-mode))))
   :config
-  (set-face-attribute 'org-document-title nil :height 250)
-  ;; Unbind C-<tab> to use 'next-buffer
+  ;; Unbind C-<tab> to use 'tab-next
   (define-key org-mode-map (kbd "C-<tab>") nil)
   (setq org-todo-keywords
         '((sequence "TODO" "ONGOING" "|" "DONE" "WONTDO"))))
@@ -51,9 +59,7 @@
     :format regexp
     :files "everything"
     :dir project)
-  (global-set-key (kbd "C-c C-s") #'rg-search-all)
-  ;; Customization
-  (setq ))
+  (global-set-key (kbd "C-c C-s") #'rg-search-all))
 
 ;; project commands
 (use-package projectile

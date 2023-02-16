@@ -26,13 +26,13 @@
 ;;; Code:
 
 (defun split-window-right-focus ()
-  "Splits window on the right then focus on that window"
+  "Split window on the right then focus on that window."
   (interactive)
   (split-window-right)
   (other-window 1))
 
 (defun split-window-below-focus ()
-  "Splits windmow below then focus on that window"
+  "Split windmow below then focus on that window."
   (interactive)
   (split-window-below)
   (other-window 1))
@@ -43,7 +43,7 @@
 
 ;; Move between windows
 (defun other-window-backward ()
-  "Move to previous window"
+  "Move to previous window."
   (interactive)
   (other-window -1))
 
@@ -63,16 +63,57 @@
 (winner-mode t)
 
 ;; Tab bar
-
 (setq tab-bar-show nil)
 (tab-bar-mode t)
+
+;; Vars
+(defvar my-workspace '("Elevo" "Emacs" "Org")
+  "List of tab names to be created by `create-my-workspace'.")
+
+;; Utils
+(defun create-named-tab (name)
+  "Create a new tab and rename it to NAME."
+  (tab-bar-new-tab)
+  (tab-bar-rename-tab name))
+
+(defun print-tab-name ()
+  "Print the name of the current tab."
+  (message (alist-get 'name (tab-bar--current-tab))))
+
+;; Interactive functions
+(defun new-tab (name)
+  "Create a new tab with `NAME'."
+  (interactive "sNew tab name: ")
+  (create-named-tab name))
+
+(defun create-my-workspace ()
+  "Create tabs based on the `my-workspace' variable."
+  (interactive)
+  (dolist (tab my-workspace)
+    (create-named-tab tab)))
+
+(defun my-tab-next ()
+  "Call `tab-bar-switch-to-next-tab' and print tab name."
+  (interactive)
+  (tab-bar-switch-to-next-tab)
+  (print-tab-name))
+
+(defun my-tab-prev ()
+  "Call `tab-bar-switch-to-prev-tab' and print tab name."
+  (interactive)
+  (tab-bar-switch-to-prev-tab)
+  (print-tab-name))
+
+(define-key global-map (kbd "C-<tab>") 'my-tab-next)
+(define-key global-map (kbd "C-S-<tab>") 'my-tab-prev)
 (define-key global-map (kbd "C-x t v") 'toggle-frame-tab-bar)
 (define-key global-map (kbd "C-x t s") 'tab-switcher)
-
+(define-key global-map (kbd "C-x t 2") 'new-tab)
 
 (use-package ace-window
   :defer t
   :config (global-set-key (kbd "C-x o") 'ace-window))
 
 (provide 'window)
+
 ;;; window.el ends here

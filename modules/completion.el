@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2022  Henry MATHEISEN
 
-;; Author: Henry MATHEISEN <henry@macbook>
+;; Author: Henry MATHEISEN <haineriz@posteo.de>
 ;; Keywords: 
 
 ;; This program is free software; you can redistribute it and/or modify

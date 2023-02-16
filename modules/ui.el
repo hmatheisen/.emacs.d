@@ -65,6 +65,7 @@
 
 ;; Use ibuffer to list buffers
 (global-set-key (kbd "C-x C-b") 'ibuffer)
+
 ;; Filter groups
 (setq ibuffer-saved-filter-groups
       '(("default"
@@ -109,5 +110,21 @@
   :diminish page-break-lines-mode
   :config (global-page-break-lines-mode))
 
+
+;; Bookmarks (this should live elsewhere)
+
+(defun bookmark-update (bookmark)
+  "Choose a BOOKMARK from list and change its location."
+  (interactive
+   (list
+    (completing-read
+     "Current Bookmarks: "
+     (mapcar #'car bookmark-alist))))
+  (bookmark-set bookmark)
+  (message "The bookmark %s has been updated" bookmark))
+
+(define-key global-map (kbd "C-x r M") 'bookmark-update)
+
 (provide 'ui)
+
 ;;; ui.el ends here
