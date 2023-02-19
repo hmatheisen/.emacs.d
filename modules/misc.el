@@ -59,5 +59,8 @@
 ;; Split Ediff horizontally
 (setq ediff-split-window-function 'split-window-horizontally)
 
+;; Set mail address
+(setq user-mail-address "haineriz@posteo.de")
+
 (provide 'misc)
 ;;; misc.el ends here

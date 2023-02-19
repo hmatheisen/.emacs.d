@@ -33,6 +33,9 @@
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 
+;; Enable set goal column
+(put 'set-goal-column 'disabled nil)
+
 ;; Replace active region when typing
 (delete-selection-mode t)
 

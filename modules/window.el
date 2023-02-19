@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2021  Henry MATHEISEN
 
-;; Author: Henry MATHEISEN <henry.mthsn@gmail.com>
+;; Author: Henry MATHEISEN <haineriz@posteo.de>
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -78,7 +78,11 @@
 
 (defun print-tab-name ()
   "Print the name of the current tab."
-  (message (alist-get 'name (tab-bar--current-tab))))
+  (message
+   (concat
+    "<< "
+    (upcase (alist-get 'name (tab-bar--current-tab)))
+    " >>")))
 
 ;; Interactive functions
 (defun new-tab (name)
@@ -89,6 +93,8 @@
 (defun create-my-workspace ()
   "Create tabs based on the `my-workspace' variable."
   (interactive)
+  (unless my-workspace
+    (error "Cannot create workspaces if var: `my-workspace' is nil"))
   (dolist (tab my-workspace)
     (create-named-tab tab)))
 
@@ -111,7 +117,6 @@
 (define-key global-map (kbd "C-x t 2") 'new-tab)
 
 (use-package ace-window
-  :defer t
   :config (global-set-key (kbd "C-x o") 'ace-window))
 
 (provide 'window)

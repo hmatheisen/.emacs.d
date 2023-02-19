@@ -1,3 +1,31 @@
+;;; tools.el --- Some third party tools I use        -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2023  Henry MATHEISEN
+
+;; Author: Henry MATHEISEN <haineriz@posteo.de>
+;; Keywords: 
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; Most of these shoud live somewhere else in a dedicated file
+
+;;; Code:
+
+
+
 ;; Git goodness
 (use-package magit
   :defer t
@@ -21,29 +49,29 @@
     (visual-line-mode 1)
     (auto-fill-mode 1)
     ;; Override faces
-    (set-face-attribute 'org-document-title nil :height 2.0)
+    (set-face-attribute 'org-document-title nil :height 1.8)
     (custom-set-faces
-     '(org-level-1 ((t (:inherit outline-1 :height 1.8))))
-     '(org-level-2 ((t (:inherit outline-2 :height 1.6))))
-     '(org-level-3 ((t (:inherit outline-3 :height 1.4))))
-     '(org-level-4 ((t (:inherit outline-4 :height 1.2))))
+     '(org-level-1 ((t (:inherit outline-1 :height 1.6))))
+     '(org-level-2 ((t (:inherit outline-2 :height 1.4))))
+     '(org-level-3 ((t (:inherit outline-3 :height 1.2))))
+     '(org-level-4 ((t (:inherit outline-4 :height 1.0))))
      '(org-level-5 ((t (:inherit outline-5 :height 1.0))))))
+
   :hook ((org-mode . he/org-mode-hook)
-         (org-indent-mode . (lambda ()
-                              (diminish 'org-indent-mode)))
-         (flyspell-mode . (lambda ()
-                            (diminish 'flyspell-mode)))
-         (buffer-face-mode . (lambda ()
-                               (diminish 'buffer-face-mode))))
+         (org-indent-mode . (lambda () (diminish 'org-indent-mode)))
+         (flyspell-mode . (lambda () (diminish 'flyspell-mode)))
+         (buffer-face-mode . (lambda () (diminish 'buffer-face-mode))))
+
   :config
+  ;; Recommended bindings
+  (global-set-key (kbd "C-c l") #'org-store-link)
+  (global-set-key (kbd "C-c a") #'org-agenda)
+  (global-set-key (kbd "C-c c") #'org-capture)
   ;; Unbind C-<tab> to use 'tab-next
   (define-key org-mode-map (kbd "C-<tab>") nil)
   (setq org-todo-keywords
-        '((sequence "TODO" "ONGOING" "|" "DONE" "WONTDO"))))
-
-(use-package org-bullets
-  :defer t
-  :hook (org-mode . org-bullets-mode))
+        '((sequence "TODO" "ONGOING" "|" "DONE" "WONTDO")
+          (sequence "TO_DO" "IN_PROGRESS" "TO_REVIEW" "TO_TEST" "READY_TO_MERGE" "|" "READY_TO_DEPLOY"))))
 
 (use-package toc-org
   :defer t
@@ -77,3 +105,5 @@
   :diminish yas-minor-mode
   :config (yas-global-mode t))
 
+(provide 'tools)
+;;; tools.el ends here
