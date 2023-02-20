@@ -3,7 +3,7 @@
 ;; Copyright (C) 2023  Henry MATHEISEN
 
 ;; Author: Henry MATHEISEN <haineriz@posteo.de>
-;; Keywords: 
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -24,9 +24,9 @@
 
 ;;; Code:
 
+;; Git
 
-
-;; Git goodness
+;; Magit
 (use-package magit
   :defer t
   :bind ("C-x g" . 'magit-status))
@@ -38,12 +38,14 @@
   (global-git-gutter-mode t)
   (setq git-gutter:hide-gutter t))
 
-;; Org mode goodness
+
+;; Org mode
+
 (use-package org
   :defer t
   :diminish visual-line-mode auto-fill-function
   :preface
-  (defun he/org-mode-hook ()
+  (defun my-org-mode-hook ()
     ;; Useful writing modes
     (org-indent-mode 1)
     (visual-line-mode 1)
@@ -57,7 +59,7 @@
      '(org-level-4 ((t (:inherit outline-4 :height 1.0))))
      '(org-level-5 ((t (:inherit outline-5 :height 1.0))))))
 
-  :hook ((org-mode . he/org-mode-hook)
+  :hook ((org-mode . my-org-mode-hook)
          (org-indent-mode . (lambda () (diminish 'org-indent-mode)))
          (flyspell-mode . (lambda () (diminish 'flyspell-mode)))
          (buffer-face-mode . (lambda () (diminish 'buffer-face-mode))))
@@ -69,15 +71,16 @@
   (global-set-key (kbd "C-c c") #'org-capture)
   ;; Unbind C-<tab> to use 'tab-next
   (define-key org-mode-map (kbd "C-<tab>") nil)
+  (setq org-agenda-files '("~/Notes/org/life.org" "/Users/henry/Notes/org/journal.org"))
   (setq org-todo-keywords
-        '((sequence "TODO" "ONGOING" "|" "DONE" "WONTDO")
-          (sequence "TO_DO" "IN_PROGRESS" "TO_REVIEW" "TO_TEST" "READY_TO_MERGE" "|" "READY_TO_DEPLOY"))))
+        '((sequence "TODO" "ONGOING" "|" "DONE" "WONTDO"))))
 
 (use-package toc-org
   :defer t
   :hook ((org-mode      . toc-org-mode)
          (markdown-mode . toc-org-mode)))
 
+
 ;; Quick search
 (use-package ripgrep
   :config
@@ -87,19 +90,24 @@
     :format regexp
     :files "everything"
     :dir project)
-  (global-set-key (kbd "C-c C-s") #'rg-search-all))
+  (global-set-key (kbd "C-c C-s") #'rg-search-all)
+  ;; web mode uses this binding for snippet which I don't need
+  (define-key web-mode-map (kbd "C-c C-s") #'rg-search-all))
 
-;; project commands
+
+;; Project wide commands
 (use-package projectile
   :init
   (projectile-mode +1)
   :bind (:map projectile-mode-map
               ("C-c p" . projectile-command-map)))
 
+
 ;; Vterm integration
 (use-package vterm
   :load-path  "~/.emacs.d/emacs-libvterm/")
 
+
 ;; Snippets
 (use-package yasnippet
   :diminish yas-minor-mode

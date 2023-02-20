@@ -41,14 +41,21 @@
   (setq typescript-indent-level 2))
 
 (use-package web-mode
-  :mode (("\\.tsx\\'" . web-mode))
+  :mode (("\\.tsx\\'" . web-mode)
+         ("\\.js\\'"  . web-mode))
   :config
+  ;; Default to jsx for .js files since it's the one I use the most
+  (setq web-mode-content-types-alist
+        '(("jsx" . "\\.js\\'")))
   (setq web-mode-markup-indent-offset 2
         web-mode-css-indent-offset 2
         web-mode-code-indent-offset 2))
 
 ;; JS indent
 (setq js-indent-level 2)
+
+(use-package prettier
+  :hook ((web-mode . prettier-mode)))
 
 (provide 'lang)
 ;;; lang.el ends here

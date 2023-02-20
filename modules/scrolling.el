@@ -3,7 +3,7 @@
 ;; Copyright (C) 2021  Henry MATHEISEN
 
 ;; Author: Henry MATHEISEN <haineriz@posteo.de>
-;; Keywords: 
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -28,8 +28,8 @@
 ;; Half page scroll instead of whole page
 
 (defun scroll-half-page (direction)
-  "Scrolls half page up if `direction' is non-nil, otherwise
-  will scroll half page down."
+  "Scroll half page up if `DIRECTION' is non-nil.
+Otherwise will scroll half page down."
   (let ((opos (cdr (nth 6 (posn-at-point)))))
     ;; opos = original position line relative to window
     (move-to-window-line nil)  ;; Move cursor to middle line
@@ -39,12 +39,12 @@
     (move-to-window-line opos)))  ;; Restore cursor/point position
 
 (defun scroll-half-page-down ()
-  "Scrolls exactly half page down keeping cursor/point position."
+  "Scroll exactly half page down keeping cursor/point position."
   (interactive)
   (scroll-half-page nil))
 
 (defun scroll-half-page-up ()
-  "Scrolls exactly half page up keeping cursor/point position."
+  "Scroll exactly half page up keeping cursor/point position."
   (interactive)
   (scroll-half-page t))
 
@@ -55,10 +55,12 @@
 ;; Scoll line by line.
 
 (defun scroll-one-line-up ()
+  "Scroll one line up."
   (interactive)
   (scroll-up-command 1))
 
 (defun scroll-one-line-down ()
+  "Scroll one line down."
   (interactive)
   (scroll-down-command 1))
 

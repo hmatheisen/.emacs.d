@@ -95,7 +95,8 @@
   (interactive)
   (unless my-workspace
     (error "Cannot create workspaces if var: `my-workspace' is nil"))
-  (dolist (tab my-workspace)
+  (tab-bar-rename-tab (car my-workspace)) ; rename current tab with first element
+  (dolist (tab (cdr my-workspace)) ; create tabs with the rest
     (create-named-tab tab)))
 
 (defun my-tab-next ()
@@ -116,7 +117,7 @@
 (define-key global-map (kbd "C-x t s") 'tab-switcher)
 (define-key global-map (kbd "C-x t 2") 'new-tab)
 
-(use-package ace-window
+(use-package "ace-window"
   :config (global-set-key (kbd "C-x o") 'ace-window))
 
 (provide 'window)

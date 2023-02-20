@@ -60,7 +60,7 @@
 (set-face-attribute 'variable-pitch
                     nil
                     :family *mono-font*
-                    :height (* *font-size* 12))
+                    :height (* *font-size* 10))
 
 
 ;; Use ibuffer to list buffers
@@ -81,8 +81,8 @@
 
 ;; Add hook
 (add-hook 'ibuffer-mode-hook
-          '(lambda ()
-             (ibuffer-switch-to-saved-filter-groups "default")))
+          #'(lambda ()
+              (ibuffer-switch-to-saved-filter-groups "default")))
 
 ;; Do not show groups that are empty
 (setq ibuffer-show-empty-filter-groups nil)
@@ -99,8 +99,7 @@
 (use-package treemacs
   :defer t
   :config (setq treemacs-no-png-images t)
-  :bind (:map global-map
-              ("C-x t t" . treemacs)))
+  :bind (:map global-map ("C-x t t" . treemacs)))
 
 (use-package olivetti
   :defer t

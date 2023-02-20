@@ -49,6 +49,9 @@ example : (setq morning-hour 07) for 8am")
 Default is 5pm.
 example : (setq evening-hour 18) for 17pm")
 
+(defvar switcher-timer (run-with-timer 0 (* 1 60) 'theme-switcher)
+  "Timer running the main function.")
+
 (defun list-available-themes ()
   "Theme list to display for interactive selection."
   (list (intern (completing-read "Theme: " (custom-available-themes)))))
@@ -71,8 +74,7 @@ Otherwise apply the default theme."
         ;; Between day and night hours: day theme
         (switch-to-theme day-theme)
       ;; Night time
-      (switch-to-theme night-theme))
-    nil))
+      (switch-to-theme night-theme))))
 
 
 ;; Interactive functions to make theme manipulation easier.
@@ -95,8 +97,6 @@ Otherwise apply the default theme."
   ;; swap `day-theme' and `night-theme' variables
   (setq day-theme (prog1 night-theme (setq night-theme day-theme)))
   (theme-switcher))
-
-(setq switcher-timer (run-with-timer 0 (* 1 60) 'theme-switcher))
 
 (defun cancel-theme-switcher ()
   "Cancel timer for theme switcher."

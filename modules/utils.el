@@ -20,9 +20,7 @@
 
 ;;; Commentary:
 
-;; Add new paths to the internal PATH variable inside Emacs.  This is
-;; often an issue since Emacs does not read the PATH from your system,
-;; a number of binaries cannot be accessed.
+;; Some utility functions that I may use.
 
 ;;; Code:
 
@@ -34,6 +32,13 @@
 (add-to-path "/usr/local/bin")
 (add-to-path "/Library/TeX/texbin")
 (add-to-path "/Users/henry/.rbenv/shims")
+
+(defun macroexpand-point (sexp)
+  "Expand macro SEXP at point to temp buffer."
+  (interactive (list (sexp-at-point)))
+  (with-output-to-temp-buffer "*el-macroexpansion*"
+    (pp (macroexpand sexp)))
+  (with-current-buffer "*el-macroexpansion*" (emacs-lisp-mode)))
 
 (provide 'utils)
 ;;; utils.el ends here
