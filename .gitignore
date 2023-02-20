@@ -1,7 +1,6 @@
 *
 !.gitignore
 !README.org
-!congig.org
 
 !modules
 !modules/*
