@@ -75,6 +75,18 @@
   (setq org-todo-keywords
         '((sequence "TODO" "ONGOING" "|" "DONE" "WONTDO"))))
 
+(use-package org-roam
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ;; Dailies
+         ("C-c n j" . org-roam-dailies-capture-today))
+  :config
+  (setq org-roam-directory (file-truename "~/Notes/org-roam"))
+  (org-roam-db-autosync-mode))
+
 (use-package toc-org
   :defer t
   :hook ((org-mode      . toc-org-mode)
@@ -92,7 +104,8 @@
     :dir project)
   (global-set-key (kbd "C-c C-s") #'rg-search-all)
   ;; web mode uses this binding for snippet which I don't need
-  (define-key web-mode-map (kbd "C-c C-s") #'rg-search-all))
+  ;; (define-key web-mode-map (kbd "C-c C-s") #'rg-search-all)
+  )
 
 
 ;; Project wide commands
@@ -100,7 +113,9 @@
   :init
   (projectile-mode +1)
   :bind (:map projectile-mode-map
-              ("C-c p" . projectile-command-map)))
+              ("C-c p" . projectile-command-map))
+  :config
+  (setq projectile-completion-system 'ivy))
 
 
 ;; Vterm integration

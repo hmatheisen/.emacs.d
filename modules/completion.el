@@ -27,10 +27,14 @@
 (use-package counsel
   :defer t
   :diminish ivy-mode counsel-mode
-  :bind (("C-s" . swiper-isearch))
+  :bind (("C-s" . swiper-isearch)
+         ("C-c C-r" . ivy-resume)
+         ("C-c d" . counsel-descbinds)
+         ("C-c o" . counsel-outline))
   :hook ((after-init . ivy-mode)
          (ivy-mode . counsel-mode))
   :init
+  (setq ivy-use-virtual-buffers t)
   (setq ivy-count-format "(%d/%d) "))
 
 (use-package lsp-mode
