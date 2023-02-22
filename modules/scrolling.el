@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; I am not a fan of Emacs native scrolling so these ar a set of
+;; I am not a fan of Emacs native scrolling so these are a set of
 ;; functions to make it smoother.
 
 ;;; Code:
@@ -32,11 +32,11 @@
 Otherwise will scroll half page down."
   (let ((opos (cdr (nth 6 (posn-at-point)))))
     ;; opos = original position line relative to window
-    (move-to-window-line nil)  ;; Move cursor to middle line
+    (move-to-window-line nil)    ;; Move cursor to middle line
     (if direction
-        (recenter-top-bottom -1)  ;; Current line becomes last
-      (recenter-top-bottom 0))  ;; Current line becomes first
-    (move-to-window-line opos)))  ;; Restore cursor/point position
+        (recenter-top-bottom -1) ;; Current line becomes last
+      (recenter-top-bottom 0))   ;; Current line becomes first
+    (move-to-window-line opos))) ;; Restore cursor/point position
 
 (defun scroll-half-page-down ()
   "Scroll exactly half page down keeping cursor/point position."
@@ -67,8 +67,7 @@ Otherwise will scroll half page down."
 ;; scroll window up/down by one line
 (global-set-key (kbd "M-n") 'scroll-one-line-up)
 (global-set-key (kbd "M-p") 'scroll-one-line-down)
-
-;; Somehow Info mode overrides the globally set key
+;; Also use it in Info mode
 (define-key Info-mode-map (kbd "M-n") 'scroll-one-line-up)
 
 

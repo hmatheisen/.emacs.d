@@ -90,7 +90,6 @@
 (setq ibuffer-expert t)
 
 (use-package which-key
-  :diminish which-key-mode
   :config
   (which-key-mode)
   (setq which-key-idle-delay 0.2
@@ -106,7 +105,6 @@
   :config (setq olivetti-body-width 110))
 
 (use-package page-break-lines
-  :diminish page-break-lines-mode
   :config (global-page-break-lines-mode))
 
 
@@ -123,6 +121,16 @@
   (message "The bookmark %s has been updated" bookmark))
 
 (define-key global-map (kbd "C-x r M") 'bookmark-update)
+
+
+;; Modeline
+
+;; Hide minor modes from mode line
+(use-package rich-minority
+  :init
+  (setf rm-blacklist "")
+  :config
+  (rich-minority-mode t))
 
 (provide 'ui)
 

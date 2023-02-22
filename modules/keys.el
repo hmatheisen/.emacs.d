@@ -24,14 +24,17 @@
 
 ;;; Code:
 
+;; Cool kill line
 (defun kill-line-to-begining ()
   "Kill current line to position 0."
   (interactive)
   (kill-line 0))
 (global-set-key (kbd "s-<backspace>") 'kill-line-to-begining)
 
+;; Escape is quit
 (global-set-key (kbd "<escape>") 'keyboard-quit)
 
+;; Vim keybindings if needed
 (use-package evil
   :init
   ;; C-u is Vi behaviour

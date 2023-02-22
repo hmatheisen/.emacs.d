@@ -41,9 +41,5 @@
   (require 'use-package-ensure)
   (setq use-package-always-ensure t))
 
-(use-package diminish
-  :defer t
-  :after use-package)
-
 (provide 'packages)
 ;;; packages.el ends here

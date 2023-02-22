@@ -33,7 +33,6 @@
 
 ;; git gutter to track changes
 (use-package git-gutter
-  :diminish git-gutter-mode
   :config
   (global-git-gutter-mode t)
   (setq git-gutter:hide-gutter t))
@@ -43,7 +42,6 @@
 
 (use-package org
   :defer t
-  :diminish visual-line-mode auto-fill-function
   :preface
   (defun my-org-mode-hook ()
     ;; Useful writing modes
@@ -59,11 +57,7 @@
      '(org-level-4 ((t (:inherit outline-4 :height 1.0))))
      '(org-level-5 ((t (:inherit outline-5 :height 1.0))))))
 
-  :hook ((org-mode . my-org-mode-hook)
-         (org-indent-mode . (lambda () (diminish 'org-indent-mode)))
-         (flyspell-mode . (lambda () (diminish 'flyspell-mode)))
-         (buffer-face-mode . (lambda () (diminish 'buffer-face-mode))))
-
+  :hook ((org-mode . my-org-mode-hook))
   :config
   ;; Recommended bindings
   (global-set-key (kbd "C-c l") #'org-store-link)
@@ -102,10 +96,7 @@
     :format regexp
     :files "everything"
     :dir project)
-  (global-set-key (kbd "C-c C-s") #'rg-search-all)
-  ;; web mode uses this binding for snippet which I don't need
-  ;; (define-key web-mode-map (kbd "C-c C-s") #'rg-search-all)
-  )
+  (global-set-key (kbd "C-c C-s") #'rg-search-all))
 
 
 ;; Project wide commands
@@ -115,7 +106,14 @@
   :bind (:map projectile-mode-map
               ("C-c p" . projectile-command-map))
   :config
-  (setq projectile-completion-system 'ivy))
+  (setq projectile-completion-system 'ivy)
+  (projectile-register-project-type 'rails-rspec '("Gemfile" "app" "lib" "db" "config" "spec")
+                                    :project-file "Gemfile"
+                                    :compile "start-rails-server"
+                                    :src-dir "app/"
+                                    :test "launch-test"
+                                    :test-dir "spec/unit/"
+                                    :test-suffix "_spec"))
 
 
 ;; Vterm integration
@@ -125,7 +123,6 @@
 
 ;; Snippets
 (use-package yasnippet
-  :diminish yas-minor-mode
   :config (yas-global-mode t))
 
 (provide 'tools)

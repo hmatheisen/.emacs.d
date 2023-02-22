@@ -32,6 +32,7 @@
 (add-to-path "/usr/local/bin")
 (add-to-path "/Library/TeX/texbin")
 (add-to-path "/Users/henry/.rbenv/shims")
+(add-to-path "/Users/henry/.local/bin")
 
 (defun macroexpand-point (sexp)
   "Expand macro SEXP at point to temp buffer."

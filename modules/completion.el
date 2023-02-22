@@ -26,7 +26,6 @@
 
 (use-package counsel
   :defer t
-  :diminish ivy-mode counsel-mode
   :bind (("C-s" . swiper-isearch)
          ("C-c C-r" . ivy-resume)
          ("C-c d" . counsel-descbinds)
@@ -56,9 +55,7 @@
     (define-key company-active-map (kbd "C-n") 'company-select-next)
     (define-key company-active-map (kbd "C-p") 'company-select-previous))
   :ensure company
-  :hook (after-init . (lambda ()
-                        (global-company-mode)
-                        (diminish 'company-mode))))
+  :hook (after-init . global-company-mode))
 
 (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 

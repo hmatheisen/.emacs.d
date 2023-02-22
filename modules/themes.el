@@ -108,11 +108,11 @@ Otherwise apply the default theme."
 
 ;; Set when to change
 (setq day-hour 9)
-(setq night-hour 16)
+(setq night-hour 14)
 
 ;; Set themes
-(setq day-theme 'modus-operandi)
-(setq night-theme 'modus-vivendi)
+(setq day-theme 'standard-light)
+(setq night-theme 'standard-dark)
 
 (provide 'themes)
 

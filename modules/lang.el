@@ -28,7 +28,6 @@
   :defer t)
 
 (use-package ruby-electric
-  :diminish ruby-electric-mode
   :defer t
   :hook (ruby-mode . ruby-electric-mode))
 
@@ -40,11 +39,13 @@
   :config
   (setq typescript-indent-level 2))
 
+;; Web mode for js/jsx/tsx
 (use-package web-mode
   :mode (("\\.tsx\\'" . web-mode)
          ("\\.js\\'"  . web-mode))
   :config
-  ;; Default to jsx for .js files since it's the one I use the most
+  ;; Default to jsx for .js files since it's the one I use the most on
+  ;; flow files
   (setq web-mode-content-types-alist
         '(("jsx" . "\\.js\\'")))
   (setq web-mode-markup-indent-offset 2
@@ -54,6 +55,7 @@
 ;; JS indent
 (setq js-indent-level 2)
 
+;; Run prettier on save in web mode
 (use-package prettier
   :hook ((web-mode . prettier-mode)))
 
