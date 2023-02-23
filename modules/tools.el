@@ -24,6 +24,12 @@
 
 ;;; Code:
 
+;; Linting
+(use-package flycheck
+  :config
+  (global-flycheck-mode))
+
+
 ;; Git
 
 ;; Magit
@@ -79,7 +85,19 @@
          ("C-c n j" . org-roam-dailies-capture-today))
   :config
   (setq org-roam-directory (file-truename "~/Notes/org-roam"))
-  (org-roam-db-autosync-mode))
+  (org-roam-db-autosync-mode)
+  (setq org-roam-capture-templates
+        '(("d" "default" plain "%?"
+           :target
+           (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+TITLE: ${title}
+#+STARTUP: overview")
+           :unnarrowed t)
+          ("s" "sprint" plain "%?"
+           :target
+           (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+TITLE: ${title}
+#+TODO: TO_DO(o) IN_PROGRESS(p) TO_REVIEW(r) TO_TEST(t) READY_TO_MERGE(m) | READY_TO_DEPLOY(d)
+#+STARTUP: overview")
+           :unnarrowed t))))
 
 (use-package toc-org
   :defer t

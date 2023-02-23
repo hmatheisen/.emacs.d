@@ -44,7 +44,7 @@
 (add-hook 'after-init-hook 'toggle-frame-fullscreen)
 
 ;; Set fringes
-(fringe-mode 0) ;; no fringes
+(fringe-mode '(nil . 0)) ;; left only
 
 ;; Fonts
 (set-face-attribute 'default
@@ -128,9 +128,13 @@
 ;; Hide minor modes from mode line
 (use-package rich-minority
   :init
-  (setf rm-blacklist "")
+  (setq rm-whitelist
+        (mapconcat
+         #'identity
+         '("Projectile.*" "Fly.*" "LSP.*")
+         "\\|"))
   :config
-  (rich-minority-mode t))
+  (rich-minority-mode 1))
 
 (provide 'ui)
 
