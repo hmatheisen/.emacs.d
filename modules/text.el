@@ -57,10 +57,22 @@
                 "\\(\\s-*\\)="))
 
 
+;; Visual Undo
 (use-package undo-tree
   :config
   (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
   (global-undo-tree-mode))
+
+
+;; Whitespace cleanup
+
+(add-hook 'before-save-hook 'whitespace-cleanup)
+;; Change whitespace style for markdown files
+(add-hook 'markdown-mode-hook
+          (lambda ()
+            (setq-local
+             whitespace-style
+             (delq 'trailing whitespace-style))))
 
 (provide 'text)
 

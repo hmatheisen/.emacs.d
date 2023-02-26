@@ -34,5 +34,9 @@
 (setq ns-use-proxy-icon  nil)
 (setq frame-title-format nil)
 
+(setq dired-use-ls-dired t
+      insert-directory-program "/usr/local/Cellar/coreutils/9.1/bin/gls"
+      dired-listing-switches "-aBhl --group-directories-first")
+
 (provide 'macos)
 ;;; macos.el ends here

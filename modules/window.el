@@ -29,15 +29,24 @@
   "Split window on the right then focus on that window."
   (interactive)
   (split-window-right)
+  (balance-windows)
   (other-window 1))
 
 (defun split-window-below-focus ()
-  "Split windmow below then focus on that window."
+  "Split window below then focus on that window."
   (interactive)
   (split-window-below)
+  (balance-windows)
   (other-window 1))
 
+(defun delete-window-balance ()
+  "Delete window and balance."
+  (interactive)
+  (delete-window)
+  (balance-windows))
+
 ;; Use by own split functions
+(global-set-key (kbd "C-x 0") 'delete-window-balance)
 (global-set-key (kbd "C-x 2") 'split-window-below-focus)
 (global-set-key (kbd "C-x 3") 'split-window-right-focus)
 
