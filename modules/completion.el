@@ -3,7 +3,7 @@
 ;; Copyright (C) 2022  Henry MATHEISEN
 
 ;; Author: Henry MATHEISEN <haineriz@posteo.de>
-;; Keywords: 
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -20,13 +20,14 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 
 (use-package counsel
   :defer t
-  :bind (("C-s" . swiper-isearch)
+  :bind (("C-s" . swiper)
+         ("C-S-s" . swiper-thing-at-point)
          ("C-c C-r" . ivy-resume)
          ("C-c d" . counsel-descbinds)
          ("C-c o" . counsel-outline))

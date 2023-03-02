@@ -3,7 +3,7 @@
 ;; Copyright (C) 2023  Henry MATHEISEN
 
 ;; Author: Henry MATHEISEN <haineriz@posteo.de>
-;; Keywords: 
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -20,21 +20,18 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 
-(use-package yaml-mode
-  :defer t)
-
+
+;; Ruby
 (use-package ruby-electric
   :defer t
   :hook (ruby-mode . ruby-electric-mode))
 
-;; Shell settings
-(setq sh-basic-offset 2)
-
-;; Typescript
+
+;; Frontend
 (use-package typescript-mode
   :config
   (setq typescript-indent-level 2))
@@ -58,6 +55,13 @@
 ;; Run prettier on save in web mode
 (use-package prettier
   :hook ((web-mode . prettier-mode)))
+
+
+(use-package yaml-mode
+  :defer t)
+
+;; Shell settings
+(setq sh-basic-offset 2)
 
 (provide 'lang)
 ;;; lang.el ends here

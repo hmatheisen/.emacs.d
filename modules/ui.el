@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 
@@ -88,6 +88,12 @@
 (setq ibuffer-show-empty-filter-groups nil)
 ;; Do not prompt when deleting a new buffer
 (setq ibuffer-expert t)
+(setq ibuffer-use-other-window t)
+
+;; Dired
+
+(setq dired-dwim-target t)
+
 
 (use-package which-key
   :config

@@ -71,7 +71,7 @@
   (global-set-key (kbd "C-c c") #'org-capture)
   ;; Unbind C-<tab> to use 'tab-next
   (define-key org-mode-map (kbd "C-<tab>") nil)
-  (setq org-agenda-files '("~/Notes/org/life.org" "/Users/henry/Notes/org/journal.org"))
+  (setq org-agenda-files '("~/Notes/org-roam"))
   (setq org-todo-keywords
         '((sequence "TODO" "ONGOING" "|" "DONE" "WONTDO"))))
 
@@ -95,7 +95,7 @@
           ("s" "sprint" plain "%?"
            :target
            (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+TITLE: ${title}
-#+TODO: TO_DO(o) IN_PROGRESS(p) TO_REVIEW(r) TO_TEST(t) READY_TO_MERGE(m) | READY_TO_DEPLOY(d)
+#+TODO: TO_DO(o) IN_PROGRESS(p) TO_REVIEW(r) TO_TEST(t) READY_TO_MERGE(m) READY_TO_DEPLOY(d) | DONE(D)
 #+STARTUP: overview")
            :unnarrowed t))))
 

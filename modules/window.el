@@ -76,8 +76,11 @@
 (tab-bar-mode t)
 
 ;; Vars
-(defvar my-workspace '("Elevo" "Emacs" "Org")
-  "List of tab names to be created by `create-my-workspace'.")
+(defvar my-workspace
+  '(("Elevo" . "~/Code/elevo-rails/")
+    ("Emacs" . "~/.emacs.d/")
+    ("Org"   . "~/Notes/org-roam/"))
+  "Alist of tab names and folders to be created by `create-my-workspace'.")
 
 ;; Utils
 (defun create-named-tab (name)
@@ -104,9 +107,13 @@
   (interactive)
   (unless my-workspace
     (error "Cannot create workspaces if var: `my-workspace' is nil"))
-  (tab-bar-rename-tab (car my-workspace)) ; rename current tab with first element
-  (dolist (tab (cdr my-workspace)) ; create tabs with the rest
-    (create-named-tab tab)))
+  ;; Do not create a new tab for the element of the list
+  (tab-bar-rename-tab (caar my-workspace))
+  (dired (cdar my-workspace))
+  (cl-loop for (tab . dir) in (cdr my-workspace)
+           do
+           (create-named-tab tab)
+           (dired dir)))
 
 (defun my-tab-next ()
   "Call `tab-bar-switch-to-next-tab' and print tab name."
