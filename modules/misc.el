@@ -3,7 +3,7 @@
 ;; Copyright (C) 2022  Henry MATHEISEN
 
 ;; Author: Henry MATHEISEN <haineriz@posteo.de>
-;; Keywords: 
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 
@@ -51,7 +51,10 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;; Backups live in a specific place
-(setq backup-directory-alist '(("." . "~/.emacs.d/.backups")))
+(setq backup-directory-alist
+      `((".*" . "~/.emacs.d/.backups")))
+(setq auto-save-file-name-transforms
+      `((".*" "~/.emacs.d/.auto-saves" t)))
 
 ;; Confirm before leaving
 (setq confirm-kill-emacs #'yes-or-no-p)
