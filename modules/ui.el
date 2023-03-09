@@ -69,8 +69,7 @@
 ;; Filter groups
 (setq ibuffer-saved-filter-groups
       '(("default"
-         ("buffers" (or (name . "\*dashboard\*")
-                        (name . "\*scratch\*")))
+         ("buffers" (name . "\*.*\*"))
          ("magit" (name . "magit*"))
          ("elevo" (filename . "Code/elevo-rails"))
          ("emacs" (filename . ".emacs.d"))

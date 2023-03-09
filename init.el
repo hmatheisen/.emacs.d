@@ -19,9 +19,8 @@
 
 ;;; Commentary:
 
-;; Personal Emacs init file.  The actual init is rather small since it
-;; just ensures `use-package' and `org' is installed so that we can
-;; load the actual config file.
+;; Personal Emacs init file.  Here, we define a `load-module' function
+;; to load my module based config.
 
 ;;; Code:
 
@@ -29,7 +28,7 @@
   "Check whether system is mac.")
 
 (defun load-module (file)
-  "Load FILE in the modules directory"
+  "Load FILE in the modules directory."
   (load (concat
          (expand-file-name "modules/" user-emacs-directory)
          file)))

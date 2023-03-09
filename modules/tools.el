@@ -35,7 +35,10 @@
 ;; Magit
 (use-package magit
   :defer t
-  :bind ("C-x g" . 'magit-status))
+  :bind ("C-x g" . 'magit-status)
+  :config
+  (transient-append-suffix 'magit-log "-A"
+    '("-m" "No Merges" "--no-merges")))
 
 ;; git gutter to track changes
 (use-package git-gutter
@@ -114,6 +117,9 @@
     :format regexp
     :files "everything"
     :dir project)
+  (rg-define-toggle
+   "--context 5"
+   (kbd "C-c c"))
   (global-set-key (kbd "C-c C-s") #'rg-search-all))
 
 

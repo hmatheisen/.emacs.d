@@ -1,6 +1,12 @@
 * My GNU Emacs config
 
+Most of the interesting code can be found in the =modules/=
+directory.  It's arranged arbitrarily for now but I try to stay
+consitent.
+
 ** TODOS
 
 - [ ] re-arrange modules files
-
+- [ ] generate release.md buffer (ask for source and target and fill a
+  md file with git log's content)
+- [ ] improve code navigation with lsp

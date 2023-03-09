@@ -37,6 +37,7 @@ To format a \"sql-mode\" buffer with the \"pg_format\" command:
 \(format-buffer-on-save
   sql
   :command \"pg_format\"\)"
+  (declare (indent defun))
   (let* ((mode-str            (concat (symbol-name mode)))
          (command             (plist-get args :command))
          (before-save-hook-fn (intern (concat mode-str "-before-save-hook")))
@@ -52,7 +53,7 @@ To format a \"sql-mode\" buffer with the \"pg_format\" command:
             (current-buffer)
             t
             ,error-buffer-name
-            nil)
+            t)
            (goto-char point-pos)))
        (add-hook ',major-hook-name
                  (lambda ()
@@ -101,6 +102,12 @@ To format a \"sql-mode\" buffer with the \"pg_format\" command:
 ;; Run prettier on save in web mode
 (use-package prettier
   :hook ((web-mode . prettier-mode)))
+
+
+;; XML
+
+(format-buffer-on-save nxml
+  :command "xmllint --format -")
 
 
 ;; SQL
