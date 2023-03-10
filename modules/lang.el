@@ -64,6 +64,9 @@
 (cl-defmacro format-buffer-on-save (mode &key command args)
   "Run a shell COMMAND with ARGS for a given MODE on the whole buffer.
 
+This macro creates 2 functions to format a region or the whiole
+buffer.  It also defines a hook to run the buffer format on save.
+
 Errors are shown in a read only buffer if there are any.
 
 Example:
@@ -71,11 +74,11 @@ To format a \"ruby-mode\" buffer with the \"stree format
 --print-width=100\" command:
 
 \(format-buffer-on-save ruby
-  :command \"pg_format\"
+  :command \"stree\"
   :args '\(\"format\" \"--print-width=100\"\)\)"
   (declare (indent defun))
   (let* ((mode-str            (symbol-name mode))
-         (format-region-fn      (intern (concat mode-str "-format-region")))
+         (format-region-fn    (intern (concat mode-str "-format-region")))
          (before-save-hook-fn (intern (concat mode-str "-format-buffer")))
          (major-hook-name     (intern (concat mode-str "-mode-hook"))))
     `(progn
@@ -140,7 +143,8 @@ To format a \"ruby-mode\" buffer with the \"stree format
 ;; XML
 
 (format-buffer-on-save nxml
-  :command "xmllint --format -")
+  :command "xmllint"
+  :args '("--format" "-"))
 
 
 ;; SQL

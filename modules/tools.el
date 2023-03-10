@@ -126,7 +126,7 @@
 ;; Project wide commands
 (use-package projectile
   :init
-  (projectile-mode +1)
+  (projectile-mode)
   :bind (:map projectile-mode-map
               ("C-c p" . projectile-command-map))
   :config
