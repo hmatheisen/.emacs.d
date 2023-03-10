@@ -26,35 +26,67 @@
 
 ;; Utils
 
-(defmacro format-buffer-on-save (mode &rest args)
-  "Run a shell command from ARGS for a given MODE on the whole buffer.
+(defun format-region (beg end program args)
+  "Format region with PROGRAM and ARGS on BEG to END."
+  (let* ((input-file  (make-temp-file (concat program "-input")))  ; run the formatter on this file
+         (stdout-file (make-temp-file (concat program "-stdout"))) ; formatter output
+         (stderr-file (make-temp-file (concat program "-stderr"))) ; formatter err
+         (point-pos   (point)))
+    ;; Write region to input-file
+    (write-region beg end input-file nil :quiet)
+    (let ((error-buffer (get-buffer-create (concat "*" program " Error Buffer*"))) ; create error buffer
+          (return-code
+           (apply 'call-process
+                  program
+                  input-file
+                  (list (list :file stdout-file) stderr-file)
+                  t
+                  args))) ; save return code
+      ;; Save stderr in error buffer
+      (with-current-buffer error-buffer
+        (let ((inhibit-read-only t))
+          (insert-file-contents stderr-file nil nil nil t))
+        (special-mode))
+      ;; Update buffer if formatter returns 0
+      ;; else, display error buffer
+      (if (zerop return-code)
+          (progn
+            (save-restriction
+              (narrow-to-region beg end)
+              (insert-file-contents stdout-file nil nil nil t)
+              (goto-char point-pos)
+              (delete-windows-on error-buffer)))
+        (display-buffer error-buffer)))
+    (delete-file input-file)
+    (delete-file stdout-file)
+    (delete-file stderr-file)))
 
-Errors are reported in a buffer but not shown.
+(cl-defmacro format-buffer-on-save (mode &key command args)
+  "Run a shell COMMAND with ARGS for a given MODE on the whole buffer.
+
+Errors are shown in a read only buffer if there are any.
 
 Example:
-To format a \"sql-mode\" buffer with the \"pg_format\" command:
+To format a \"ruby-mode\" buffer with the \"stree format
+--print-width=100\" command:
 
-\(format-buffer-on-save
-  sql
-  :command \"pg_format\"\)"
+\(format-buffer-on-save ruby
+  :command \"pg_format\"
+  :args '\(\"format\" \"--print-width=100\"\)\)"
   (declare (indent defun))
-  (let* ((mode-str            (concat (symbol-name mode)))
-         (command             (plist-get args :command))
-         (before-save-hook-fn (intern (concat mode-str "-before-save-hook")))
-         (major-hook-name     (intern (concat mode-str "-mode-hook")))
-         (error-buffer-name   (concat "*" (capitalize mode-str) " Format Error Buffer*")))
+  (let* ((mode-str            (symbol-name mode))
+         (format-region-fn      (intern (concat mode-str "-format-region")))
+         (before-save-hook-fn (intern (concat mode-str "-format-buffer")))
+         (major-hook-name     (intern (concat mode-str "-mode-hook"))))
     `(progn
+       (defun ,format-region-fn (beg end)
+         (interactive "r")
+         (format-region
+          beg end ,command ,args))
        (defun ,before-save-hook-fn ()
-         (let ((point-pos (point)))
-           (shell-command-on-region
-            (point-min)
-            (point-max)
-            ,command
-            (current-buffer)
-            t
-            ,error-buffer-name
-            t)
-           (goto-char point-pos)))
+         (interactive)
+         (format-region
+          (point-min) (point-max) ,command ,args))
        (add-hook ',major-hook-name
                  (lambda ()
                    (add-hook 'before-save-hook
@@ -75,7 +107,8 @@ To format a \"sql-mode\" buffer with the \"pg_format\" command:
   :hook (ruby-mode . ruby-electric-mode))
 
 (format-buffer-on-save ruby
-  :command "stree format --print-width=100")
+  :command "stree"
+  :args '("format" "--print-width=100"))
 
 
 ;; Frontend
