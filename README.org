@@ -10,3 +10,4 @@ consitent.
 - [ ] generate release.md buffer (ask for source and target and fill a
   md file with git log's content)
 - [ ] improve code navigation with lsp
+- [ ] function to switch buffer between 2 windows

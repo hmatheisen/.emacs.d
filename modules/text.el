@@ -64,6 +64,10 @@
   (global-undo-tree-mode))
 
 
+;; IEdit for interactive multi edit
+(use-package iedit)
+
+
 ;; Whitespace cleanup
 
 (add-hook 'before-save-hook 'whitespace-cleanup)

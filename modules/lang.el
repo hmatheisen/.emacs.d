@@ -132,6 +132,10 @@ To format a \"ruby-mode\" buffer with the \"stree format
         web-mode-css-indent-offset 2
         web-mode-code-indent-offset 2))
 
+(use-package emmet-mode
+  :hook
+  (web-mode . emmet-mode))
+
 ;; JS indent
 (setq js-indent-level 2)
 

@@ -61,6 +61,7 @@
 
 ;; Split Ediff horizontally
 (setq ediff-split-window-function 'split-window-horizontally)
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
 ;; Set mail address
 (setq user-mail-address "haineriz@posteo.de")

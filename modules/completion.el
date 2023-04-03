@@ -60,5 +60,8 @@
 
 (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 
+(use-package ivy-emoji
+  :bind ("C-c i e" . ivy-emoji))
+
 (provide 'completion)
 ;;; completion.el ends here
