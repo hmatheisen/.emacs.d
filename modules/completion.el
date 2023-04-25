@@ -40,7 +40,10 @@
 (use-package lsp-mode
   :init
   (setq lsp-keymap-prefix "C-c l")
-  :hook ((lsp-mode . lsp-enable-which-key-integration))
+  :hook ((ruby-mode . lsp)
+         (ruby-mode . lsp)
+         (typescript-mode . lsp)
+         (web-mode . lsp-enable-which-key-integration))
   :commands lsp
   :config (setq lsp-headerline-breadcrumb-enable nil))
 

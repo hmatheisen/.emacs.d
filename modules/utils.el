@@ -41,5 +41,13 @@
     (pp (macroexpand sexp)))
   (with-current-buffer "*el-macroexpansion*" (emacs-lisp-mode)))
 
+(defun new-buffer (new-buffer-name)
+  "Create a new buffer named NEW-BUFFER-NAME and switch to it."
+  (interactive "sNew buffer name: ")
+  (switch-to-buffer
+   (concat "*" new-buffer-name "*")))
+
+(global-set-key (kbd "C-x B") 'new-buffer)
+
 (provide 'utils)
 ;;; utils.el ends here

@@ -44,7 +44,11 @@
   ;; Override list of buffers where default state is something else than "emacs"
   (setq evil-insert-state-modes nil)
   (setq evil-motion-state-modes nil)
-  (setq evil-normal-state-modes nil)
+  (setq evil-normal-state-modes '(ruby-mode typescript-mode web-mode))
+  ;; Use Emacs binding in insert state
+  (setq evil-disable-insert-state-bindings t)
+  ;; Don't change cursor in insert mode
+  (setq evil-insert-state-cursor nil)
   :config
   ;; Customize undo system
   (evil-set-undo-system 'undo-tree)

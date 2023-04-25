@@ -113,7 +113,8 @@
   (cl-loop for (tab . dir) in (cdr my-workspace)
            do
            (create-named-tab tab)
-           (dired dir)))
+           (dired dir))
+  (tab-bar-switch-to-tab (caar my-workspace)))
 
 (defun my-tab-next ()
   "Call `tab-bar-switch-to-next-tab' and print tab name."

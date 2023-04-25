@@ -92,10 +92,9 @@ To format a \"ruby-mode\" buffer with the \"stree format
           (point-min) (point-max) ,command ,args))
        (add-hook ',major-hook-name
                  (lambda ()
-                   (add-hook 'before-save-hook
-                             #',before-save-hook-fn
-                             nil
-                             t))))))
+                   (local-set-key
+                    (kbd "C-c f")
+                    #',before-save-hook-fn))))))
 
 
 ;; Clojure

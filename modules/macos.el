@@ -19,11 +19,11 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 
-;; Keyboard options 
+;; Keyboard options
 (setq mac-option-modifier 'meta
       mac-command-modifier 'super
       mac-right-option-modifier 'nil)
@@ -35,7 +35,7 @@
 (setq frame-title-format nil)
 
 (setq dired-use-ls-dired t
-      insert-directory-program "/usr/local/Cellar/coreutils/9.1/bin/gls"
+      insert-directory-program "/usr/local/Cellar/coreutils/9.2/bin/gls"
       dired-listing-switches "-aBhl --group-directories-first")
 
 (provide 'macos)
