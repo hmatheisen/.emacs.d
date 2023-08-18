@@ -1,6 +1,6 @@
-;;; utils.el --- Function utils for Emacs init       -*- lexical-binding: t; -*-
+;;; nry-utils.el --- Utility functions I sometimes use  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2021  Henry MATHEISEN
+;; Copyright (C) 2023  Henry MATHEISEN
 
 ;; Author: Henry MATHEISEN <haineriz@posteo.de>
 ;; Keywords:
@@ -20,34 +20,34 @@
 
 ;;; Commentary:
 
-;; Some utility functions that I may use.
+;;
 
 ;;; Code:
 
-(defun add-to-path (path)
+(defun nry-add-to-path (path)
   "Add a path to variable `exec-path' and Emacs \"PATH\" variable."
   (add-to-list 'exec-path path)
   (setenv "PATH" (concat (getenv "PATH") ":" path)))
 
-(add-to-path "/usr/local/bin")
-(add-to-path "/Library/TeX/texbin")
-(add-to-path "/Users/henry/.rbenv/shims")
-(add-to-path "/Users/henry/.local/bin")
+(nry-add-to-path "/usr/local/bin")
+(nry-add-to-path "/Library/TeX/texbin")
+(nry-add-to-path "/Users/henry/.rbenv/shims")
+(nry-add-to-path "/Users/henry/.local/bin")
 
-(defun macroexpand-point (sexp)
+(defun nry-macroexpand-point (sexp)
   "Expand macro SEXP at point to temp buffer."
   (interactive (list (sexp-at-point)))
   (with-output-to-temp-buffer "*el-macroexpansion*"
     (pp (macroexpand sexp)))
   (with-current-buffer "*el-macroexpansion*" (emacs-lisp-mode)))
 
-(defun new-buffer (new-buffer-name)
+(defun nry-new-buffer (new-buffer-name)
   "Create a new buffer named NEW-BUFFER-NAME and switch to it."
   (interactive "sNew buffer name: ")
   (switch-to-buffer
    (concat "*" new-buffer-name "*")))
 
-(global-set-key (kbd "C-x B") 'new-buffer)
+(global-set-key (kbd "C-x B") 'nry-new-buffer)
 
-(provide 'utils)
-;;; utils.el ends here
+(provide 'nry-utils)
+;;; nry-utils.el ends here

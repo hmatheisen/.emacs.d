@@ -1,8 +1,9 @@
-;;; themes.el --- Theme switcher and themes settings                  -*- lexical-binding: t; -*-
+;;; nry-theme.el --- Theme config                    -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2021  Henry MATHEISEN
+;; Copyright (C) 2023  Henry MATHEISEN
 
 ;; Author: Henry MATHEISEN <haineriz@posteo.de>
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -19,15 +20,7 @@
 
 ;;; Commentary:
 
-;; I use this code to switch from one theme to another at desired
-;; hours.  This is useful if, like me, you like a light theme during
-;; the day and a dark theme at night.
 ;;
-;; This can be used a standalone package.  If desired, you only need to
-;; set ther variables yourself.  See "My own config page".
-;;
-;; A minor mode could be provided to enable/disable the switch.  Also
-;; the time could be more precise than just the hour
 
 ;;; Code:
 
@@ -78,19 +71,6 @@ Otherwise apply the default theme."
 
 
 ;; Interactive functions to make theme manipulation easier.
-
-(defun change-day-theme (theme)
-  "Change the day theme interactively to THEME."
-  (interactive (list-available-themes))
-  (setq day-theme theme)
-  (theme-switcher))
-
-(defun change-night-theme (theme)
-  "Change the night theme interactively to THEME."
-  (interactive (list-available-themes))
-  (setq night-theme theme)
-  (theme-switcher))
-
 (defun toggle-theme ()
   "Toggle between the day and night theme."
   (interactive)
@@ -111,9 +91,8 @@ Otherwise apply the default theme."
 (setq night-hour 14)
 
 ;; Set themes
-(setq day-theme 'standard-light)
-(setq night-theme 'standard-dark)
+(setq day-theme 'modus-vivendi)
+(setq night-theme 'modus-operandi)
 
-(provide 'themes)
-
-;;; themes.el ends here
+(provide 'nry-theme)
+;;; nry-theme.el ends here

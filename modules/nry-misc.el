@@ -1,8 +1,8 @@
-;;; misc.el --- Miscellaneous settings               -*- lexical-binding: t; -*-
+;;; nry-misc.el --- Miscellaneous settings           -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022  Henry MATHEISEN
+;; Copyright (C) 2023  Henry MATHEISEN
 
-;; Author: Henry MATHEISEN <haineriz@posteo.de>
+;; Author: Henry MATHEISEN <henry@macbook>
 ;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -44,9 +44,6 @@
 (global-unset-key (kbd "C-z"))
 (global-unset-key (kbd "C-x C-z"))
 
-;; Keep custom file but don't load it
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-
 ;; Answer by y or n instead of yes or no
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -66,5 +63,5 @@
 ;; Set mail address
 (setq user-mail-address "haineriz@posteo.de")
 
-(provide 'misc)
-;;; misc.el ends here
+(provide 'nry-misc)
+;;; nry-misc.el ends here

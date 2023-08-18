@@ -1,8 +1,9 @@
-;;; init.el --- He-Macs init file                    -*- lexical-binding: t; -*-
+;;; init.el --- Emacs config entrypoint              -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2021  Henry MATHEISEN
+;; Copyright (C) 2023  Henry MATHEISEN
 
-;; Author: Henry MATHEISEN <haineriz@posteo.de>
+;; Author: Henry MATHEISEN <henry@macbook>
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -19,36 +20,44 @@
 
 ;;; Commentary:
 
-;; Personal Emacs init file.  Here, we define a `load-module' function
-;; to load my module based config.
+;;
 
 ;;; Code:
 
 (defconst *is-a-mac* (eq system-type 'darwin)
   "Check whether system is mac.")
 
-(defun load-module (file)
-  "Load FILE in the modules directory."
-  (load (concat
-         (expand-file-name "modules/" user-emacs-directory)
-         file)))
+(add-to-list 'load-path
+             (expand-file-name "modules" user-emacs-directory))
+(setq custom-file (locate-user-emacs-file "custom.el"))
 
-(load-module "packages") ;; Must be loaded before others
+;; Load package manager and add sources
+(setq package-archives
+      '(("org" . "https://orgmode.org/elpa/")
+        ("melpa" . "https://melpa.org/packages/")
+        ("melpa-stable" . "https://stable.melpa.org/packages/")
+        ("gnu" . "http://elpa.gnu.org/packages/")))
 
-(load-module "completion")
-(load-module "keys")
-(load-module "lang")
+(package-initialize)
+
+;; Load config files
+
+(require 'nry-completion)
+(require 'nry-lang)
 (when *is-a-mac*
-  (load-module "macos"))
-(load-module "misc")
-(load-module "scrolling")
-(load-module "text")
-(load-module "themes")
-(load-module "tools")
-(load-module "ui")
-(load-module "utils")
-(load-module "window")
+  (require 'nry-macos))
+(require 'nry-misc)
+(require 'nry-org)
+(require 'nry-text)
+(require 'nry-theme)
+(require 'nry-tools)
+(require 'nry-ui)
+(require 'nry-utils)
+(require 'nry-window)
+
+;; Variables configured via the interactive 'customize' interface
+;; (when (file-exists-p custom-file)
+;;   (load custom-file))
 
 (provide 'init)
-
 ;;; init.el ends here

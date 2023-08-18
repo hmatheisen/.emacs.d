@@ -1,8 +1,8 @@
-;;; lang.el --- Packages for unsupported languages   -*- lexical-binding: t; -*-
+;;; nry-lang.el --- Language specific config         -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023  Henry MATHEISEN
 
-;; Author: Henry MATHEISEN <haineriz@posteo.de>
+;; Author: Henry MATHEISEN <henry@macbook>
 ;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -24,9 +24,7 @@
 
 ;;; Code:
 
-;; Utils
-
-(defun format-region (beg end program args)
+(defun nry-format-region (beg end program args)
   "Format region with PROGRAM and ARGS on BEG to END."
   (let* ((input-file  (make-temp-file (concat program "-input")))  ; run the formatter on this file
          (stdout-file (make-temp-file (concat program "-stdout"))) ; formatter output
@@ -61,7 +59,7 @@
     (delete-file stdout-file)
     (delete-file stderr-file)))
 
-(cl-defmacro format-buffer-on-save (mode &key command args)
+(cl-defmacro nry-format-buffer-on-save (mode &key command args)
   "Run a shell COMMAND with ARGS for a given MODE on the whole buffer.
 
 This macro creates 2 functions to format a region or the whiole
@@ -73,7 +71,7 @@ Example:
 To format a \"ruby-mode\" buffer with the \"stree format
 --print-width=100\" command:
 
-\(format-buffer-on-save ruby
+\(nry-format-buffer-on-save ruby
   :command \"stree\"
   :args '\(\"format\" \"--print-width=100\"\)\)"
   (declare (indent defun))
@@ -84,11 +82,11 @@ To format a \"ruby-mode\" buffer with the \"stree format
     `(progn
        (defun ,format-region-fn (beg end)
          (interactive "r")
-         (format-region
+         (nry-format-region
           beg end ,command ,args))
        (defun ,before-save-hook-fn ()
          (interactive)
-         (format-region
+         (nry-format-region
           (point-min) (point-max) ,command ,args))
        (add-hook ',major-hook-name
                  (lambda ()
@@ -96,30 +94,25 @@ To format a \"ruby-mode\" buffer with the \"stree format
                     (kbd "C-c f")
                     #',before-save-hook-fn))))))
 
-
-;; Clojure
-
-(use-package clojure-mode)
-(use-package cider)
-
-
 ;; Ruby
 (use-package ruby-electric
+  :ensure t
   :defer t
   :hook (ruby-mode . ruby-electric-mode))
 
-(format-buffer-on-save ruby
+(nry-format-buffer-on-save ruby
   :command "stree"
   :args '("format" "--print-width=100"))
 
-
 ;; Frontend
 (use-package typescript-mode
+  :ensure t
   :config
   (setq typescript-indent-level 2))
 
 ;; Web mode for js/jsx/tsx
 (use-package web-mode
+  :ensure t
   :mode (("\\.tsx\\'" . web-mode)
          ("\\.js\\'"  . web-mode))
   :config
@@ -132,34 +125,21 @@ To format a \"ruby-mode\" buffer with the \"stree format
         web-mode-code-indent-offset 2))
 
 (use-package emmet-mode
+  :ensure t
   :hook
   (web-mode . emmet-mode))
 
-;; JS indent
+;; JS
 (setq js-indent-level 2)
 
-;; Run prettier on save in web mode
-(use-package prettier
-  :hook ((web-mode . prettier-mode)))
-
-
 ;; XML
-
-(format-buffer-on-save nxml
+(nry-format-buffer-on-save nxml
   :command "xmllint"
   :args '("--format" "-"))
 
-
 ;; SQL
-
-(format-buffer-on-save sql
+(nry-format-buffer-on-save sql
   :command "pg_format")
-
-(use-package yaml-mode
-  :defer t)
 
-;; Shell settings
-(setq sh-basic-offset 2)
-
-(provide 'lang)
-;;; lang.el ends here
+(provide 'nry-lang)
+;;; nry-lang.el ends here

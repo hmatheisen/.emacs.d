@@ -1,8 +1,9 @@
-;;; macos.el --- MacOS Specific Options              -*- lexical-binding: t; -*-
+;;; nry-tools.el --- Very useful third party tools   -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2022  Henry MATHEISEN
+;; Copyright (C) 2023  Henry MATHEISEN
 
 ;; Author: Henry MATHEISEN <haineriz@posteo.de>
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -23,20 +24,21 @@
 
 ;;; Code:
 
-;; Keyboard options
-(setq mac-option-modifier 'meta
-      mac-command-modifier 'super
-      mac-right-option-modifier 'nil)
+;; Magit
+(use-package magit
+  :ensure t
+  :defer t
+  :bind ("C-x g" . 'magit-status)
+  :config
+  (transient-append-suffix 'magit-log "-A"
+    '("-m" "No Merges" "--no-merges")))
 
-;; Title bar appearance
-(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-(add-to-list 'default-frame-alist '(ns-appearance . dark))
-(setq ns-use-proxy-icon  nil)
-(setq frame-title-format nil)
+;; git gutter to track changes
+(use-package git-gutter
+  :ensure t
+  :config
+  (global-git-gutter-mode t)
+  (setq git-gutter:hide-gutter t))
 
-(setq dired-use-ls-dired t
-      insert-directory-program "/usr/local/Cellar/coreutils/9.2/bin/gls"
-      dired-listing-switches "-aBhl --group-directories-first")
-
-(provide 'macos)
-;;; macos.el ends here
+(provide 'nry-tools)
+;;; nry-tools.el ends here

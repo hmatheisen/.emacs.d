@@ -1,8 +1,8 @@
-;;; text.el --- Text manipulation                      -*- lexical-binding: t; -*-
+;;; nry-text.el --- Text editing configs             -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2021  Henry MATHEISEN
+;; Copyright (C) 2023  Henry MATHEISEN
 
-;; Author: Henry MATHEISEN <haineriz@posteo.de>
+;; Author: Henry MATHEISEN <henry@macbook>
 ;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,7 @@
 
 ;;; Commentary:
 
-;; Make use of the align function to target specific
-;; regions/characters
+;;
 
 ;;; Code:
 
@@ -57,19 +56,11 @@
                 "\\(\\s-*\\)="))
 
 
-;; Visual Undo
-(use-package undo-tree
-  :config
-  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
-  (global-undo-tree-mode))
-
-
 ;; IEdit for interactive multi edit
-(use-package iedit)
+(use-package iedit :ensure t)
 
 
 ;; Whitespace cleanup
-
 (add-hook 'before-save-hook 'whitespace-cleanup)
 ;; Change whitespace style for markdown files
 (add-hook 'markdown-mode-hook
@@ -78,6 +69,5 @@
              whitespace-style
              (delq 'trailing whitespace-style))))
 
-(provide 'text)
-
-;;; text.el ends here
+(provide 'nry-text)
+;;; nry-text.el ends here
