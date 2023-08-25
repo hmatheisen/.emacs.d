@@ -28,7 +28,11 @@
 (use-package magit
   :ensure t
   :defer t
-  :bind ("C-x g" . 'magit-status)
+  :bind (("C-x g" . 'magit-status)
+          :map magit-file-section-map
+          ("RET" . magit-diff-visit-file-other-window)
+          :map magit-hunk-section-map
+          ("RET" . magit-diff-visit-file-other-window))
   :config
   (transient-append-suffix 'magit-log "-A"
     '("-m" "No Merges" "--no-merges")))

@@ -24,6 +24,8 @@
 
 ;;; Code:
 
+(require 'cl-lib)
+
 (defun nry-split-window-right-focus ()
   "Split window on the right then focus on that window."
   (interactive)
@@ -99,7 +101,7 @@
 (defun nry-new-tab (name)
   "Create a new tab with `NAME'."
   (interactive "sNew tab name: ")
-  (create-named-tab name))
+  (nry-create-named-tab name))
 
 (defun nry-create-my-workspace ()
   "Create tabs based on the `my-workspace' variable."

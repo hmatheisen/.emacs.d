@@ -24,6 +24,8 @@
 
 ;;; Code:
 
+(require 'cl-lib)
+
 (defun nry-format-region (beg end program args)
   "Format region with PROGRAM and ARGS on BEG to END."
   (let* ((input-file  (make-temp-file (concat program "-input")))  ; run the formatter on this file
@@ -104,26 +106,6 @@ To format a \"ruby-mode\" buffer with the \"stree format
   :command "stree"
   :args '("format" "--print-width=100"))
 
-;; Frontend
-(use-package typescript-mode
-  :ensure t
-  :config
-  (setq typescript-indent-level 2))
-
-;; Web mode for js/jsx/tsx
-(use-package web-mode
-  :ensure t
-  :mode (("\\.tsx\\'" . web-mode)
-         ("\\.js\\'"  . web-mode))
-  :config
-  ;; Default to jsx for .js files since it's the one I use the most on
-  ;; flow files
-  (setq web-mode-content-types-alist
-        '(("jsx" . "\\.js\\'")))
-  (setq web-mode-markup-indent-offset 2
-        web-mode-css-indent-offset 2
-        web-mode-code-indent-offset 2))
-
 (use-package emmet-mode
   :ensure t
   :hook
@@ -140,6 +122,33 @@ To format a \"ruby-mode\" buffer with the \"stree format
 ;; SQL
 (nry-format-buffer-on-save sql
   :command "pg_format")
+
+;; Treesitter
+(setq treesit-language-source-alist
+      '((bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
+        (c . ("https://github.com/tree-sitter/tree-sitter-c"))
+        (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"))
+        (css . ("https://github.com/tree-sitter/tree-sitter-css"))
+        (go . ("https://github.com/tree-sitter/tree-sitter-go"))
+        (html . ("https://github.com/tree-sitter/tree-sitter-html"))
+        (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript"))
+        (json . ("https://github.com/tree-sitter/tree-sitter-json"))
+        (lua . ("https://github.com/Azganoth/tree-sitter-lua"))
+        (make . ("https://github.com/alemuller/tree-sitter-make"))
+        (python . ("https://github.com/tree-sitter/tree-sitter-python"))
+        (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src"))
+        (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src"))
+        (ruby . ("https://github.com/tree-sitter/tree-sitter-ruby"))
+        (rust . ("https://github.com/tree-sitter/tree-sitter-rust"))
+        (sql . ("https://github.com/m-novikov/tree-sitter-sql"))
+        (toml . ("https://github.com/tree-sitter/tree-sitter-toml"))))
+
+(setq major-mode-remap-alist
+      '((bash-mode . bash-ts-mode)
+        (js2-mode . js-ts-mode)
+        (typescript-mode . typescript-ts-mode)
+        (json-mode . json-ts-mode)
+        (css-mode . css-ts-mode)))
 
 (provide 'nry-lang)
 ;;; nry-lang.el ends here

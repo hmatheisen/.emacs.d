@@ -34,26 +34,39 @@
     (org-indent-mode 1)
     (visual-line-mode 1)
     (auto-fill-mode 1)
-    ;; Override faces
-    (set-face-attribute 'org-document-title nil :height 1.8)
-    (custom-set-faces
-     '(org-level-1 ((t (:inherit outline-1 :height 1.6))))
-     '(org-level-2 ((t (:inherit outline-2 :height 1.4))))
-     '(org-level-3 ((t (:inherit outline-3 :height 1.2))))
-     '(org-level-4 ((t (:inherit outline-4 :height 1.0))))
-     '(org-level-5 ((t (:inherit outline-5 :height 1.0))))))
-
+    (windmove-mode -1))
   :hook ((org-mode . my-org-mode-hook))
+  :bind (("C-c l" . org-store-link)
+         ("C-c a" . org-agenda)
+         ("C-c c" . org-capture)
+         :map org-mode-map
+         ("C-c C-m" . org-modern-mode)) ;; toggle org modern
   :config
-  ;; Recommended bindings
-  (global-set-key (kbd "C-c l") #'org-store-link)
-  (global-set-key (kbd "C-c a") #'org-agenda)
-  (global-set-key (kbd "C-c c") #'org-capture)
   ;; Unbind C-<tab> to use 'tab-next
   (define-key org-mode-map (kbd "C-<tab>") nil)
-  (setq org-agenda-files '("~/Notes/org"))
+  ;; Files
+  (setq org-directory "~/org/")
+  (setq org-agenda-files (list org-directory))
+  ;; Others
+  (setq org-startup-folded 'fold)
+  (setq org-log-done 'time)
   (setq org-todo-keywords
-        '((sequence "TODO" "ONGOING" "|" "DONE" "WONTDO"))))
+        '((sequence "TODO(t)" "ONGOING(g)" "|" "DONE(d)" "WONTDO(w)")
+          (sequence "TODO(T)" "IN_PROGRESS(P)" "TO_REVIEW(R)" "TO_TEST(F)" "READY_TO_MERGE(M)" "|" "DONE(D)")))
+  (setq org-capture-templates
+        '(("t" "Todo" entry (file (lambda () (concat org-directory "tasks.org")))
+           "* TODO %?\n")
+          ("i" "Idea" entry (file+headline (lambda () (concat org-directory "journal.org")) "Ideas")
+           "* %?\nEntered on %U\n  %i\n  %a")
+          ("T" "Ticket" entry (file+headline (lambda () (concat org-directory "sprint.org")) "Tickets")
+           "* IN_PROGRESS %?\nSCHEDULED: %T"))))
+
+(use-package org-tempo)
+
+(use-package org-modern
+  :ensure t
+  :config
+  (global-org-modern-mode))
 
 (use-package toc-org
   :ensure t

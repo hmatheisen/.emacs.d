@@ -63,5 +63,8 @@
 ;; Set mail address
 (setq user-mail-address "haineriz@posteo.de")
 
+;; Enable recentf mode
+(recentf-mode)
+
 (provide 'nry-misc)
 ;;; nry-misc.el ends here

@@ -48,6 +48,7 @@
   (require 'nry-macos))
 (require 'nry-misc)
 (require 'nry-org)
+(require 'nry-scroll)
 (require 'nry-text)
 (require 'nry-theme)
 (require 'nry-tools)

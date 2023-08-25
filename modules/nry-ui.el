@@ -24,8 +24,11 @@
 
 ;;; Code:
 
-(defconst *mono-font* "Iosevka"
+(defconst *mono-font* "Iosevka Comfy"
   "Default mono font to be used.")
+
+(defconst *variable-font* "Iosevka Aile"
+  "Default variable font to be used.")
 
 (defconst *font-size* 16
   "Font size un points.")
@@ -40,20 +43,41 @@
 (fringe-mode '(nil . 0)) ;; left only
 
 ;; Fonts
-(set-face-attribute 'default
-                    nil
-                    :family *mono-font*
-                    :height (* *font-size* 10))
+(set-face-attribute 'default nil :family *mono-font* :height (* *font-size* 10))
+(set-face-attribute 'variable-pitch nil :family *variable-font*)
+(set-face-attribute 'fixed-pitch nil :family *variable-font*)
 
-(set-face-attribute 'fixed-pitch
-                    nil
-                    :family *mono-font*
-                    :height (* *font-size* 10))
+(use-package which-key
+  :ensure t
+  :config
+  (which-key-mode)
+  (setq which-key-idle-delay 0.2
+        which-key-idle-secondary-delay 0.2))
 
-(set-face-attribute 'variable-pitch
-                    nil
-                    :family *mono-font*
-                    :height (* *font-size* 10))
+(use-package page-break-lines
+  :ensure t
+  :config (global-page-break-lines-mode))
+
+;; Modeline
+
+;; Hide minor modes from mode line
+(use-package rich-minority
+  :ensure t
+  :init
+  (setq rm-whitelist
+        (mapconcat
+         #'identity
+         '("Projectile.*" "Fly.*")
+         "\\|"))
+  :config
+  (rich-minority-mode 1))
+
+(use-package treemacs
+  :ensure t
+  :custom
+  (treemacs-no-png-images t)
+  (treemacs-width 40)
+  (treemacs-width-is-initially-locked nil))
 
 (provide 'nry-ui)
 ;;; ui.el ends here

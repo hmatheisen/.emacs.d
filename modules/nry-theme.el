@@ -71,14 +71,14 @@ Otherwise apply the default theme."
 
 
 ;; Interactive functions to make theme manipulation easier.
-(defun toggle-theme ()
+(defun nry-toggle-theme ()
   "Toggle between the day and night theme."
   (interactive)
   ;; swap `day-theme' and `night-theme' variables
   (setq day-theme (prog1 night-theme (setq night-theme day-theme)))
   (theme-switcher))
 
-(defun cancel-theme-switcher ()
+(defun nry-cancel-theme-switcher ()
   "Cancel timer for theme switcher."
   (interactive)
   (cancel-timer switcher-timer))
@@ -91,8 +91,8 @@ Otherwise apply the default theme."
 (setq night-hour 14)
 
 ;; Set themes
-(setq day-theme 'modus-vivendi)
-(setq night-theme 'modus-operandi)
+(setq day-theme 'modus-operandi)
+(setq night-theme 'modus-vivendi)
 
 (provide 'nry-theme)
 ;;; nry-theme.el ends here

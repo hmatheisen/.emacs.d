@@ -97,7 +97,7 @@
          ("M-s g" . consult-grep)
          ("M-s G" . consult-git-grep)
          ("M-s r" . consult-ripgrep)
-         ("M-s l" . consult-line)
+         ("C-s" . consult-line)
          ("M-s L" . consult-line-multi)
          ("M-s k" . consult-keep-lines)
          ("M-s u" . consult-focus-lines)
@@ -125,20 +125,37 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
-;; TODO: try Corfu
-(use-package company-mode
-  :defer t
+(use-package corfu
+  :ensure t
+  :custom
+  (corfu-auto t)
+  (corfu-cycle t)
+  (corfu-preselect 'prompt)
+  :config
+  (setq tab-always-indent 'complete)
+  :bind
+  (:map corfu-map
+        ("TAB" . corfu-next)
+        ([tab] . corfu-next)
+        ("S-TAB" . corfu-previous)
+        ([backtab] . corfu-previous))
   :init
-  (setq company-selection-wrap-around t)
-  (setq company-minimum-prefix-length 1)
-  (setq company-idle-delay 0)
-  (with-eval-after-load 'company
-    (define-key company-active-map (kbd "M-n") nil)
-    (define-key company-active-map (kbd "M-p") nil)
-    (define-key company-active-map (kbd "C-n") 'company-select-next)
-    (define-key company-active-map (kbd "C-p") 'company-select-previous))
-  :ensure company
-  :hook (after-init . global-company-mode))
+  (global-corfu-mode))
+
+;; TODO: try Corfu
+;; (use-package company-mode
+;;   :defer t
+;;   :init
+;;   (setq company-selection-wrap-around t)
+;;   (setq company-minimum-prefix-length 1)
+;;   (setq company-idle-delay 0)
+;;   (with-eval-after-load 'company
+;;     (define-key company-active-map (kbd "M-n") nil)
+;;     (define-key company-active-map (kbd "M-p") nil)
+;;     (define-key company-active-map (kbd "C-n") 'company-select-next)
+;;     (define-key company-active-map (kbd "C-p") 'company-select-previous))
+;;   :ensure company
+;;   :hook (after-init . global-company-mode))
 
 ;; Snippets
 (use-package yasnippet
