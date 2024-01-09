@@ -1,5 +1,1 @@
 * My GNU Emacs config
-
-Most of the interesting code can be found in the =modules/=
-directory.  It's arranged arbitrarily for now but I try to stay
-consitent.

@@ -2,8 +2,10 @@
 !.gitignore
 !README.org
 
-!modules
-!modules/*
+!install-treesit.el
 
 !snippets
 !snippets/*
+
+!lisp
+!lisp/*

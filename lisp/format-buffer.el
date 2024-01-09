@@ -1,8 +1,8 @@
-;;; nry-lang.el --- Language specific config         -*- lexical-binding: t; -*-
+;;; format-buffer.el --- Format buffer given an external program  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2023  Henry MATHEISEN
+;; Copyright (C) 2024  Henry MATHEISEN
 
-;; Author: Henry MATHEISEN <henry@macbook>
+;; Author: Henry MATHEISEN <haineriz@posteo.de>
 ;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -61,7 +61,7 @@
     (delete-file stdout-file)
     (delete-file stderr-file)))
 
-(cl-defmacro nry-format-buffer-on-save (mode &key command args)
+(cl-defmacro nry-format (mode &key command args)
   "Run a shell COMMAND with ARGS for a given MODE on the whole buffer.
 
 This macro creates 2 functions to format a region or the whiole
@@ -73,82 +73,22 @@ Example:
 To format a \"ruby-mode\" buffer with the \"stree format
 --print-width=100\" command:
 
-\(nry-format-buffer-on-save ruby
+\(nry-format ruby
   :command \"stree\"
   :args '\(\"format\" \"--print-width=100\"\)\)"
   (declare (indent defun))
   (let* ((mode-str            (symbol-name mode))
          (format-region-fn    (intern (concat mode-str "-format-region")))
-         (before-save-hook-fn (intern (concat mode-str "-format-buffer")))
-         (major-hook-name     (intern (concat mode-str "-mode-hook"))))
+         (format-buffer-fn    (intern (concat mode-str "-format-buffer"))))
     `(progn
        (defun ,format-region-fn (beg end)
          (interactive "r")
          (nry-format-region
           beg end ,command ,args))
-       (defun ,before-save-hook-fn ()
+       (defun ,format-buffer-fn ()
          (interactive)
          (nry-format-region
-          (point-min) (point-max) ,command ,args))
-       (add-hook ',major-hook-name
-                 (lambda ()
-                   (local-set-key
-                    (kbd "C-c f")
-                    #',before-save-hook-fn))))))
+          (point-min) (point-max) ,command ,args)))))
 
-;; Ruby
-(use-package ruby-electric
-  :ensure t
-  :defer t
-  :hook (ruby-mode . ruby-electric-mode))
-
-(nry-format-buffer-on-save ruby
-  :command "stree"
-  :args '("format" "--print-width=100"))
-
-(use-package emmet-mode
-  :ensure t
-  :hook
-  (web-mode . emmet-mode))
-
-;; JS
-(setq js-indent-level 2)
-
-;; XML
-(nry-format-buffer-on-save nxml
-  :command "xmllint"
-  :args '("--format" "-"))
-
-;; SQL
-(nry-format-buffer-on-save sql
-  :command "pg_format")
-
-;; Treesitter
-(setq treesit-language-source-alist
-      '((bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
-        (c . ("https://github.com/tree-sitter/tree-sitter-c"))
-        (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"))
-        (css . ("https://github.com/tree-sitter/tree-sitter-css"))
-        (go . ("https://github.com/tree-sitter/tree-sitter-go"))
-        (html . ("https://github.com/tree-sitter/tree-sitter-html"))
-        (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript"))
-        (json . ("https://github.com/tree-sitter/tree-sitter-json"))
-        (lua . ("https://github.com/Azganoth/tree-sitter-lua"))
-        (make . ("https://github.com/alemuller/tree-sitter-make"))
-        (python . ("https://github.com/tree-sitter/tree-sitter-python"))
-        (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src"))
-        (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src"))
-        (ruby . ("https://github.com/tree-sitter/tree-sitter-ruby"))
-        (rust . ("https://github.com/tree-sitter/tree-sitter-rust"))
-        (sql . ("https://github.com/m-novikov/tree-sitter-sql"))
-        (toml . ("https://github.com/tree-sitter/tree-sitter-toml"))))
-
-(setq major-mode-remap-alist
-      '((bash-mode . bash-ts-mode)
-        (js2-mode . js-ts-mode)
-        (typescript-mode . typescript-ts-mode)
-        (json-mode . json-ts-mode)
-        (css-mode . css-ts-mode)))
-
-(provide 'nry-lang)
-;;; nry-lang.el ends here
+(provide 'format-buffer)
+;;; format-buffer.el ends here
