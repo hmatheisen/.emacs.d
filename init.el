@@ -33,7 +33,7 @@
  '(completion-styles '(orderless basic partial-completion emacs22))
  '(confirm-kill-emacs 'y-or-n-p)
  '(custom-safe-themes
-   '("242f33ba517c05f45e075d8ed3d13c0a7b7d1392e0c95d66830029e561607085" "51f3fb81f9233280cb28ee3023e43e82c9307d59d158626881ca14f964d2abeb" default))
+   '("d0f3adfe292c9d633930e35c3458cda77796073bb25af852689f999bbb3d9398" "242f33ba517c05f45e075d8ed3d13c0a7b7d1392e0c95d66830029e561607085" "51f3fb81f9233280cb28ee3023e43e82c9307d59d158626881ca14f964d2abeb" default))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
  '(display-line-numbers nil)
@@ -56,7 +56,7 @@
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
-   '(markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
+   '(ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
  '(pixel-scroll-precision-mode t)
  '(recentf-mode t)
  '(repeat-mode t)
@@ -81,15 +81,15 @@
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "Iosevka Comfy Fixed" :foundry "nil" :slant normal :weight regular :height 160 :width normal)))))
 
-;;; ================================================================================
+;;; ============================================================================
 ;;; Consts
-;;; ================================================================================
+;;; ============================================================================
 
 (defconst *is-a-mac* (eq system-type 'darwin))
 
-;;; ================================================================================
+;;; ============================================================================
 ;;; Packages
-;;; ================================================================================
+;;; ============================================================================
 
 (add-to-list 'package-archives
              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
@@ -98,15 +98,15 @@
 (add-to-list 'load-path
              (expand-file-name "lisp" user-emacs-directory))
 
-;;; ================================================================================
+;;; ============================================================================
 ;;; UI
-;;; ================================================================================
+;;; ============================================================================
 
 (use-package theme-switcher
   :ensure nil
   :config
   (setq theme-switcher-day-theme 'ef-day
-        theme-switcher-night-theme 'ef-dark)
+        theme-switcher-night-theme 'ef-winter)
   (theme-switcher-mode t))
 
 ;; Line numbers in prog mode only
@@ -115,6 +115,9 @@
 (when *is-a-mac*
   (setq ns-auto-hide-menu-bar nil
         ns-use-fullscreen-animation t)
+  (setq mac-option-modifier 'meta
+        mac-command-modifier 'super
+        mac-right-option-modifier 'nil)
   (add-hook 'emacs-startup-hook 'toggle-frame-fullscreen))
 
 (global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
@@ -144,12 +147,40 @@
   (treemacs-width 40)
   (treemacs-width-is-initially-locked nil))
 
-(use-package minions
-  :config (minions-mode 1))
+;; (use-package minions
+;;   :config (minions-mode 1))
 
-;;; ================================================================================
+(use-package doom-modeline
+  :config
+  (setq doom-modeline-height 20)
+  (doom-modeline-mode 1))
+
+;; A better *help* buffer
+(use-package helpful
+  :bind (("C-h v" . helpful-variable)
+         ("C-h f" . helpful-callable)
+         ("C-h k" . helpful-key)
+         ("C-h x" . helpful-command)))
+
+(use-package ibuffer
+  :custom
+  (ibuffer-use-other-window t)
+  :ensure nil
+  :bind ("C-x C-b" . ibuffer))
+
+;; Group ibuffer's list by project
+(use-package ibuffer-project
+  :preface
+  (defun ibuffer-hook ()
+    "Group ibuffer's list by project."
+    (setq ibuffer-filter-groups (ibuffer-project-generate-filter-groups))
+    (unless (eq ibuffer-sorting-mode 'project-file-relative)
+      (ibuffer-do-sort-by-project-file-relative)))
+  :hook (ibuffer . ibuffer-hook))
+
+;;; ============================================================================
 ;;; Completion & Navigation
-;;; ================================================================================
+;;; ============================================================================
 
 ;; Completions
 (use-package orderless)
@@ -163,7 +194,7 @@
   (corfu-cycle t)
   (corfu-auto t)
   (corfu-auto-delay 0)
-  (corfu-auto-prefix 2)
+  (corfu-auto-prefix 3)
   :bind
   (:map corfu-map ("M-SPC" . corfu-insert-separator))
   :init
@@ -171,33 +202,71 @@
   (corfu-history-mode))
 
 ;; Completion at point extensions
-(use-package cape)
+(use-package cape
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-file))
 
 (use-package yasnippet
   :config (yas-global-mode t))
 
 ;; Search and navigation
 (use-package consult
-  :bind
-  (("C-x b" . consult-buffer)
-   ("C-x r b" . consult-bookmark)
-   ("C-x p b" . consult-project-buffer)
-   ("M-g f" . consult-flymake)
-   ("M-g g" . consult-goto-line)
-   ("M-g M-g" . consult-goto-line)
-   ("M-g o" . consult-outline)
-   ("M-g i" . consult-imenu)
-   ("M-g I" . consult-imenu-multi)
-   ("M-s r" . consult-ripgrep)
-   ("M-s l" . consult-line)
-   ("M-s L" . consult-line-multi)
-   ("C-x r j" . consult-register)
-   :map isearch-mode-map
-   ("M-e" . consult-isearch-history)))
+  :bind (;; C-c bindings in `mode-specific-map'
+         ("C-c M-x" . consult-mode-command)
+         ("C-c h" . consult-history)
+         ("C-c k" . consult-kmacro)
+         ("C-c m" . consult-man)
+         ("C-c i" . consult-info)
+         ([remap Info-search] . consult-info)
+         ;; C-x bindings in `ctl-x-map'
+         ("C-x M-:" . consult-complex-command)
+         ("C-x b" . consult-buffer)
+         ("C-x 4 b" . consult-buffer-other-window)
+         ("C-x 5 b" . consult-buffer-other-frame)
+         ("C-x t b" . consult-buffer-other-tab)
+         ("C-x r b" . consult-bookmark)
+         ("C-x p b" . consult-project-buffer)
+         ;; Custom M-# bindings for fast register access
+         ("M-#" . consult-register-load)
+         ("M-'" . consult-register-store)
+         ("C-M-#" . consult-register)
+         ;; Other custom bindings
+         ("M-y" . consult-yank-pop)
+         ;; M-g bindings in `goto-map'
+         ("M-g e" . consult-compile-error)
+         ("M-g f" . consult-flymake)
+         ("M-g g" . consult-goto-line)
+         ("M-g M-g" . consult-goto-line)
+         ("M-g o" . consult-outline)
+         ("M-g m" . consult-mark)
+         ("M-g k" . consult-global-mark)
+         ("M-g i" . consult-imenu)
+         ("M-g I" . consult-imenu-multi)
+         ;; M-s bindings in `search-map'
+         ("M-s d" . consult-find)
+         ("M-s c" . consult-locate)
+         ("M-s g" . consult-grep)
+         ("M-s G" . consult-git-grep)
+         ("M-s r" . consult-ripgrep)
+         ("M-s l" . consult-line)
+         ("M-s L" . consult-line-multi)
+         ("M-s k" . consult-keep-lines)
+         ("M-s u" . consult-focus-lines)
+         ;; Isearch integration
+         ("M-s e" . consult-isearch-history)
+         :map isearch-mode-map
+         ("M-e" . consult-isearch-history)
+         ("M-s e" . consult-isearch-history)
+         ("M-s l" . consult-line)
+         ("M-s L" . consult-line-multi)
+         ;; Minibuffer history
+         :map minibuffer-local-map
+         ("M-s" . consult-history)
+         ("M-r" . consult-history)))
 
-;;; ================================================================================
+;;; ============================================================================
 ;;; Files
-;;; ================================================================================
+;;; ============================================================================
 
 ;; Backup files live in user emacs directory
 (setq backup-directory-alist
@@ -207,30 +276,42 @@
       `((".*" ,temporary-file-directory t)))
 
 ;; Dired
-(when *is-a-mac*
-  (setq insert-directory-program "gls"
-        dired-listing-switches "-AGFhlv --group-directories-first --time-style=long-iso"))
-(setq dired-dwim-target t)
-(add-hook 'dired-mode-hook #'dired-hide-details-mode)
+(use-package dired
+  :ensure nil
+  :bind (:map dired-mode-map
+              ("C-c C-q" . wdired-change-to-wdired-mode)
+              )
+  :config
+  (when (and *is-a-mac* (executable-find "gls"))
+    (setq insert-directory-program "gls"
+          dired-listing-switches "-AGFhlv --group-directories-first --time-style=long-iso"))
+  ;; Always delete and copy recursively
+  (setq dired-recursive-deletes 'always
+        dired-recursive-copies 'always)
+  ;; Guess a default target directory
+  (setq dired-dwim-target t))
 
-;;; ================================================================================
+(use-package diredfl
+  :config (diredfl-global-mode))
+
+;;; ============================================================================
 ;;; Languages
-;;; ================================================================================
+;;; ============================================================================
 
 (require 'format-buffer)
 
 ;; Ruby
-(nry-format ruby
+(format-lang ruby
   :command "stree"
   :args '("format" "--print-width=100"))
 
 ;; XML
-(nry-format nxml
+(format-lang nxml
   :command "xmllint"
   :args '("--format" "-"))
 
 ;; SQL
-(nry-format sql
+(format-lang sql
   :command "pg_format")
 
 ;; Flymake
@@ -242,9 +323,12 @@
         ("M-n" . 'flymake-goto-next-error)
         ("M-p" . 'flymake-goto-prev-error)))
 
-;;; ================================================================================
+;; YAML mode
+(use-package yaml-mode)
+
+;;; ============================================================================
 ;;; Org
-;;; ================================================================================
+;;; ============================================================================
 
 (use-package org
   :ensure t
@@ -277,7 +361,7 @@
            "* %?\nEntered on: %u")
           ("T" "Ticket" entry
            (file+headline (lambda () (concat org-directory "sprint.org")) "Tickets")
-           "* IN PROGRESS %?\nScheduled: %t"))))
+           "* IN PROGRESS %?\nSCHEDULED: %t"))))
 
 
 ;; Beautiful Org mode
@@ -291,9 +375,9 @@
   :hook ((org-mode      . toc-org-mode)
          (markdown-mode . toc-org-mode)))
 
-;;; ================================================================================
+;;; ============================================================================
 ;;; Text
-;;; ================================================================================
+;;; ============================================================================
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
@@ -333,6 +417,7 @@
 
 (use-package iedit)
 
+;; Auto insert mode
 (auto-insert-mode t)
 (add-to-list 'auto-insert-alist
              '(("\\.rb\\'" . "Ruby frozen string header")
@@ -340,9 +425,9 @@
 
 "))
 
-;;; ================================================================================
+;;; ============================================================================
 ;;; Git
-;;; ================================================================================
+;;; ============================================================================
 
 (use-package magit
   :ensure t
@@ -356,38 +441,38 @@
   (transient-append-suffix 'magit-log "-A"
     '("-m" "No Merges" "--no-merges")))
 
-;;; ================================================================================
+;;; ============================================================================
 ;;; Utils
-;;; ================================================================================
+;;; ============================================================================
 
-(defun nry-add-to-path (path)
+(defun add-to-path (path)
   "Add a path to variable `exec-path' and Emacs \"PATH\" variable."
   (add-to-list 'exec-path path)
   (setenv "PATH" (concat (getenv "PATH") ":" path)))
 
-(nry-add-to-path "/usr/local/bin")
-(nry-add-to-path "/Library/TeX/texbin")
-(nry-add-to-path "/Users/henry/.rbenv/shims")
-(nry-add-to-path "/Users/henry/.local/bin")
+(add-to-path "/usr/local/bin")
+(add-to-path "/Library/TeX/texbin")
+(add-to-path "/Users/henry/.rbenv/shims")
+(add-to-path "/Users/henry/.local/bin")
 
-(defun nry-macroexpand-point (sexp)
+(defun macroexpand-point (sexp)
   "Expand macro SEXP at point to temp buffer."
   (interactive (list (sexp-at-point)))
   (with-output-to-temp-buffer "*el-macroexpansion*"
     (pp (macroexpand sexp)))
   (with-current-buffer "*el-macroexpansion*" (emacs-lisp-mode)))
 
-(defun nry-new-buffer (new-buffer-name)
+(defun new-buffer (new-buffer-name)
   "Create a new buffer named NEW-BUFFER-NAME and switch to it."
   (interactive "sNew buffer name: ")
   (switch-to-buffer
    (concat "*" new-buffer-name "*")))
 
-(global-set-key (kbd "C-x B") 'nry-new-buffer)
+(global-set-key (kbd "C-x B") 'new-buffer)
 
-;;; ================================================================================
+;;; ============================================================================
 ;;; Window
-;;; ================================================================================
+;;; ============================================================================
 
 ;; Move between windows
 (defun other-window-backward ()
@@ -398,9 +483,9 @@
 (global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "M-O") 'other-window-backward)
 
-;;; ================================================================================
+;;; ============================================================================
 ;;; Tools
-;;; ================================================================================
+;;; ============================================================================
 
 (use-package vterm
   :load-path (lambda ()

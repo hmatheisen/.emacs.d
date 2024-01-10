@@ -20,8 +20,6 @@
 
 ;;; Commentary:
 
-;; TODO Create an actual minor mode for this
-
 ;;; Code:
 
 (defgroup theme-switcher nil
@@ -51,7 +49,7 @@ Default is 8am."
   :type 'integer
   :group 'theme-switcher)
 
-(defcustom theme-switcher-night-start 17
+(defcustom theme-switcher-night-start 16
   "The hour when the theme goes from light to dark in the evening.
 Default is 5pm."
   :type 'integer
@@ -77,17 +75,13 @@ loaded."
       (theme-switcher--load-theme theme-switcher-night-theme))))
 
 (defun theme-switcher--create-timer ()
-  "Hook to run when enabling theme switcher."
+  "Set a timer to check every minute if the theme needs to be changed."
   (setq theme-switcher--timer (run-with-timer 0 (* 1 60) 'theme-switcher--switch-theme)))
 
 (defun theme-switcher--delete-timer ()
-  "Hook to run when disabling theme switcher."
+  "Cancel the timer and reset the timer variable"
   (cancel-timer theme-switcher--timer)
   (setq theme-switcher--timer nil))
-
-;; (defun list-available-themes ()
-;;   "Theme list to display for interactive selection."
-;;   (list (intern (completing-read "Theme: " (custom-available-themes)))))
 
 
 ;; Interactive functions to make theme manipulation easier.

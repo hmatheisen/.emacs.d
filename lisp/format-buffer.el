@@ -26,7 +26,7 @@
 
 (require 'cl-lib)
 
-(defun nry-format-region (beg end program args)
+(defun format-region (beg end program args)
   "Format region with PROGRAM and ARGS on BEG to END."
   (let* ((input-file  (make-temp-file (concat program "-input")))  ; run the formatter on this file
          (stdout-file (make-temp-file (concat program "-stdout"))) ; formatter output
@@ -61,7 +61,7 @@
     (delete-file stdout-file)
     (delete-file stderr-file)))
 
-(cl-defmacro nry-format (mode &key command args)
+(cl-defmacro format-lang (mode &key command args)
   "Run a shell COMMAND with ARGS for a given MODE on the whole buffer.
 
 This macro creates 2 functions to format a region or the whiole
@@ -73,7 +73,7 @@ Example:
 To format a \"ruby-mode\" buffer with the \"stree format
 --print-width=100\" command:
 
-\(nry-format ruby
+\(format ruby
   :command \"stree\"
   :args '\(\"format\" \"--print-width=100\"\)\)"
   (declare (indent defun))
@@ -83,11 +83,11 @@ To format a \"ruby-mode\" buffer with the \"stree format
     `(progn
        (defun ,format-region-fn (beg end)
          (interactive "r")
-         (nry-format-region
+         (format-region
           beg end ,command ,args))
        (defun ,format-buffer-fn ()
          (interactive)
-         (nry-format-region
+         (format-region
           (point-min) (point-max) ,command ,args)))))
 
 (provide 'format-buffer)
