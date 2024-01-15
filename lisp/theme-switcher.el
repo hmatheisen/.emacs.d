@@ -31,7 +31,8 @@
   :group 'theme-switcher
   (if theme-switcher-mode
       (theme-switcher--create-timer)
-    (theme-switcher--delete-timer)))
+    (theme-switcher--delete-timer))
+  (theme-switcher--switch-theme))
 
 (defcustom theme-switcher-day-theme nil
   "The light theme to switch to during the day."

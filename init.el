@@ -33,7 +33,7 @@
  '(completion-styles '(orderless basic partial-completion emacs22))
  '(confirm-kill-emacs 'y-or-n-p)
  '(custom-safe-themes
-   '("d0f3adfe292c9d633930e35c3458cda77796073bb25af852689f999bbb3d9398" "242f33ba517c05f45e075d8ed3d13c0a7b7d1392e0c95d66830029e561607085" "51f3fb81f9233280cb28ee3023e43e82c9307d59d158626881ca14f964d2abeb" default))
+   '("ca934a76aae4ff950288e082be75a68eb7bac6e8d3dd58b28649993540412ed6" "714394050e703db8a773ed350ca6f9cb6636d4bf2e348514804a48929aafc762" "d0f3adfe292c9d633930e35c3458cda77796073bb25af852689f999bbb3d9398" "242f33ba517c05f45e075d8ed3d13c0a7b7d1392e0c95d66830029e561607085" "51f3fb81f9233280cb28ee3023e43e82c9307d59d158626881ca14f964d2abeb" default))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
  '(display-line-numbers nil)
@@ -42,7 +42,6 @@
  '(dynamic-completion-mode t)
  '(ediff-merge-split-window-function 'split-window-vertically)
  '(ediff-window-setup-function 'ediff-setup-windows-plain)
- '(electric-layout-mode t)
  '(electric-pair-mode t)
  '(fill-column 80)
  '(follow-auto t)
@@ -56,7 +55,7 @@
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
-   '(ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
+   '(eglot prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
  '(pixel-scroll-precision-mode t)
  '(recentf-mode t)
  '(repeat-mode t)
@@ -92,7 +91,7 @@
 ;;; ============================================================================
 
 (add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+             '("melpa" . "https://melpa.org/packages/") t)
 
 ;; Load lisp code in other directories
 (add-to-list 'load-path
@@ -145,14 +144,17 @@
   :custom
   (treemacs-no-png-images t)
   (treemacs-width 40)
-  (treemacs-width-is-initially-locked nil))
+  (treemacs-width-is-initially-locked nil)
+  :bind (("s-b" . treemacs)))
 
 ;; (use-package minions
 ;;   :config (minions-mode 1))
 
 (use-package doom-modeline
   :config
-  (setq doom-modeline-height 20)
+  (setq doom-modeline-height 20
+        doom-modeline-buffer-encoding nil
+        doom-modeline-icon nil)
   (doom-modeline-mode 1))
 
 ;; A better *help* buffer
@@ -279,8 +281,7 @@
 (use-package dired
   :ensure nil
   :bind (:map dired-mode-map
-              ("C-c C-q" . wdired-change-to-wdired-mode)
-              )
+              ("C-c C-q" . wdired-change-to-wdired-mode))
   :config
   (when (and *is-a-mac* (executable-find "gls"))
     (setq insert-directory-program "gls"
@@ -326,12 +327,29 @@
 ;; YAML mode
 (use-package yaml-mode)
 
+;; Remap major modes to their treesit equivalent
+(setq major-mode-remap-alist
+      '((bash-mode . bash-ts-mode)
+        (css-mode . css-ts-mode)
+        (go-mode . go-ts-mode)
+        (json-mode . json-ts-mode)
+        (python-mode . python-ts-mode)
+        (ruby-mode . ruby-ts-mode)
+        (tsx-mode . tsx-ts-mode)
+        (typescript-mode . typescript-ts-mode)
+        (yaml-mode . yaml-ts-mode)))
+
+(add-hook 'ruby-ts-mode-hook 'eglot-ensure)
+(add-hook 'typescript-ts-mode-hook 'eglot-ensure)
+(add-hook 'tsx-ts-mode-hook 'eglot-ensure)
+(add-hook 'go-ts-mode-hook 'eglot-ensure)
+(add-hook 'python-ts-mode-hook 'eglot-ensure)
+
 ;;; ============================================================================
 ;;; Org
 ;;; ============================================================================
 
 (use-package org
-  :ensure t
   :preface
   (defun my-org-mode-hook ()
     (org-indent-mode 1)
@@ -363,14 +381,12 @@
            (file+headline (lambda () (concat org-directory "sprint.org")) "Tickets")
            "* IN PROGRESS %?\nSCHEDULED: %t"))))
 
-
 ;; Beautiful Org mode
 (use-package org-modern
   :init
   (global-org-modern-mode))
 
 (use-package toc-org
-  :ensure t
   :defer t
   :hook ((org-mode      . toc-org-mode)
          (markdown-mode . toc-org-mode)))
@@ -425,12 +441,13 @@
 
 "))
 
+(require 'isearch-transient)
+
 ;;; ============================================================================
 ;;; Git
 ;;; ============================================================================
 
 (use-package magit
-  :ensure t
   :defer t
   :bind (("C-x g" . 'magit-status)
          :map magit-file-section-map
@@ -460,7 +477,9 @@
   (interactive (list (sexp-at-point)))
   (with-output-to-temp-buffer "*el-macroexpansion*"
     (pp (macroexpand sexp)))
-  (with-current-buffer "*el-macroexpansion*" (emacs-lisp-mode)))
+  (with-current-buffer "*el-macroexpansion*"
+    (emacs-lisp-mode)
+    (read-only-mode)))
 
 (defun new-buffer (new-buffer-name)
   "Create a new buffer named NEW-BUFFER-NAME and switch to it."
