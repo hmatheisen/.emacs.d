@@ -33,7 +33,7 @@
  '(completion-styles '(orderless basic partial-completion emacs22))
  '(confirm-kill-emacs 'y-or-n-p)
  '(custom-safe-themes
-   '("ca934a76aae4ff950288e082be75a68eb7bac6e8d3dd58b28649993540412ed6" "714394050e703db8a773ed350ca6f9cb6636d4bf2e348514804a48929aafc762" "d0f3adfe292c9d633930e35c3458cda77796073bb25af852689f999bbb3d9398" "242f33ba517c05f45e075d8ed3d13c0a7b7d1392e0c95d66830029e561607085" "51f3fb81f9233280cb28ee3023e43e82c9307d59d158626881ca14f964d2abeb" default))
+   '("01aef17f41edea53c665cb57320bd80393761f836be5ab0bd53292afc94bd14d" "ca934a76aae4ff950288e082be75a68eb7bac6e8d3dd58b28649993540412ed6" "714394050e703db8a773ed350ca6f9cb6636d4bf2e348514804a48929aafc762" "d0f3adfe292c9d633930e35c3458cda77796073bb25af852689f999bbb3d9398" "242f33ba517c05f45e075d8ed3d13c0a7b7d1392e0c95d66830029e561607085" "51f3fb81f9233280cb28ee3023e43e82c9307d59d158626881ca14f964d2abeb" default))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
  '(display-line-numbers nil)
@@ -55,7 +55,7 @@
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
-   '(eglot prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
+   '(undo-tree wgrep embark-consult embark eglot prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
  '(pixel-scroll-precision-mode t)
  '(recentf-mode t)
  '(repeat-mode t)
@@ -266,6 +266,16 @@
          ("M-s" . consult-history)
          ("M-r" . consult-history)))
 
+(use-package embark
+  :bind
+  (("C-." . embark-act)
+   ("C-;" . embark-dwim)
+   ("C-h B" . embark-bindings)))
+
+(use-package embark-consult
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+
 ;;; ============================================================================
 ;;; Files
 ;;; ============================================================================
@@ -441,6 +451,11 @@
 
 "))
 
+;; Visual undo tree
+(use-package undo-tree
+  :config
+  (global-undo-tree-mode))
+
 (require 'isearch-transient)
 
 ;;; ============================================================================
@@ -479,7 +494,7 @@
     (pp (macroexpand sexp)))
   (with-current-buffer "*el-macroexpansion*"
     (emacs-lisp-mode)
-    (read-only-mode)))
+    (view-mode)))
 
 (defun new-buffer (new-buffer-name)
   "Create a new buffer named NEW-BUFFER-NAME and switch to it."
@@ -502,6 +517,19 @@
 (global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "M-O") 'other-window-backward)
 
+(defun window-half-height ()
+  (max 1 (/ (1- (window-height (selected-window))) 2)))
+
+(defun scroll-half-page-up-command ()
+  (interactive)
+  (scroll-up-command (window-half-height)))
+
+(defun scroll-half-page-down-command ()
+  (interactive)
+  (scroll-down-command (window-half-height)))
+
+(global-set-key (kbd "C-v") 'scroll-half-page-up-command)
+(global-set-key (kbd "M-v") 'scroll-half-page-down-command)
 ;;; ============================================================================
 ;;; Tools
 ;;; ============================================================================
