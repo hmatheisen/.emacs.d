@@ -1,1 +1,6 @@
 * My GNU Emacs config
+
+Most of the code lives in [[file:init.el][init.el]].  There is some exportable code in the [[file:lisp/][lisp]]
+directory that could be packaged and used in other config.
+
+It's a fairly simple config I use it and change it every day.

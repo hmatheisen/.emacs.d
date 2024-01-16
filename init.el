@@ -55,7 +55,7 @@
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
-   '(undo-tree wgrep embark-consult embark eglot prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
+   '(inf-ruby undo-tree wgrep embark-consult embark eglot prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
  '(pixel-scroll-precision-mode t)
  '(recentf-mode t)
  '(repeat-mode t)
@@ -269,7 +269,6 @@
 (use-package embark
   :bind
   (("C-." . embark-act)
-   ("C-;" . embark-dwim)
    ("C-h B" . embark-bindings)))
 
 (use-package embark-consult
@@ -316,6 +315,9 @@
   :command "stree"
   :args '("format" "--print-width=100"))
 
+(use-package ruby-electric
+  :hook ((ruby-ts-mode . ruby-electric-mode)))
+
 ;; XML
 (format-lang nxml
   :command "xmllint"
@@ -349,6 +351,7 @@
         (typescript-mode . typescript-ts-mode)
         (yaml-mode . yaml-ts-mode)))
 
+;; Eglot ensure
 (add-hook 'ruby-ts-mode-hook 'eglot-ensure)
 (add-hook 'typescript-ts-mode-hook 'eglot-ensure)
 (add-hook 'tsx-ts-mode-hook 'eglot-ensure)
@@ -398,12 +401,14 @@
 
 (use-package toc-org
   :defer t
-  :hook ((org-mode      . toc-org-mode)
+  :hook ((org-mod       . toc-org-mode)
          (markdown-mode . toc-org-mode)))
 
 ;;; ============================================================================
 ;;; Text
 ;;; ============================================================================
+
+(require 'isearch-transient)
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
@@ -412,14 +417,12 @@
 (defun align-equals (beg end)
   "Align `=' signs in a given region, from BEG to END."
   (interactive "r")
-  (align-regexp beg
-                end
-                "\\(\\s-*\\)="))
+  (align-regexp beg end "\\(\\s-*\\)="))
 
 ;; Whitespace cleanup on save
 (add-hook 'before-save-hook 'whitespace-cleanup)
 
-;; Change whitespace style for markdown files
+;; Do not remove trailing whitespace when cleaning in markdown mode
 (add-hook 'markdown-mode-hook
           (lambda ()
             (setq-local
@@ -428,17 +431,14 @@
 
 (use-package evil
   :init
-  (setq evil-want-C-u-scroll t ;; C-u is Vi behaviour
-        evil-default-state 'emacs ;; Default mode is emacs
-        evil-insert-state-modes nil ;; Override list of buffers where default state is something else than "emacs"
+  (setq evil-want-C-u-scroll t
+        evil-default-state 'emacs
+        evil-insert-state-modes nil
         evil-motion-state-modes nil
-        evil-disable-insert-state-bindings t ;; Use Emacs binding in insert state
-        evil-insert-state-cursor nil) ;; Don't change cursor in insert mode
-  ;; (setq evil-normal-state-modes '(ruby-mode typescript-mode web-mode))
+        evil-disable-insert-state-bindings t
+        evil-insert-state-cursor nil)
   :config
-  (evil-set-undo-system 'undo-redo) ;; Customize undo system
-  (with-eval-after-load 'evil-maps
-    (define-key evil-motion-state-map (kbd "SPC") 'evil-ex)) ;; Use SPC instead of : for commands
+  (evil-set-undo-system 'undo-redo)
   (evil-mode 1))
 
 (use-package iedit)
@@ -454,9 +454,35 @@
 ;; Visual undo tree
 (use-package undo-tree
   :config
+  (setq undo-tree-history-directory-alist
+        `(("." . ,(concat user-emacs-directory "undo"))))
   (global-undo-tree-mode))
 
-(require 'isearch-transient)
+;; Kill to end of line
+(defun kill-beg-line ()
+  "Kill a line from point to column 0."
+  (interactive)
+  (kill-line 0))
+
+(global-set-key (kbd "s-<backspace>") 'kill-beg-line)
+
+;; Copy file absolute path
+(defun project-absolute-file-path ()
+  "Print and kill the absolute file path of the current buffer in a project."
+  (interactive)
+  (let* ((project (project-current t))
+         (root (project-root project))
+         (absolute-file-path (file-relative-name buffer-file-name root)))
+    (kill-new absolute-file-path)
+    (message (concat "Saved '" absolute-file-path "' to kill ring"))))
+
+(define-key project-prefix-map "\C-p" 'project-absolute-file-path)
+
+;; Auto fill in text mode
+(add-hook 'text-mode-hook 'auto-fill-mode)
+
+;; Ispell
+(setq ispell-program-name "aspell")
 
 ;;; ============================================================================
 ;;; Git
