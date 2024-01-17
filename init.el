@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2023  Henry MATHEISEN
 
-;; Author: Henry MATHEISEN <henry.mthsn@gmail.com>
+;; Author: Henry MATHEISEN <haineriz@posteo.de>
 ;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -43,6 +43,7 @@
  '(ediff-merge-split-window-function 'split-window-vertically)
  '(ediff-window-setup-function 'ediff-setup-windows-plain)
  '(electric-pair-mode t)
+ '(elfeed-feeds '("https://planet.emacslife.com/atom.xml"))
  '(fill-column 80)
  '(follow-auto t)
  '(global-auto-revert-mode t)
@@ -55,7 +56,7 @@
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
-   '(inf-ruby undo-tree wgrep embark-consult embark eglot prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
+   '(elfeed inf-ruby undo-tree wgrep embark-consult embark eglot prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
  '(pixel-scroll-precision-mode t)
  '(recentf-mode t)
  '(repeat-mode t)
