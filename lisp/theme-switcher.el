@@ -30,9 +30,10 @@
   :global t
   :group 'theme-switcher
   (if theme-switcher-mode
-      (theme-switcher--create-timer)
-    (theme-switcher--delete-timer))
-  (theme-switcher--switch-theme))
+      (progn
+        (theme-switcher--create-timer)
+        (theme-switcher--switch-theme))
+    (theme-switcher--delete-timer)))
 
 (defcustom theme-switcher-day-theme nil
   "The light theme to switch to during the day."

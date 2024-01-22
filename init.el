@@ -48,19 +48,22 @@
  '(follow-auto t)
  '(global-auto-revert-mode t)
  '(global-goto-address-mode t)
+ '(global-revert-mode t)
  '(global-so-long-mode t)
  '(global-tab-line-mode nil)
+ '(go-ts-mode-indent-offset 4)
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
  '(mode-line-compact nil)
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
-   '(elfeed inf-ruby undo-tree wgrep embark-consult embark eglot prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
+   '(eglot flymake-eslint emmet-mode diff-hl rubocop csv-mode hl-todo elfeed inf-ruby undo-tree wgrep embark-consult embark prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
  '(pixel-scroll-precision-mode t)
  '(recentf-mode t)
  '(repeat-mode t)
  '(ring-bell-function 'ignore)
+ '(savehist-mode t)
  '(scroll-bar-mode nil)
  '(scroll-conservatively 1000)
  '(show-paren-delay 0)
@@ -104,9 +107,10 @@
 
 (use-package theme-switcher
   :ensure nil
+  :custom
+  (theme-switcher-day-theme 'ef-day)
+  (theme-switcher-night-theme 'ef-winter)
   :config
-  (setq theme-switcher-day-theme 'ef-day
-        theme-switcher-night-theme 'ef-winter)
   (theme-switcher-mode t))
 
 ;; Line numbers in prog mode only
@@ -144,12 +148,9 @@
 (use-package treemacs
   :custom
   (treemacs-no-png-images t)
-  (treemacs-width 40)
+  (treemacs-width 50)
   (treemacs-width-is-initially-locked nil)
   :bind (("s-b" . treemacs)))
-
-;; (use-package minions
-;;   :config (minions-mode 1))
 
 (use-package doom-modeline
   :config
@@ -190,6 +191,19 @@
 
 ;; Replace dabbrev-expand with hippie-expand
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
+
+;; Reorder so Dabbrev is tried first
+(setq hippie-expand-try-functions-list
+      '(try-expand-dabbrev
+        try-expand-dabbrev-all-buffers
+        try-expand-dabbrev-from-kill
+        try-complete-file-name-partially
+        try-complete-file-name
+        try-expand-all-abbrevs
+        try-expand-list
+        try-expand-line
+        try-complete-lisp-symbol-partially
+        try-complete-lisp-symbol))
 
 ;; In buffer completion
 (use-package corfu
@@ -311,6 +325,24 @@
 
 (require 'format-buffer)
 
+;; Eglot
+(use-package eglot
+  :ensure nil
+  :preface
+  (defun setup-other-flymake-backends ()
+    "Add other backends to flymake when using eglot"
+    (cond ((derived-mode-p 'typescript-ts-mode 'tsx-ts-mode)
+           (flymake-eslint-enable))
+          ((derived-mode-p 'ruby-ts-mode)
+           (add-hook 'flymake-diagnostic-functions
+                     'ruby-flymake-auto))))
+  :hook ((ruby-ts-mode . eglot-ensure)
+         (typescript-ts-mode . eglot-ensure)
+         (tsx-ts-mode . eglot-ensure)
+         (go-ts-mode . eglot-ensure)
+         (python-ts-mode . eglot-ensure)
+         (eglot-managed-mode . setup-other-flymake-backends)))
+
 ;; Ruby
 (format-lang ruby
   :command "stree"
@@ -318,6 +350,19 @@
 
 (use-package ruby-electric
   :hook ((ruby-ts-mode . ruby-electric-mode)))
+
+;; Typescript
+;; TODO find a good keybinding
+(use-package prettier)
+
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
+
+;; Enable eslint for flymake
+(use-package flymake-eslint)
+
+;; Emacs lisp
+(add-hook 'emacs-lisp-mode-hook 'flymake-mode)
 
 ;; XML
 (format-lang nxml
@@ -351,13 +396,6 @@
         (tsx-mode . tsx-ts-mode)
         (typescript-mode . typescript-ts-mode)
         (yaml-mode . yaml-ts-mode)))
-
-;; Eglot ensure
-(add-hook 'ruby-ts-mode-hook 'eglot-ensure)
-(add-hook 'typescript-ts-mode-hook 'eglot-ensure)
-(add-hook 'tsx-ts-mode-hook 'eglot-ensure)
-(add-hook 'go-ts-mode-hook 'eglot-ensure)
-(add-hook 'python-ts-mode-hook 'eglot-ensure)
 
 ;;; ============================================================================
 ;;; Org
@@ -475,15 +513,24 @@
          (root (project-root project))
          (absolute-file-path (file-relative-name buffer-file-name root)))
     (kill-new absolute-file-path)
-    (message (concat "Saved '" absolute-file-path "' to kill ring"))))
+    (message (concat "Saved \"" absolute-file-path "\" to kill ring"))))
 
-(define-key project-prefix-map "\C-p" 'project-absolute-file-path)
+(define-key project-prefix-map "\C-y" 'project-absolute-file-path)
 
 ;; Auto fill in text mode
 (add-hook 'text-mode-hook 'auto-fill-mode)
 
 ;; Ispell
 (setq ispell-program-name "aspell")
+
+;; Highlight TODOs
+(use-package hl-todo
+  :config
+  (global-hl-todo-mode))
+
+(use-package wgrep
+  :config
+  (setq wgrep-auto-save-buffer t))
 
 ;;; ============================================================================
 ;;; Git
@@ -499,6 +546,11 @@
   :config
   (transient-append-suffix 'magit-log "-A"
     '("-m" "No Merges" "--no-merges")))
+
+(use-package diff-hl
+  :config
+  (diff-hl-margin-mode t)
+  (global-diff-hl-mode))
 
 ;;; ============================================================================
 ;;; Utils
@@ -531,6 +583,19 @@
 
 (global-set-key (kbd "C-x B") 'new-buffer)
 
+;; Set async shell command output buffer to view-mode
+(defun set-buffer-to-view-mode (_command &optional output-buffer _error-buffer)
+  "Advice function to set async shell command OUTPUT-BUFFER to view mode."
+  (let ((buffer (or output-buffer shell-command-buffer-name-async)))
+    (with-current-buffer buffer
+      (view-mode))))
+
+(advice-add 'async-shell-command
+            :after
+            #'set-buffer-to-view-mode)
+
+(put 'list-timers 'disabled nil)
+
 ;;; ============================================================================
 ;;; Window
 ;;; ============================================================================
@@ -545,18 +610,37 @@
 (global-set-key (kbd "M-O") 'other-window-backward)
 
 (defun window-half-height ()
+  "Return half the height of a window."
   (max 1 (/ (1- (window-height (selected-window))) 2)))
 
 (defun scroll-half-page-up-command ()
+  "Scroll up half the height of a window."
   (interactive)
   (scroll-up-command (window-half-height)))
 
 (defun scroll-half-page-down-command ()
+  "Scroll down half the height of a window."
   (interactive)
   (scroll-down-command (window-half-height)))
 
 (global-set-key (kbd "C-v") 'scroll-half-page-up-command)
 (global-set-key (kbd "M-v") 'scroll-half-page-down-command)
+
+(defun split-window-right-focus ()
+  "Splits whe window below and move point to new window."
+  (interactive)
+  (split-window-right)
+  (other-window 1))
+
+(defun split-window-below-focus ()
+  "Splits whe window below and move point to new window."
+  (interactive)
+  (split-window-below)
+  (other-window 1))
+
+(global-set-key (kbd "C-x 2") 'split-window-below-focus)
+(global-set-key (kbd "C-x 3") 'split-window-right-focus)
+
 ;;; ============================================================================
 ;;; Tools
 ;;; ============================================================================
