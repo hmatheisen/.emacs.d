@@ -58,7 +58,7 @@
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
-   '(eglot flymake-eslint emmet-mode diff-hl rubocop csv-mode hl-todo elfeed inf-ruby undo-tree wgrep embark-consult embark prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
+   '(prodigy ac-geiser geiser-guile geiser eglot flymake-eslint emmet-mode diff-hl rubocop csv-mode hl-todo elfeed inf-ruby undo-tree wgrep embark-consult embark prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
  '(pixel-scroll-precision-mode t)
  '(recentf-mode t)
  '(repeat-mode t)
@@ -324,6 +324,7 @@
 ;;; ============================================================================
 
 (require 'format-buffer)
+(require 'tasks)
 
 ;; Eglot
 (use-package eglot
@@ -350,6 +351,21 @@
 
 (use-package ruby-electric
   :hook ((ruby-ts-mode . ruby-electric-mode)))
+
+(with-task-project "~/Code/elevo-rails/"
+  (define-task rails-gettext
+    :command "bundle exec rails gettext:update"
+    :description "Update gettext entries")
+  (define-task sort-forestschema
+    :command "bin/sort_forestschema"
+    :description "Sort `.forestadmin-schema.json' file"
+    :async nil)
+  (define-task yarn-client-tests
+    :command "yarn client:test"
+    :description "Run all client tests")
+  (define-task annotate-models
+    :command "bundle exec rails annotate_models"
+    :description "Annotate rails models"))
 
 ;; Typescript
 ;; TODO find a good keybinding

@@ -23,7 +23,7 @@
 ;;; Code:
 
 (defgroup theme-switcher nil
-  "Automatically switch theme between day and night")
+  "Automatically switch theme between day and night.")
 
 (define-minor-mode theme-switcher-mode
   "Automatically switch theme between day and night."
@@ -61,8 +61,7 @@ Default is 5pm."
   "Timer that runs the switcher function.")
 
 (defun theme-switcher--load-theme (theme)
-  "Disable all enabled themes except THEME then load THEME if not already
-loaded."
+  "Disable all enabled themes except THEME then load THEME if not already loaded."
   (if-let ((themes-to-disable (remove theme custom-enabled-themes)))
       (dolist (to-disable themes-to-disable)
         (disable-theme to-disable)))
@@ -81,7 +80,7 @@ loaded."
   (setq theme-switcher--timer (run-with-timer 0 (* 1 60) 'theme-switcher--switch-theme)))
 
 (defun theme-switcher--delete-timer ()
-  "Cancel the timer and reset the timer variable"
+  "Cancel the timer and reset the timer variable."
   (cancel-timer theme-switcher--timer)
   (setq theme-switcher--timer nil))
 
