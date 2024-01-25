@@ -20,14 +20,43 @@
 
 ;;; Commentary:
 
-;;
-
 ;;; Code:
 
 (require 'cl-lib)
+(require 'project)
 
 (defvar tasks-functions nil
-  "List of functions created by tasks.")
+  "Plist of functions created by tasks.")
+
+(defun tasks--tasks-functions-get (key)
+  "Get KEY's value from `tasks-functions' plist."
+  (plist-get tasks-functions key 'string-equal))
+
+(defun tasks--tasks-functions-put (key value)
+  "Put VALUE in KEY on `tasks-functions' plist.
+VALUE is not inserted if it's already in the list."
+  (let ((init-list (tasks--tasks-functions-get key)))
+    (unless (member value init-list)
+      (setq tasks-functions
+            (plist-put tasks-functions
+                       key
+                       `(,@init-list ,value)
+                       'string-equal)))))
+
+(defun tasks--tasks-functions->list ()
+  "Convert the `tasks-functions' plist to a function list."
+  (let ((func-list))
+    (dolist (el tasks-functions func-list)
+      (if (listp el)
+          (dolist (func el)
+            (setq func-list (cons func func-list)))))))
+
+(defun tasks--run-tasks (task-list)
+  "Prompt user to chose a task from TASK-LIST and call it."
+  (funcall
+   (intern
+    (completing-read "Tasks: "
+                     task-list))))
 
 (defmacro with-task-project (task-project-name &rest body)
   "Create tasks within a project TASK-PROJECT-NAME.
@@ -44,9 +73,21 @@ Eval `define-task' macros in BODY."
     body)))
 
 (cl-defmacro define-task (task-name &key command description project-path (async t))
-  "Define a new task TASK-NAME to run COMMAND.
+  "Define a new task named to run a COMMAND.
 A command has a DESCRIPTION and can be run from a PROJECT-PATH.
-If ASYNC is set to nil, run a shell command."
+A call to `define-task' creates a new interactive function named TASK-NAME.
+If ASYNC is set to nil, use `shell-command' otherwise, default to
+`async-shell-command'.
+
+Example:
+
+\(define-task list-files
+  :commamd \"ls -alsh\"
+  :description \"List all files in directory\"
+  :project-path \"~/.emacs.d/\")
+
+This will create a new interactive function called list-files that runs the
+`async-shell-command': \"ls -alsh\" inside the directory \"~/.emacs.d/\""
   (declare (indent defun))
   (let ((shell-function (if async 'async-shell-command 'shell-command))
         (description (if project-path
@@ -54,22 +95,29 @@ If ASYNC is set to nil, run a shell command."
                        description))
         (directory (or project-path default-directory)))
     (unless (string-equal task-name "elisp--witness--lisp") ;; :(
-      (cl-pushnew task-name tasks-functions))
+      (tasks--tasks-functions-put project-path task-name))
     `(defun ,task-name ()
-       (:documentation ,description)
+       ,description
        (interactive)
        (let ((default-directory ,directory))
          (funcall ',shell-function ,command)))))
 
-(defun run-task ()
+(defun tasks-run ()
   "Run a defined task."
   (interactive)
-  (funcall (intern (completing-read "Task: " tasks-functions))))
+  (tasks--run-tasks (tasks--tasks-functions->list)))
 
-;; TODO (defun project-run-task ())
+(defun project-tasks-run ()
+  "Run a defined task in a project."
+  (interactive)
+  (let* ((project (project-current t))
+         (root (project-root project))
+         (tasks-list (tasks--tasks-functions-get root)))
+    (if tasks-list
+        (tasks--run-tasks (tasks--tasks-functions-get root))
+      (message "No tasks defined for this project"))))
 
-;; TODO Interactively define a new task
-;;      Where can we save the data and which format?
+(define-key project-prefix-map "\C-t" 'project-tasks-run)
 
 (provide 'tasks)
 ;;; tasks.el ends here

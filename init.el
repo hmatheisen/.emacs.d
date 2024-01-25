@@ -82,7 +82,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Iosevka Comfy Fixed" :foundry "nil" :slant normal :weight regular :height 160 :width normal)))))
+ '(default ((t (:family "Iosevka Comfy Fixed" :foundry "nil" :slant normal :weight regular :height 160 :width normal))))
+ '(org-document-title ((t (:foreground "midnight blue" :weight bold :height 1.7))))
+ '(org-level-1 ((t (:inherit outline-1 :extend nil :height 1.5))))
+ '(org-level-2 ((t (:inherit outline-1 :extend nil :height 1.3))))
+ '(org-level-3 ((t (:inherit outline-1 :extend nil :height 1.1)))))
 
 ;;; ============================================================================
 ;;; Consts
@@ -93,6 +97,8 @@
 ;;; ============================================================================
 ;;; Packages
 ;;; ============================================================================
+
+(require 'package)
 
 (add-to-list 'package-archives
              '("melpa" . "https://melpa.org/packages/") t)
@@ -413,6 +419,27 @@
         (typescript-mode . typescript-ts-mode)
         (yaml-mode . yaml-ts-mode)))
 
+;; Markdown
+(use-package markdown-mode
+  :hook ((markdown-mode . (lambda ()
+                            ;; Do not remove trailing whitespace when cleaning in markdown mode
+                            (setq-local whitespace-style (delq 'trailing whitespace-style))
+                            (abbrev-mode))))
+  :config
+  (define-skeleton markdown-release
+    "Release template."
+    "Insert Release Tag: "
+    "# " str "\n\n"
+    "## Stories\n\n"
+    "## Bugfixes\n\n"
+    "## Tasks\n\n"
+    "## Migrations\n\n"
+    "## Rollback Plan\n")
+  (define-abbrev
+    markdown-mode-abbrev-table
+    "release" ""
+    'markdown-release))
+
 ;;; ============================================================================
 ;;; Org
 ;;; ============================================================================
@@ -423,6 +450,7 @@
     (org-indent-mode 1)
     (visual-line-mode 1)
     (auto-fill-mode 1)
+    (abbrev-mode 1)
     (windmove-mode -1))
   :hook ((org-mode . my-org-mode-hook))
   :bind (("C-c l" . org-store-link)
@@ -477,13 +505,6 @@
 ;; Whitespace cleanup on save
 (add-hook 'before-save-hook 'whitespace-cleanup)
 
-;; Do not remove trailing whitespace when cleaning in markdown mode
-(add-hook 'markdown-mode-hook
-          (lambda ()
-            (setq-local
-             whitespace-style
-             (delq 'trailing whitespace-style))))
-
 (use-package evil
   :init
   (setq evil-want-C-u-scroll t
@@ -500,11 +521,11 @@
 
 ;; Auto insert mode
 (auto-insert-mode t)
-(add-to-list 'auto-insert-alist
-             '(("\\.rb\\'" . "Ruby frozen string header")
-               nil "# frozen_string_literal: true
-
-"))
+(define-auto-insert
+  '("\\.rb\\'" . "Ruby frozen string header")
+  '(nil
+    "# frozen_string_literal: true\n"
+    "\n"))
 
 ;; Visual undo tree
 (use-package undo-tree
@@ -540,9 +561,9 @@
 (setq ispell-program-name "aspell")
 
 ;; Highlight TODOs
-(use-package hl-todo
-  :config
-  (global-hl-todo-mode))
+;; (use-package hl-todo
+;;   :config
+;;   (global-hl-todo-mode))
 
 (use-package wgrep
   :config
@@ -585,11 +606,12 @@
 (defun macroexpand-point (sexp)
   "Expand macro SEXP at point to temp buffer."
   (interactive (list (sexp-at-point)))
-  (with-output-to-temp-buffer "*el-macroexpansion*"
-    (pp (macroexpand sexp)))
-  (with-current-buffer "*el-macroexpansion*"
-    (emacs-lisp-mode)
-    (view-mode)))
+  (let ((buffer-name "*el-macroexpansion**"))
+    (with-output-to-temp-buffer buffer-name
+      (pp (macroexpand sexp)))
+    (with-current-buffer buffer-name
+      (emacs-lisp-mode)
+      (view-mode))))
 
 (defun new-buffer (new-buffer-name)
   "Create a new buffer named NEW-BUFFER-NAME and switch to it."
