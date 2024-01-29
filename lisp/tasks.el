@@ -58,20 +58,6 @@ VALUE is not inserted if it's already in the list."
     (completing-read "Tasks: "
                      task-list))))
 
-(defmacro with-task-project (task-project-name &rest body)
-  "Create tasks within a project TASK-PROJECT-NAME.
-Eval `define-task' macros in BODY."
-  (declare (indent defun))
-  (macroexp-progn
-   (mapcar
-    (lambda (task)
-      (unless (eq (car task) 'define-task)
-        (error "`with-task-project' can only be used to call `define-task' macro"))
-      `(,@(take 2 task)
-        :project-path ,task-project-name
-        ,@(nthcdr 2 task)))
-    body)))
-
 (cl-defmacro define-task (task-name &key command description project-path (async t))
   "Define a new task named to run a COMMAND.
 A command has a DESCRIPTION and can be run from a PROJECT-PATH.
@@ -92,14 +78,13 @@ This will create a new interactive function called list-files that runs the
   (let ((shell-function (if async 'async-shell-command 'shell-command))
         (description (if project-path
                          (concat project-path " - " description)
-                       description))
-        (directory (or project-path default-directory)))
+                       description)))
     (unless (string-equal task-name "elisp--witness--lisp") ;; :(
       (tasks--tasks-functions-put project-path task-name))
     `(defun ,task-name ()
        ,description
        (interactive)
-       (let ((default-directory ,directory))
+       (let ((default-directory ,project-path))
          (funcall ',shell-function ,command)))))
 
 (defun tasks-run ()

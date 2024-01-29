@@ -358,20 +358,23 @@
 (use-package ruby-electric
   :hook ((ruby-ts-mode . ruby-electric-mode)))
 
-(with-task-project "~/Code/elevo-rails/"
-  (define-task rails-gettext
-    :command "bundle exec rails gettext:update"
-    :description "Update gettext entries")
-  (define-task sort-forestschema
-    :command "bin/sort_forestschema"
-    :description "Sort `.forestadmin-schema.json' file"
-    :async nil)
-  (define-task yarn-client-tests
-    :command "yarn client:test"
-    :description "Run all client tests")
-  (define-task annotate-models
-    :command "bundle exec rails annotate_models"
-    :description "Annotate rails models"))
+(define-task rails-gettext
+  :command "bundle exec rails gettext:update"
+  :project-path "~/Code/elevo-rails/"
+  :description "Update gettext entries")
+(define-task sort-forestschema
+  :command "bin/sort_forestschema"
+  :project-path "~/Code/elevo-rails/"
+  :description "Sort `.forestadmin-schema.json' file"
+  :async nil)
+(define-task yarn-client-tests
+  :command "yarn client:test"
+  :project-path "~/Code/elevo-rails/"
+  :description "Run all client tests")
+(define-task annotate-models
+  :command "bundle exec rails annotate_models"
+  :project-path "~/Code/elevo-rails/"
+  :description "Annotate rails models")
 
 ;; Typescript
 ;; TODO find a good keybinding
