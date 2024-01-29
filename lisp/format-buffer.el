@@ -64,22 +64,22 @@
 (cl-defmacro format-lang (mode &key command args)
   "Run a shell COMMAND with ARGS for a given MODE on the whole buffer.
 
-This macro creates 2 functions to format a region or the whiole
-buffer.  It also defines a hook to run the buffer format on save.
+This macro creates 2 functions to format a region or the whole buffer.
 
 Errors are shown in a read only buffer if there are any.
 
 Example:
-To format a \"ruby-mode\" buffer with the \"stree format
---print-width=100\" command:
+To format a \"ruby-mode\" buffer with the \"stree format --print-width=100\"
+command:
 
 \(format ruby
   :command \"stree\"
-  :args '\(\"format\" \"--print-width=100\"\)\)"
+  :args \\='(\"format\" \"--print-width=100\"\)\)"
   (declare (indent defun))
-  (let* ((mode-str            (symbol-name mode))
-         (format-region-fn    (intern (concat mode-str "-format-region")))
-         (format-buffer-fn    (intern (concat mode-str "-format-buffer"))))
+  (let* ((mode-str          (symbol-name mode))
+         (mode-hook         (intern (concat mode-str "-mode-hook")))
+         (format-region-fn  (intern (concat mode-str "-format-region")))
+         (format-buffer-fn  (intern (concat mode-str "-format-buffer"))))
     `(progn
        (defun ,format-region-fn (beg end)
          (interactive "r")
@@ -88,7 +88,10 @@ To format a \"ruby-mode\" buffer with the \"stree format
        (defun ,format-buffer-fn ()
          (interactive)
          (format-region
-          (point-min) (point-max) ,command ,args)))))
+          (point-min) (point-max) ,command ,args))
+       (add-hook ',mode-hook
+                 (lambda ()
+                   (local-set-key (kbd "C-c f") ',format-buffer-fn))))))
 
 (provide 'format-buffer)
 ;;; format-buffer.el ends here

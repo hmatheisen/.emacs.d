@@ -84,7 +84,7 @@ This will create a new interactive function called list-files that runs the
     `(defun ,task-name ()
        ,description
        (interactive)
-       (let ((default-directory ,project-path))
+       (let ((default-directory ,(or project-path `default-directory)))
          (funcall ',shell-function ,command)))))
 
 (defun tasks-run ()

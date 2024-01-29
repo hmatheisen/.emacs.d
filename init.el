@@ -351,13 +351,14 @@
          (eglot-managed-mode . setup-other-flymake-backends)))
 
 ;; Ruby
-(format-lang ruby
+(format-lang ruby-ts
   :command "stree"
   :args '("format" "--print-width=100"))
 
 (use-package ruby-electric
   :hook ((ruby-ts-mode . ruby-electric-mode)))
 
+;; Rails commands
 (define-task rails-gettext
   :command "bundle exec rails gettext:update"
   :project-path "~/Code/elevo-rails/"
@@ -377,8 +378,11 @@
   :description "Annotate rails models")
 
 ;; Typescript
-;; TODO find a good keybinding
-(use-package prettier)
+(use-package prettier
+  :bind (:map tsx-ts-mode-map
+         ("C-c f" . prettier-prettify)
+         :map typescript-ts-mode-map
+         ("C-c f" . prettier-prettify)))
 
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
@@ -426,10 +430,9 @@
 (use-package markdown-mode
   :hook ((markdown-mode . (lambda ()
                             ;; Do not remove trailing whitespace when cleaning in markdown mode
-                            (setq-local whitespace-style (delq 'trailing whitespace-style))
-                            (abbrev-mode))))
+                            (setq-local whitespace-style (delq 'trailing whitespace-style)))))
   :config
-  (define-skeleton markdown-release
+  (define-skeleton markdown-release-skeleton
     "Release template."
     "Insert Release Tag: "
     "# " str "\n\n"
@@ -438,10 +441,9 @@
     "## Tasks\n\n"
     "## Migrations\n\n"
     "## Rollback Plan\n")
-  (define-abbrev
-    markdown-mode-abbrev-table
-    "release" ""
-    'markdown-release))
+  ;; Use `markdown-release' as auto-insert on 'release.md' files.
+  (define-auto-insert
+    '("release.md" . "Release template") 'markdown-release-skeleton))
 
 ;;; ============================================================================
 ;;; Org
@@ -563,10 +565,8 @@
 ;; Ispell
 (setq ispell-program-name "aspell")
 
-;; Highlight TODOs
-;; (use-package hl-todo
-;;   :config
-;;   (global-hl-todo-mode))
+;; Abbrev mode by default in all buffers
+(setq-default abbrev-mode t)
 
 (use-package wgrep
   :config
