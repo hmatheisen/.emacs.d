@@ -32,34 +32,36 @@
          (stdout-file (make-temp-file (concat program "-stdout"))) ; formatter output
          (stderr-file (make-temp-file (concat program "-stderr"))) ; formatter err
          (point-pos   (point)))
-    ;; Write region to input-file
-    (write-region beg end input-file nil :quiet)
-    (let ((error-buffer (get-buffer-create (concat "*" program " Error Buffer*"))) ; create error buffer
-          (return-code
-           (apply 'call-process
-                  program
-                  input-file
-                  (list (list :file stdout-file) stderr-file)
-                  t
-                  args))) ; save return code
-      ;; Save stderr in error buffer
-      (with-current-buffer error-buffer
-        (let ((inhibit-read-only t))
-          (insert-file-contents stderr-file nil nil nil t))
-        (special-mode))
-      ;; Update buffer if formatter returns 0
-      ;; else, display error buffer
-      (if (zerop return-code)
-          (progn
-            (save-restriction
-              (narrow-to-region beg end)
-              (insert-file-contents stdout-file nil nil nil t)
-              (goto-char point-pos)
-              (delete-windows-on error-buffer)))
-        (display-buffer error-buffer)))
-    (delete-file input-file)
-    (delete-file stdout-file)
-    (delete-file stderr-file)))
+    (unwind-protect
+        (progn
+          ;; Write region to input-file
+          (write-region beg end input-file nil :quiet)
+          (let ((error-buffer (get-buffer-create (concat "*" program " Error Buffer*"))) ; create error buffer
+                (return-code
+                 (apply 'call-process
+                        program
+                        input-file
+                        (list (list :file stdout-file) stderr-file)
+                        t
+                        args))) ; save return code
+            ;; Save stderr in error buffer
+            (with-current-buffer error-buffer
+              (let ((inhibit-read-only t))
+                (insert-file-contents stderr-file nil nil nil t))
+              (special-mode))
+            ;; Update buffer if formatter returns 0
+            ;; else, display error buffer
+            (if (zerop return-code)
+                (progn
+                  (save-restriction
+                    (narrow-to-region beg end)
+                    (insert-file-contents stdout-file nil nil nil t)
+                    (goto-char point-pos)
+                    (delete-windows-on error-buffer)))
+              (display-buffer error-buffer))))
+      (delete-file input-file)
+      (delete-file stdout-file)
+      (delete-file stderr-file))))
 
 (cl-defmacro format-lang (mode &key command args)
   "Run a shell COMMAND with ARGS for a given MODE on the whole buffer.

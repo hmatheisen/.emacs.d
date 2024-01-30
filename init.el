@@ -58,7 +58,7 @@
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
-   '(prodigy ac-geiser geiser-guile geiser eglot flymake-eslint emmet-mode diff-hl rubocop csv-mode hl-todo elfeed inf-ruby undo-tree wgrep embark-consult embark prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
+   '(olivetti emmet prodigy ac-geiser geiser-guile geiser eglot flymake-eslint emmet-mode diff-hl rubocop csv-mode hl-todo elfeed inf-ruby undo-tree wgrep embark-consult embark prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
  '(pixel-scroll-precision-mode t)
  '(recentf-mode t)
  '(repeat-mode t)
@@ -387,6 +387,9 @@
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
 
+(use-package emmet-mode
+  :hook ((tsx-ts-mode . emmet-mode)))
+
 ;; Enable eslint for flymake
 (use-package flymake-eslint)
 
@@ -430,7 +433,8 @@
 (use-package markdown-mode
   :hook ((markdown-mode . (lambda ()
                             ;; Do not remove trailing whitespace when cleaning in markdown mode
-                            (setq-local whitespace-style (delq 'trailing whitespace-style)))))
+                            (setq-local whitespace-style
+                                        (delq 'trailing whitespace-style)))))
   :config
   (define-skeleton markdown-release-skeleton
     "Release template."
@@ -489,7 +493,7 @@
 
 (use-package toc-org
   :defer t
-  :hook ((org-mod       . toc-org-mode)
+  :hook ((org-mode      . toc-org-mode)
          (markdown-mode . toc-org-mode)))
 
 ;;; ============================================================================
