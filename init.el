@@ -296,6 +296,12 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
+(require 'workspace)
+(setq workspace-config
+      '(("~/Code/elevo-rails/" . (dired magit))
+        ("~/org/" . ("sprint.org" "tasks.org"))
+        ("~/.emacs.d/" . (dired magit))))
+
 ;;; ============================================================================
 ;;; Files
 ;;; ============================================================================
@@ -575,6 +581,9 @@
 (use-package wgrep
   :config
   (setq wgrep-auto-save-buffer t))
+
+(add-to-list 'grep-find-ignored-directories "node_modules")
+(add-to-list 'grep-find-ignored-directories "vendor")
 
 ;;; ============================================================================
 ;;; Git
