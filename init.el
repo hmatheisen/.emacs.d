@@ -175,6 +175,7 @@
 (use-package ibuffer
   :custom
   (ibuffer-use-other-window t)
+  (ibuffer-expert t)
   :ensure nil
   :bind ("C-x C-b" . ibuffer))
 
@@ -297,10 +298,11 @@
   (embark-collect-mode . consult-preview-at-point-mode))
 
 (require 'workspace)
+
 (setq workspace-config
       '(("~/Code/elevo-rails/" . (dired magit))
-        ("~/org/" . ("sprint.org" "tasks.org"))
-        ("~/.emacs.d/" . (dired magit))))
+        ("~/org/"              . ("sprint.org" "tasks.org"))
+        ("~/.emacs.d/"         . (dired magit))))
 
 ;;; ============================================================================
 ;;; Files

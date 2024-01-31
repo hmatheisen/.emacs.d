@@ -42,13 +42,13 @@
           (window-actions (cdr frame-config))
           (path (car frame-config)))
       (with-selected-frame frame
+        (if (length> window-actions 3)
+            (error "Can't handle more than 3 actions per frame"))
         (dolist (action window-actions)
-          (if (length> window-actions 3)
-              (error "Can't handle more than 3 actions per frame"))
           (let* ((position (cl-position action window-actions))
                  (window (cond ((= position 0) (selected-window))
-                               ((= position 1) (split-window-right))
-                               ((= position 2) (split-window-below)))))
+                               ((= position 1) (split-window-right nil (car (window-list))))
+                               ((= position 2) (split-window-below nil (nth 1 (window-list)))))))
             (with-selected-window window
               (cond ((eq action 'dired) (dired path))
                     ((eq action 'magit) (magit-status path))
