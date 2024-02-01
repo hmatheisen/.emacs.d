@@ -83,10 +83,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "Iosevka Comfy Fixed" :foundry "nil" :slant normal :weight regular :height 160 :width normal))))
- '(org-document-title ((t (:foreground "midnight blue" :weight bold :height 1.7))))
- '(org-level-1 ((t (:inherit outline-1 :extend nil :height 1.5))))
- '(org-level-2 ((t (:inherit outline-1 :extend nil :height 1.3))))
- '(org-level-3 ((t (:inherit outline-1 :extend nil :height 1.1)))))
+ '(org-document-title ((t (:height 1.7))))
+ '(org-level-1 ((t (:height 1.5))))
+ '(org-level-2 ((t (:height 1.3))))
+ '(org-level-3 ((t (:height 1.1)))))
 
 ;;; ============================================================================
 ;;; Consts
