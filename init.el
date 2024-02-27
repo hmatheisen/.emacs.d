@@ -33,7 +33,7 @@
  '(completion-styles '(orderless basic partial-completion emacs22))
  '(confirm-kill-emacs 'y-or-n-p)
  '(custom-safe-themes
-   '("01aef17f41edea53c665cb57320bd80393761f836be5ab0bd53292afc94bd14d" "ca934a76aae4ff950288e082be75a68eb7bac6e8d3dd58b28649993540412ed6" "714394050e703db8a773ed350ca6f9cb6636d4bf2e348514804a48929aafc762" "d0f3adfe292c9d633930e35c3458cda77796073bb25af852689f999bbb3d9398" "242f33ba517c05f45e075d8ed3d13c0a7b7d1392e0c95d66830029e561607085" "51f3fb81f9233280cb28ee3023e43e82c9307d59d158626881ca14f964d2abeb" default))
+   '("2777f300b438d2d061560c6a1afac9723e7f840413b12a471055428269ee17dd" "2ca3da7d36b0d326f984530a07be54b272b5c313b1361989acf747d8b5616162" "9ed206ff6874db89cb4a588c6cdc75a7b056fecbc9880e9758881bdef6d9d79a" "01aef17f41edea53c665cb57320bd80393761f836be5ab0bd53292afc94bd14d" "ca934a76aae4ff950288e082be75a68eb7bac6e8d3dd58b28649993540412ed6" "714394050e703db8a773ed350ca6f9cb6636d4bf2e348514804a48929aafc762" "d0f3adfe292c9d633930e35c3458cda77796073bb25af852689f999bbb3d9398" "242f33ba517c05f45e075d8ed3d13c0a7b7d1392e0c95d66830029e561607085" "51f3fb81f9233280cb28ee3023e43e82c9307d59d158626881ca14f964d2abeb" default))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
  '(display-line-numbers nil)
@@ -58,7 +58,7 @@
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
-   '(olivetti emmet prodigy ac-geiser geiser-guile geiser eglot flymake-eslint emmet-mode diff-hl rubocop csv-mode hl-todo elfeed inf-ruby undo-tree wgrep embark-consult embark prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
+   '(flymake-kondor restclient sass-mode beacon sly olivetti emmet prodigy ac-geiser geiser-guile geiser eglot flymake-eslint emmet-mode diff-hl rubocop csv-mode hl-todo elfeed inf-ruby undo-tree wgrep embark-consult embark prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
  '(pixel-scroll-precision-mode t)
  '(recentf-mode t)
  '(repeat-mode t)
@@ -114,7 +114,7 @@
 (use-package theme-switcher
   :ensure nil
   :custom
-  (theme-switcher-day-theme 'ef-day)
+  (theme-switcher-day-theme 'ef-arbutus)
   (theme-switcher-night-theme 'ef-winter)
   :config
   (theme-switcher-mode t))
@@ -371,6 +371,10 @@
   :command "bundle exec rails gettext:update"
   :project-path "~/Code/elevo-rails/"
   :description "Update gettext entries")
+(define-task rails-migrate
+  :command "bundle exec rails db:migrate"
+  :project-path "~/Code/elevo-rails/"
+  :description "Run rails migration")
 (define-task sort-forestschema
   :command "bin/sort_forestschema"
   :project-path "~/Code/elevo-rails/"
@@ -456,6 +460,18 @@
   ;; Use `markdown-release' as auto-insert on 'release.md' files.
   (define-auto-insert
     '("release.md" . "Release template") 'markdown-release-skeleton))
+
+;; Quicklisp
+;; (load (expand-file-name "~/.quicklisp/slime-helper.el"))
+;; Replace "sbcl" with the path to your implementation
+(setq inferior-lisp-program "sbcl")
+
+;; Clojure
+(use-package cider)
+(use-package clojure-mode)
+(use-package flymake-kondor
+  :ensure t
+  :hook (clojure-mode . flymake-kondor-setup))
 
 ;;; ============================================================================
 ;;; Org
@@ -649,6 +665,12 @@
 (advice-add 'async-shell-command
             :after
             #'set-buffer-to-view-mode)
+
+(defun repeat-last-async-shell-command ()
+  "Repeats the last shell command in as an `async-shell-command'."
+  (interactive)
+  (async-shell-command
+   (car shell-command-history)))
 
 (put 'list-timers 'disabled nil)
 
