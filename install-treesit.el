@@ -11,8 +11,8 @@
      (json "https://github.com/tree-sitter/tree-sitter-json")
      (python "https://github.com/tree-sitter/tree-sitter-python")
      (ruby "https://github.com/tree-sitter/tree-sitter-ruby")
-     (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-     (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+     (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "tsx/src")
+     (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src")
      (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
 
 (mapc #'treesit-install-language-grammar
