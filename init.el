@@ -33,7 +33,7 @@
  '(completion-styles '(orderless basic partial-completion emacs22))
  '(confirm-kill-emacs 'y-or-n-p)
  '(custom-safe-themes
-   '("2777f300b438d2d061560c6a1afac9723e7f840413b12a471055428269ee17dd" "2ca3da7d36b0d326f984530a07be54b272b5c313b1361989acf747d8b5616162" "9ed206ff6874db89cb4a588c6cdc75a7b056fecbc9880e9758881bdef6d9d79a" "01aef17f41edea53c665cb57320bd80393761f836be5ab0bd53292afc94bd14d" "ca934a76aae4ff950288e082be75a68eb7bac6e8d3dd58b28649993540412ed6" "714394050e703db8a773ed350ca6f9cb6636d4bf2e348514804a48929aafc762" "d0f3adfe292c9d633930e35c3458cda77796073bb25af852689f999bbb3d9398" "242f33ba517c05f45e075d8ed3d13c0a7b7d1392e0c95d66830029e561607085" "51f3fb81f9233280cb28ee3023e43e82c9307d59d158626881ca14f964d2abeb" default))
+   '("0c5d7ffa7cdf8b889342d2cd38f6ddd2cc716561048feca89b17fda56677d6b8" "694dbeb8f98dddfb603a2fe0c04101f3fe457ee49bf90a6a581271e7f9c580c8" "b216e9b72dc8c2b702e4fcfd3c0af2d73c87eba46fd4db824ddb50863447d6a9" "765b9109dfdd2f82590bf4d5452cc134d7de2163e24a160efd1887ee57c59413" "2777f300b438d2d061560c6a1afac9723e7f840413b12a471055428269ee17dd" "2ca3da7d36b0d326f984530a07be54b272b5c313b1361989acf747d8b5616162" "9ed206ff6874db89cb4a588c6cdc75a7b056fecbc9880e9758881bdef6d9d79a" "01aef17f41edea53c665cb57320bd80393761f836be5ab0bd53292afc94bd14d" "ca934a76aae4ff950288e082be75a68eb7bac6e8d3dd58b28649993540412ed6" "714394050e703db8a773ed350ca6f9cb6636d4bf2e348514804a48929aafc762" "d0f3adfe292c9d633930e35c3458cda77796073bb25af852689f999bbb3d9398" "242f33ba517c05f45e075d8ed3d13c0a7b7d1392e0c95d66830029e561607085" "51f3fb81f9233280cb28ee3023e43e82c9307d59d158626881ca14f964d2abeb" default))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
  '(display-line-numbers nil)
@@ -58,7 +58,7 @@
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
-   '(flymake-kondor restclient sass-mode beacon sly olivetti emmet prodigy ac-geiser geiser-guile geiser eglot flymake-eslint emmet-mode diff-hl rubocop csv-mode hl-todo elfeed inf-ruby undo-tree wgrep embark-consult embark prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
+   '(altcaps lorem-ipsum go-mode multiple-cursors jsdoc vundo rainbow-mode lua-mode fennel-mode multi-vterm company flymake-kondor restclient sass-mode beacon sly olivetti emmet prodigy ac-geiser geiser-guile geiser eglot flymake-eslint emmet-mode diff-hl rubocop csv-mode hl-todo elfeed inf-ruby undo-tree wgrep embark-consult embark prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
  '(pixel-scroll-precision-mode t)
  '(recentf-mode t)
  '(repeat-mode t)
@@ -68,7 +68,9 @@
  '(scroll-conservatively 1000)
  '(show-paren-delay 0)
  '(show-trailing-whitespace nil)
- '(tab-width 4)
+ '(smtpmail-smtp-server "posteo.de")
+ '(smtpmail-smtp-service 25)
+ '(tab-width 2)
  '(tool-bar-mode nil)
  '(tooltip-mode nil)
  '(trash-directory "~/.Trash")
@@ -115,7 +117,7 @@
   :ensure nil
   :custom
   (theme-switcher-day-theme 'ef-arbutus)
-  (theme-switcher-night-theme 'ef-winter)
+  (theme-switcher-night-theme 'ef-cherie)
   :config
   (theme-switcher-mode t))
 
@@ -134,7 +136,7 @@
 
 (use-package which-key
   :init
-  (setq which-key-idle-delay 0)
+  (setq which-key-idle-delay 1.0)
   (which-key-mode))
 
 ;; Minibuffer
@@ -159,10 +161,12 @@
   :bind (("s-b" . treemacs)))
 
 (use-package doom-modeline
+  :custom
+  (doom-modeline-height 20)
+  (doom-modeline-buffer-encoding nil)
+  (doom-modeline-icon nil)
+  (doom-modeline-time-analogue-clock nil)
   :config
-  (setq doom-modeline-height 20
-        doom-modeline-buffer-encoding nil
-        doom-modeline-icon nil)
   (doom-modeline-mode 1))
 
 ;; A better *help* buffer
@@ -354,9 +358,11 @@
   :hook ((ruby-ts-mode . eglot-ensure)
          (typescript-ts-mode . eglot-ensure)
          (tsx-ts-mode . eglot-ensure)
-         (go-ts-mode . eglot-ensure)
+         (go-mode . eglot-ensure)
          (python-ts-mode . eglot-ensure)
-         (eglot-managed-mode . setup-other-flymake-backends)))
+         (eglot-managed-mode . setup-other-flymake-backends))
+  :config
+  (add-to-list 'eglot-server-programs '(fennel-mode . ("fennel-ls"))))
 
 ;; Ruby
 (format-lang ruby-ts
@@ -371,19 +377,23 @@
   :command "bundle exec rails gettext:update"
   :project-path "~/Code/elevo-rails/"
   :description "Update gettext entries")
+
 (define-task rails-migrate
   :command "bundle exec rails db:migrate"
   :project-path "~/Code/elevo-rails/"
   :description "Run rails migration")
+
 (define-task sort-forestschema
   :command "bin/sort_forestschema"
   :project-path "~/Code/elevo-rails/"
   :description "Sort `.forestadmin-schema.json' file"
   :async nil)
+
 (define-task yarn-client-tests
   :command "yarn client:test"
   :project-path "~/Code/elevo-rails/"
   :description "Run all client tests")
+
 (define-task annotate-models
   :command "bundle exec rails annotate_models"
   :project-path "~/Code/elevo-rails/"
@@ -433,7 +443,6 @@
 (setq major-mode-remap-alist
       '((bash-mode . bash-ts-mode)
         (css-mode . css-ts-mode)
-        (go-mode . go-ts-mode)
         (json-mode . json-ts-mode)
         (python-mode . python-ts-mode)
         (ruby-mode . ruby-ts-mode)
@@ -473,6 +482,13 @@
   :ensure t
   :hook (clojure-mode . flymake-kondor-setup))
 
+;; Fennel
+(use-package fennel-mode)
+(use-package lua-mode)
+
+;; Golang
+(use-package go-mode)
+
 ;;; ============================================================================
 ;;; Org
 ;;; ============================================================================
@@ -508,7 +524,27 @@
            "* %?\nEntered on: %u")
           ("T" "Ticket" entry
            (file+headline (lambda () (concat org-directory "sprint.org")) "Tickets")
-           "* IN PROGRESS %?\nSCHEDULED: %t"))))
+           "* IN PROGRESS %?\nSCHEDULED: %t")))
+  (define-skeleton org-refinement-skeleton
+    "Refinement Template."
+    "Insert Refinement subject: "
+    "TITLE: " str "\n"
+    "#+OPTIONS: toc:nil\n\n"
+    "* Notes\n"
+    "* Tech Solution\n"
+    "** Backend\n"
+    "*** Routes\n"
+    "*** Validations\n"
+    "*** Serializers/Presenters\n"
+    "*** Policies\n"
+    "** Frontend\n"
+    "* Questions\n"
+    "** Product\n"
+    "** Tech\n"
+    "* Tickets\n")
+  (define-auto-insert
+    '("refinements/.*\.org" . "Refinement template")
+    'org-refinement-skeleton))
 
 ;; Beautiful Org mode
 (use-package org-modern
@@ -529,6 +565,7 @@
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 (put 'set-goal-column 'disabled nil)
+(put 'narrow-to-region 'disabled nil)
 
 (defun align-equals (beg end)
   "Align `=' signs in a given region, from BEG to END."
@@ -561,11 +598,17 @@
     "\n"))
 
 ;; Visual undo tree
-(use-package undo-tree
-  :config
-  (setq undo-tree-history-directory-alist
-        `(("." . ,(concat user-emacs-directory "undo"))))
-  (global-undo-tree-mode))
+;; (use-package undo-tree
+;;   :config
+;;   (setq undo-tree-history-directory-alist
+;;         `(("." . ,(concat user-emacs-directory "undo"))))
+;;   (global-undo-tree-mode))
+
+;; Redo binding with super
+(global-set-key (kbd "s-Z") 'undo-redo)
+
+(use-package vundo
+  :bind (("C-x u" . vundo)))
 
 ;; Kill to end of line
 (defun kill-beg-line ()
@@ -619,9 +662,12 @@
     '("-m" "No Merges" "--no-merges")))
 
 (use-package diff-hl
+  :after (magit)
   :config
   (diff-hl-margin-mode t)
-  (global-diff-hl-mode))
+  (global-diff-hl-mode)
+  (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
 ;;; ============================================================================
 ;;; Utils
@@ -727,6 +773,13 @@
   :load-path (lambda ()
                (expand-file-name "emacs-libvterm" user-emacs-directory)))
 
+(use-package copilot
+  :load-path (lambda ()
+               (expand-file-name "copilot.el" user-emacs-directory))
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . copilot-accept-completion)
+              ("TAB" . copilot-accept-completion)))
 
 (provide 'init)
 
