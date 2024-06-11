@@ -54,6 +54,7 @@
  '(go-ts-mode-indent-offset 4)
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
+ '(lua-indent-level 4)
  '(mode-line-compact nil)
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
@@ -482,6 +483,11 @@
   :ensure t
   :hook (clojure-mode . flymake-kondor-setup))
 
+;; Lua
+(format-lang lua
+  :command "lua-format"
+  :args '("-i"))
+
 ;; Fennel
 (use-package fennel-mode)
 (use-package lua-mode)
@@ -575,17 +581,17 @@
 ;; Whitespace cleanup on save
 (add-hook 'before-save-hook 'whitespace-cleanup)
 
-(use-package evil
-  :init
-  (setq evil-want-C-u-scroll t
-        evil-default-state 'emacs
-        evil-insert-state-modes nil
-        evil-motion-state-modes nil
-        evil-disable-insert-state-bindings t
-        evil-insert-state-cursor nil)
-  :config
-  (evil-set-undo-system 'undo-redo)
-  (evil-mode 1))
+;; (use-package evil
+;;   :init
+;;   (setq evil-want-C-u-scroll t
+;;         evil-default-state 'emacs
+;;         evil-insert-state-modes nil
+;;         evil-motion-state-modes nil
+;;         evil-disable-insert-state-bindings t
+;;         evil-insert-state-cursor nil)
+;;   :config
+;;   (evil-set-undo-system 'undo-redo)
+;;   (evil-mode 1))
 
 (use-package iedit)
 
@@ -629,6 +635,25 @@
     (message (concat "Saved \"" absolute-file-path "\" to kill ring"))))
 
 (define-key project-prefix-map "\C-y" 'project-absolute-file-path)
+
+;; Open vterm at root of project
+(defun project-vterm ()
+  "Open a vterm at the root of the current project."
+  (interactive)
+  (let* ((project (project-current t))
+         (root (project-root project)))
+    (vterm)
+    (vterm-send-string (concat "cd " root))
+    (vterm-send-return)))
+
+(define-key project-prefix-map "T" 'project-vterm)
+
+(defun project-rails-console ()
+  "Open a rails console at the root of the current project."
+  (interactive)
+  (let* ((project (project-current t))
+         (root (project-root project)))
+    (inf-ruby-console-rails root)))
 
 ;; Auto fill in text mode
 (add-hook 'text-mode-hook 'auto-fill-mode)
