@@ -624,37 +624,6 @@
 
 (global-set-key (kbd "s-<backspace>") 'kill-beg-line)
 
-;; Copy file absolute path
-(defun project-absolute-file-path ()
-  "Print and kill the absolute file path of the current buffer in a project."
-  (interactive)
-  (let* ((project (project-current t))
-         (root (project-root project))
-         (absolute-file-path (file-relative-name buffer-file-name root)))
-    (kill-new absolute-file-path)
-    (message (concat "Saved \"" absolute-file-path "\" to kill ring"))))
-
-(define-key project-prefix-map "\C-y" 'project-absolute-file-path)
-
-;; Open vterm at root of project
-(defun project-vterm ()
-  "Open a vterm at the root of the current project."
-  (interactive)
-  (let* ((project (project-current t))
-         (root (project-root project)))
-    (vterm)
-    (vterm-send-string (concat "cd " root))
-    (vterm-send-return)))
-
-(define-key project-prefix-map "T" 'project-vterm)
-
-(defun project-rails-console ()
-  "Open a rails console at the root of the current project."
-  (interactive)
-  (let* ((project (project-current t))
-         (root (project-root project)))
-    (inf-ruby-console-rails root)))
-
 ;; Auto fill in text mode
 (add-hook 'text-mode-hook 'auto-fill-mode)
 
@@ -670,6 +639,45 @@
 
 (add-to-list 'grep-find-ignored-directories "node_modules")
 (add-to-list 'grep-find-ignored-directories "vendor")
+
+;;; ============================================================================
+;;; Project
+;;; ============================================================================
+
+(defmacro with-current-project-root (root &rest body)
+  "Execute BODY with ROOT as the current project root."
+  (declare (indent 1))
+  `(let* ((project (project-current t))
+          (root (project-root project)))
+     ,@body))
+
+;; Copy file absolute path
+(defun project-absolute-file-path ()
+  "Print and kill the absolute file path of the current buffer in a project."
+  (interactive)
+  (with-current-project-root (root)
+    (let ((absolute-file-path (file-relative-name buffer-file-name root)))
+      (kill-new absolute-file-path)
+      (message (concat "Saved \"" absolute-file-path "\" to kill ring")))))
+
+(define-key project-prefix-map "\C-y" 'project-absolute-file-path)
+
+;; Open vterm at root of project
+(defun project-vterm ()
+  "Open a vterm at the root of the current project."
+  (interactive)
+  (with-current-project-root (root)
+    (vterm)
+    (vterm-send-string (concat "cd " root))
+    (vterm-send-return)))
+
+(define-key project-prefix-map "T" 'project-vterm)
+
+(defun project-rails-console ()
+  "Open a rails console at the root of the current project."
+  (interactive)
+  (with-current-project-root (root)
+    (inf-ruby-console-rails root)))
 
 ;;; ============================================================================
 ;;; Git
