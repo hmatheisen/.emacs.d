@@ -78,6 +78,7 @@
  '(truncate-lines t)
  '(use-package-always-ensure t)
  '(user-mail-address "haineriz@posteo.de")
+ '(warning-minimum-level :emergency)
  '(windmove-default-keybindings '([ignore]))
  '(winner-mode t))
 (custom-set-faces
@@ -136,8 +137,9 @@
 (global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
 
 (use-package which-key
+  :custom
+  (which-key-idle-delay 1.0)
   :init
-  (setq which-key-idle-delay 1.0)
   (which-key-mode))
 
 ;; Minibuffer
@@ -669,7 +671,8 @@
   (with-current-project-root (root)
     (vterm)
     (vterm-send-string (concat "cd " root))
-    (vterm-send-return)))
+    (vterm-send-return)
+    (vterm-clear)))
 
 (define-key project-prefix-map "T" 'project-vterm)
 
