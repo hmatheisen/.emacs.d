@@ -59,7 +59,7 @@
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
-   '(altcaps lorem-ipsum go-mode multiple-cursors jsdoc vundo rainbow-mode lua-mode fennel-mode multi-vterm company flymake-kondor restclient sass-mode beacon sly olivetti emmet prodigy ac-geiser geiser-guile geiser eglot flymake-eslint emmet-mode diff-hl rubocop csv-mode hl-todo elfeed inf-ruby undo-tree wgrep embark-consult embark prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
+   '(nerd-icons-corfu altcaps lorem-ipsum go-mode multiple-cursors jsdoc vundo rainbow-mode lua-mode fennel-mode multi-vterm company flymake-kondor restclient sass-mode beacon sly olivetti emmet prodigy ac-geiser geiser-guile geiser eglot flymake-eslint emmet-mode diff-hl rubocop csv-mode hl-todo elfeed inf-ruby undo-tree wgrep embark-consult embark prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
  '(pixel-scroll-precision-mode t)
  '(recentf-mode t)
  '(repeat-mode t)
@@ -219,6 +219,8 @@
         try-complete-lisp-symbol-partially
         try-complete-lisp-symbol))
 
+(use-package nerd-icons-corfu)
+
 ;; In buffer completion
 (use-package corfu
   :custom
@@ -228,8 +230,11 @@
   (corfu-auto-prefix 3)
   :bind
   (:map corfu-map ("M-SPC" . corfu-insert-separator))
+  :config
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter)
   :init
   (global-corfu-mode)
+  (corfu-popupinfo-mode)
   (corfu-history-mode))
 
 ;; Completion at point extensions
@@ -814,8 +819,8 @@
                (expand-file-name "copilot.el" user-emacs-directory))
   :hook (prog-mode . copilot-mode)
   :bind (:map copilot-completion-map
-              ("<tab>" . copilot-accept-completion)
-              ("TAB" . copilot-accept-completion)))
+              ("M-<tab>" . copilot-accept-completion)
+              ("M-TAB" . copilot-accept-completion)))
 
 (provide 'init)
 
