@@ -27,7 +27,7 @@
 (require 'transient)
 
 (transient-define-prefix isearch-menu ()
-  "isearch Menu"
+  "Transient menu for isearch."
   [["Edit Search String"
     ("e"
      "Edit the search string (recursive)"

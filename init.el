@@ -59,7 +59,7 @@
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
-   '(nerd-icons-corfu altcaps lorem-ipsum go-mode multiple-cursors jsdoc vundo rainbow-mode lua-mode fennel-mode multi-vterm company flymake-kondor restclient sass-mode beacon sly olivetti emmet prodigy ac-geiser geiser-guile geiser eglot flymake-eslint emmet-mode diff-hl rubocop csv-mode hl-todo elfeed inf-ruby undo-tree wgrep embark-consult embark prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
+   '(dogears nerd-icons-corfu altcaps lorem-ipsum go-mode multiple-cursors jsdoc vundo rainbow-mode lua-mode fennel-mode multi-vterm company flymake-kondor restclient sass-mode beacon sly olivetti emmet prodigy eglot flymake-eslint emmet-mode diff-hl rubocop csv-mode hl-todo elfeed inf-ruby undo-tree wgrep embark-consult embark prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
  '(pixel-scroll-precision-mode t)
  '(recentf-mode t)
  '(repeat-mode t)
@@ -308,6 +308,16 @@
 (use-package embark-consult
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
+
+(use-package dogears
+  :config
+  (dogears-mode t)
+  :bind
+  (("M-g d" . dogears-go)
+   ("M-g M-b" . dogears-back)
+   ("M-g M-f" . dogears-forward)
+   ("M-g M-d" . dogears-list)
+   ("M-g M-D" . dogears-sidebar)))
 
 (require 'workspace)
 
