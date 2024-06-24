@@ -46,6 +46,7 @@
  '(elfeed-feeds '("https://planet.emacslife.com/atom.xml"))
  '(fill-column 80)
  '(follow-auto t)
+ '(geiser-chez-binary "chez")
  '(global-auto-revert-mode t)
  '(global-goto-address-mode t)
  '(global-revert-mode t)
@@ -59,7 +60,7 @@
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
-   '(dogears nerd-icons-corfu altcaps lorem-ipsum go-mode multiple-cursors jsdoc vundo rainbow-mode lua-mode fennel-mode multi-vterm company flymake-kondor restclient sass-mode beacon sly olivetti emmet prodigy eglot flymake-eslint emmet-mode diff-hl rubocop csv-mode hl-todo elfeed inf-ruby undo-tree wgrep embark-consult embark prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
+   '(paredit gradle-mode geiser-chez dogears nerd-icons-corfu altcaps lorem-ipsum go-mode multiple-cursors jsdoc vundo rainbow-mode lua-mode fennel-mode multi-vterm company flymake-kondor restclient sass-mode beacon sly olivetti emmet prodigy eglot flymake-eslint emmet-mode diff-hl rubocop csv-mode hl-todo elfeed inf-ruby undo-tree wgrep embark-consult embark prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
  '(pixel-scroll-precision-mode t)
  '(recentf-mode t)
  '(repeat-mode t)
@@ -131,8 +132,7 @@
         ns-use-fullscreen-animation t)
   (setq mac-option-modifier 'meta
         mac-command-modifier 'super
-        mac-right-option-modifier 'nil)
-  (add-hook 'emacs-startup-hook 'toggle-frame-fullscreen))
+        mac-right-option-modifier 'nil))
 
 (global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
 
@@ -195,6 +195,11 @@
     (unless (eq ibuffer-sorting-mode 'project-file-relative)
       (ibuffer-do-sort-by-project-file-relative)))
   :hook (ibuffer . ibuffer-hook))
+
+(add-to-list 'default-frame-alist '(height . 80))
+(add-to-list 'default-frame-alist '(width . 180))
+(add-to-list 'default-frame-alist '(left . 0))
+(add-to-list 'default-frame-alist '(top . 0))
 
 ;;; ============================================================================
 ;;; Completion & Navigation
@@ -318,6 +323,15 @@
    ("M-g M-f" . dogears-forward)
    ("M-g M-d" . dogears-list)
    ("M-g M-D" . dogears-sidebar)))
+
+(use-package multiple-cursors
+  :config
+  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+  (global-unset-key (kbd "M-<down-mouse-1>"))
+  (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))
 
 (require 'workspace)
 
@@ -657,6 +671,9 @@
 (add-to-list 'grep-find-ignored-directories "node_modules")
 (add-to-list 'grep-find-ignored-directories "vendor")
 
+(use-package avy
+  :bind ("C-:" . avy-goto-char))
+
 ;;; ============================================================================
 ;;; Project
 ;;; ============================================================================
@@ -728,6 +745,16 @@
   "Add a path to variable `exec-path' and Emacs \"PATH\" variable."
   (add-to-list 'exec-path path)
   (setenv "PATH" (concat (getenv "PATH") ":" path)))
+
+(defun chez-scheme-set-env (dir)
+  "List dirs in chez scheme lib DIR and sets the proper env."
+  (let* ((scheme-lib-dirs (directory-files dir t
+                                           directory-files-no-dot-files-regexp))
+         (env (string-join scheme-lib-dirs ":")))
+    (setenv "CHEZSCHEMELIBDIRS" env)))
+
+(when *is-a-mac*
+  (chez-scheme-set-env "/Users/henry/Code/scheme/lib"))
 
 (add-to-path "/usr/local/bin")
 (add-to-path "/Library/TeX/texbin")
