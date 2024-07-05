@@ -33,7 +33,7 @@
  '(completion-styles '(orderless basic partial-completion emacs22))
  '(confirm-kill-emacs 'y-or-n-p)
  '(custom-safe-themes
-   '("0c5d7ffa7cdf8b889342d2cd38f6ddd2cc716561048feca89b17fda56677d6b8" "694dbeb8f98dddfb603a2fe0c04101f3fe457ee49bf90a6a581271e7f9c580c8" "b216e9b72dc8c2b702e4fcfd3c0af2d73c87eba46fd4db824ddb50863447d6a9" "765b9109dfdd2f82590bf4d5452cc134d7de2163e24a160efd1887ee57c59413" "2777f300b438d2d061560c6a1afac9723e7f840413b12a471055428269ee17dd" "2ca3da7d36b0d326f984530a07be54b272b5c313b1361989acf747d8b5616162" "9ed206ff6874db89cb4a588c6cdc75a7b056fecbc9880e9758881bdef6d9d79a" "01aef17f41edea53c665cb57320bd80393761f836be5ab0bd53292afc94bd14d" "ca934a76aae4ff950288e082be75a68eb7bac6e8d3dd58b28649993540412ed6" "714394050e703db8a773ed350ca6f9cb6636d4bf2e348514804a48929aafc762" "d0f3adfe292c9d633930e35c3458cda77796073bb25af852689f999bbb3d9398" "242f33ba517c05f45e075d8ed3d13c0a7b7d1392e0c95d66830029e561607085" "51f3fb81f9233280cb28ee3023e43e82c9307d59d158626881ca14f964d2abeb" default))
+   '("ffdf8617d6e0f1264e5879d3ac919d0f1d8c91d38f2c769e4fa633ddbab248bf" "841b6a0350ae5029d6410d27cc036b9f35d3bf657de1c08af0b7cbe3974d19ac" "0c5d7ffa7cdf8b889342d2cd38f6ddd2cc716561048feca89b17fda56677d6b8" "694dbeb8f98dddfb603a2fe0c04101f3fe457ee49bf90a6a581271e7f9c580c8" "b216e9b72dc8c2b702e4fcfd3c0af2d73c87eba46fd4db824ddb50863447d6a9" "765b9109dfdd2f82590bf4d5452cc134d7de2163e24a160efd1887ee57c59413" "2777f300b438d2d061560c6a1afac9723e7f840413b12a471055428269ee17dd" "2ca3da7d36b0d326f984530a07be54b272b5c313b1361989acf747d8b5616162" "9ed206ff6874db89cb4a588c6cdc75a7b056fecbc9880e9758881bdef6d9d79a" "01aef17f41edea53c665cb57320bd80393761f836be5ab0bd53292afc94bd14d" "ca934a76aae4ff950288e082be75a68eb7bac6e8d3dd58b28649993540412ed6" "714394050e703db8a773ed350ca6f9cb6636d4bf2e348514804a48929aafc762" "d0f3adfe292c9d633930e35c3458cda77796073bb25af852689f999bbb3d9398" "242f33ba517c05f45e075d8ed3d13c0a7b7d1392e0c95d66830029e561607085" "51f3fb81f9233280cb28ee3023e43e82c9307d59d158626881ca14f964d2abeb" default))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
  '(display-line-numbers nil)
@@ -41,6 +41,7 @@
  '(display-time-mode t)
  '(dynamic-completion-mode t)
  '(ediff-merge-split-window-function 'split-window-vertically)
+ '(ediff-split-window-function 'split-window-vertically)
  '(ediff-window-setup-function 'ediff-setup-windows-plain)
  '(electric-pair-mode t)
  '(elfeed-feeds '("https://planet.emacslife.com/atom.xml"))
@@ -60,7 +61,7 @@
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
-   '(paredit gradle-mode geiser-chez dogears nerd-icons-corfu altcaps lorem-ipsum go-mode multiple-cursors jsdoc vundo rainbow-mode lua-mode fennel-mode multi-vterm company flymake-kondor restclient sass-mode beacon sly olivetti emmet prodigy eglot flymake-eslint emmet-mode diff-hl rubocop csv-mode hl-todo elfeed inf-ruby undo-tree wgrep embark-consult embark prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
+   '(racket-mode rainbow-delimiters paredit gradle-mode geiser-chez dogears nerd-icons-corfu altcaps lorem-ipsum go-mode multiple-cursors jsdoc vundo rainbow-mode lua-mode fennel-mode multi-vterm company flymake-kondor restclient sass-mode beacon sly olivetti emmet prodigy eglot flymake-eslint emmet-mode diff-hl rubocop csv-mode hl-todo elfeed inf-ruby undo-tree wgrep embark-consult embark prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
  '(pixel-scroll-precision-mode t)
  '(recentf-mode t)
  '(repeat-mode t)
@@ -119,8 +120,8 @@
 (use-package theme-switcher
   :ensure nil
   :custom
-  (theme-switcher-day-theme 'ef-arbutus)
-  (theme-switcher-night-theme 'ef-cherie)
+  (theme-switcher-day-theme 'ef-reverie)
+  (theme-switcher-night-theme 'ef-dream)
   :config
   (theme-switcher-mode t))
 
@@ -526,6 +527,13 @@
 ;; Golang
 (use-package go-mode)
 
+;; Scheme
+(use-package geiser)
+(use-package geiser-chez)
+
+;; Racket
+(use-package racket-mode)
+
 ;;; ============================================================================
 ;;; Org
 ;;; ============================================================================
@@ -671,8 +679,22 @@
 (add-to-list 'grep-find-ignored-directories "node_modules")
 (add-to-list 'grep-find-ignored-directories "vendor")
 
+(defun kill-ring-save-whole-buffer ()
+  "Save whole buffer to the kill ring."
+  (interactive)
+  (kill-ring-save
+   (point-min)
+   (point-max))
+  (message "Buffer saved to kill ring."))
+
+(global-set-key (kbd "C-x C-y") 'kill-ring-save-whole-buffer)
+
 (use-package avy
-  :bind ("C-:" . avy-goto-char))
+  :bind (("M-i" . avy-goto-char)
+         ("M-j" . avy-goto-char-timer)))
+
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
 
 ;;; ============================================================================
 ;;; Project
@@ -731,6 +753,8 @@
 
 (use-package diff-hl
   :after (magit)
+  :custom
+  (diff-hl-draw-borders nil)
   :config
   (diff-hl-margin-mode t)
   (global-diff-hl-mode)
@@ -751,7 +775,7 @@
   (let* ((scheme-lib-dirs (directory-files dir t
                                            directory-files-no-dot-files-regexp))
          (env (string-join scheme-lib-dirs ":")))
-    (setenv "CHEZSCHEMELIBDIRS" env)))
+    (setenv "CHEZSCHEMELIBDIRS" (concat env ":."))))
 
 (when *is-a-mac*
   (chez-scheme-set-env "/Users/henry/Code/scheme/lib"))
@@ -760,6 +784,11 @@
 (add-to-path "/Library/TeX/texbin")
 (add-to-path "/Users/henry/.rbenv/shims")
 (add-to-path "/Users/henry/.local/bin")
+
+(when *is-a-mac*
+  (setenv "DYLD_LIBRARY_PATH" "/opt/homebrew/lib")
+  (setenv "LIBRARY_PATH" "/opt/homebrew/lib")
+  (setenv "C_PATH" "/opt/homebrew/include"))
 
 (defun macroexpand-point (sexp)
   "Expand macro SEXP at point to temp buffer."
