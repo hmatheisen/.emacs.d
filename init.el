@@ -29,14 +29,17 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(completion-styles '(orderless basic partial-completion emacs22))
  '(confirm-kill-emacs 'y-or-n-p)
  '(custom-safe-themes
-   '("ffdf8617d6e0f1264e5879d3ac919d0f1d8c91d38f2c769e4fa633ddbab248bf" "841b6a0350ae5029d6410d27cc036b9f35d3bf657de1c08af0b7cbe3974d19ac" "0c5d7ffa7cdf8b889342d2cd38f6ddd2cc716561048feca89b17fda56677d6b8" "694dbeb8f98dddfb603a2fe0c04101f3fe457ee49bf90a6a581271e7f9c580c8" "b216e9b72dc8c2b702e4fcfd3c0af2d73c87eba46fd4db824ddb50863447d6a9" "765b9109dfdd2f82590bf4d5452cc134d7de2163e24a160efd1887ee57c59413" "2777f300b438d2d061560c6a1afac9723e7f840413b12a471055428269ee17dd" "2ca3da7d36b0d326f984530a07be54b272b5c313b1361989acf747d8b5616162" "9ed206ff6874db89cb4a588c6cdc75a7b056fecbc9880e9758881bdef6d9d79a" "01aef17f41edea53c665cb57320bd80393761f836be5ab0bd53292afc94bd14d" "ca934a76aae4ff950288e082be75a68eb7bac6e8d3dd58b28649993540412ed6" "714394050e703db8a773ed350ca6f9cb6636d4bf2e348514804a48929aafc762" "d0f3adfe292c9d633930e35c3458cda77796073bb25af852689f999bbb3d9398" "242f33ba517c05f45e075d8ed3d13c0a7b7d1392e0c95d66830029e561607085" "51f3fb81f9233280cb28ee3023e43e82c9307d59d158626881ca14f964d2abeb" default))
+   '("841b6a0350ae5029d6410d27cc036b9f35d3bf657de1c08af0b7cbe3974d19ac"
+     "ffdf8617d6e0f1264e5879d3ac919d0f1d8c91d38f2c769e4fa633ddbab248bf" default))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
  '(display-line-numbers nil)
+ '(display-line-numbers-width 4)
  '(display-time-24hr-format t)
  '(display-time-mode t)
  '(dynamic-completion-mode t)
@@ -44,7 +47,6 @@
  '(ediff-split-window-function 'split-window-vertically)
  '(ediff-window-setup-function 'ediff-setup-windows-plain)
  '(electric-pair-mode t)
- '(elfeed-feeds '("https://planet.emacslife.com/atom.xml"))
  '(fill-column 80)
  '(follow-auto t)
  '(geiser-chez-binary "chez")
@@ -55,13 +57,22 @@
  '(global-tab-line-mode nil)
  '(go-ts-mode-indent-offset 4)
  '(indent-tabs-mode nil)
- '(inhibit-startup-screen t)
  '(lua-indent-level 4)
  '(mode-line-compact nil)
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
-   '(geiser-guile racket-mode rainbow-delimiters paredit gradle-mode geiser-chez dogears nerd-icons-corfu altcaps lorem-ipsum go-mode multiple-cursors jsdoc vundo rainbow-mode lua-mode fennel-mode multi-vterm company flymake-kondor restclient sass-mode beacon sly olivetti emmet prodigy eglot flymake-eslint emmet-mode diff-hl rubocop csv-mode hl-todo elfeed inf-ruby undo-tree wgrep embark-consult embark prettier ruby-electric ibuffer-project dired-git-info helpful doom-modeline diredfl dired-x cider clojure-mode markdown-mode evil docker yaml-mode dockerfile-mode minions ef-themes pixel-scroll treemacs rich-minority page-break-lines yasnippet which-key vertico toc-org org-modern orderless marginalia magit iedit corfu consult cape))
+   '(acme-theme altcaps cape cider copilot corfu diff-hl diredfl dogears
+                doom-modeline ef-themes embark-consult emmet-mode fennel-mode
+                flymake-eslint flymake-kondor geiser-chez glsl-mode helpful
+                ibuffer-project lua-mode magit marginalia markdown-mode
+                multiple-cursors nerd-icons-corfu orderless org-modern
+                page-break-lines prettier rainbow-delimiters ruby-electric
+                sass-mode standard-themes toc-org treemacs vertico vterm vundo
+                wgrep yaml-mode yasnippet))
+ '(package-vc-selected-packages
+   '((copilot :vc-backend Git :url
+              "https://www.github.com/copilot-emacs/copilot.el")))
  '(pixel-scroll-precision-mode t)
  '(recentf-mode t)
  '(repeat-mode t)
@@ -73,7 +84,7 @@
  '(show-trailing-whitespace nil)
  '(smtpmail-smtp-server "posteo.de")
  '(smtpmail-smtp-service 25)
- '(tab-width 2)
+ '(tab-width 4)
  '(tool-bar-mode nil)
  '(tooltip-mode nil)
  '(trash-directory "~/.Trash")
@@ -88,21 +99,19 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Iosevka Comfy Fixed" :foundry "nil" :slant normal :weight regular :height 160 :width normal))))
+ '(default ((t (:family "Go Mono" :foundry "nil" :slant normal :weight regular :height 140 :width normal))))
  '(org-document-title ((t (:height 1.7))))
  '(org-level-1 ((t (:height 1.5))))
  '(org-level-2 ((t (:height 1.3))))
  '(org-level-3 ((t (:height 1.1)))))
 
-;;; ============================================================================
+
 ;;; Consts
-;;; ============================================================================
 
 (defconst *is-a-mac* (eq system-type 'darwin))
 
-;;; ============================================================================
+
 ;;; Packages
-;;; ============================================================================
 
 (require 'package)
 
@@ -113,12 +122,14 @@
 (add-to-list 'load-path
              (expand-file-name "lisp" user-emacs-directory))
 
-;;; ============================================================================
+
 ;;; UI
-;;; ============================================================================
+
+(use-package ef-themes)
 
 (use-package theme-switcher
   :ensure nil
+  :after ef-themes
   :custom
   (theme-switcher-day-theme 'ef-reverie)
   (theme-switcher-night-theme 'ef-dream)
@@ -127,13 +138,6 @@
 
 ;; Line numbers in prog mode only
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
-
-(when *is-a-mac*
-  (setq ns-auto-hide-menu-bar nil
-        ns-use-fullscreen-animation t)
-  (setq mac-option-modifier 'meta
-        mac-command-modifier 'super
-        mac-right-option-modifier 'nil))
 
 (global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
 
@@ -197,14 +201,13 @@
       (ibuffer-do-sort-by-project-file-relative)))
   :hook (ibuffer . ibuffer-hook))
 
-(add-to-list 'default-frame-alist '(height . 80))
-(add-to-list 'default-frame-alist '(width . 180))
-(add-to-list 'default-frame-alist '(left . 0))
-(add-to-list 'default-frame-alist '(top . 0))
+(when *is-a-mac*
+  (setq mac-option-modifier 'meta
+        mac-command-modifier 'super
+        mac-right-option-modifier 'nil))
 
-;;; ============================================================================
+
 ;;; Completion & Navigation
-;;; ============================================================================
 
 ;; Completions
 (use-package orderless)
@@ -316,8 +319,7 @@
   (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package dogears
-  :config
-  (dogears-mode t)
+  :config (dogears-mode t)
   :bind
   (("M-g d" . dogears-go)
    ("M-g M-b" . dogears-back)
@@ -334,16 +336,8 @@
   (global-unset-key (kbd "M-<down-mouse-1>"))
   (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))
 
-(require 'workspace)
-
-(setq workspace-config
-      '(("~/Code/elevo-rails/" . (dired magit))
-        ("~/org/"              . ("sprint.org" "tasks.org"))
-        ("~/.emacs.d/"         . (dired magit))))
-
-;;; ============================================================================
+
 ;;; Files
-;;; ============================================================================
 
 ;; Backup files live in user emacs directory
 (setq backup-directory-alist
@@ -370,9 +364,8 @@
 (use-package diredfl
   :config (diredfl-global-mode))
 
-;;; ============================================================================
+
 ;;; Languages
-;;; ============================================================================
 
 (require 'format-buffer)
 (require 'tasks)
@@ -391,11 +384,10 @@
   :hook ((ruby-ts-mode . eglot-ensure)
          (typescript-ts-mode . eglot-ensure)
          (tsx-ts-mode . eglot-ensure)
-         (go-mode . eglot-ensure)
-         (python-ts-mode . eglot-ensure)
-         (eglot-managed-mode . setup-other-flymake-backends))
-  :config
-  (add-to-list 'eglot-server-programs '(fennel-mode . ("fennel-ls"))))
+         (go-ts-mode . eglot-ensure)
+         (eglot-managed-mode . setup-other-flymake-backends)
+         (eglot-managed-mode . (lambda ()
+                                 (eglot-inlay-hints-mode -1)))))
 
 ;; Ruby
 (format-lang ruby-ts
@@ -435,15 +427,18 @@
 ;; Typescript
 (use-package prettier
   :bind (:map tsx-ts-mode-map
-         ("C-c f" . prettier-prettify)
+         ("C-c f" . 'prettier-prettify)
          :map typescript-ts-mode-map
-         ("C-c f" . prettier-prettify)))
+         ("C-c f" . 'prettier-prettify)))
 
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
 
 (use-package emmet-mode
   :hook ((tsx-ts-mode . emmet-mode)))
+
+;; Sass
+(use-package sass-mode)
 
 ;; Enable eslint for flymake
 (use-package flymake-eslint)
@@ -472,17 +467,6 @@
 ;; YAML mode
 (use-package yaml-mode)
 
-;; Remap major modes to their treesit equivalent
-(setq major-mode-remap-alist
-      '((bash-mode . bash-ts-mode)
-        (css-mode . css-ts-mode)
-        (json-mode . json-ts-mode)
-        (python-mode . python-ts-mode)
-        (ruby-mode . ruby-ts-mode)
-        (tsx-mode . tsx-ts-mode)
-        (typescript-mode . typescript-ts-mode)
-        (yaml-mode . yaml-ts-mode)))
-
 ;; Markdown
 (use-package markdown-mode
   :hook ((markdown-mode . (lambda ()
@@ -502,6 +486,21 @@
   ;; Use `markdown-release' as auto-insert on 'release.md' files.
   (define-auto-insert
     '("release.md" . "Release template") 'markdown-release-skeleton))
+
+;; Golang
+(add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.mod\\'" . go-mod-ts-mode))
+
+(format-lang c
+  :command "clang-format"
+  :args '("--style=file"))
+
+(add-hook 'c-mode-hook (lambda ()
+                         (display-fill-column-indicator-mode 1)))
+(setq-default c-basic-offset 4)
+
+;; Glsl
+(use-package glsl-mode)
 
 ;; Quicklisp
 ;; (load (expand-file-name "~/.quicklisp/slime-helper.el"))
@@ -524,19 +523,44 @@
 (use-package fennel-mode)
 (use-package lua-mode)
 
-;; Golang
-(use-package go-mode)
-
 ;; Scheme
 (use-package geiser)
 (use-package geiser-chez)
 
-;; Racket
-(use-package racket-mode)
+;; Treesit
+(setq treesit-language-source-alist
+      '((ruby "https://github.com/tree-sitter/tree-sitter-ruby")
+        ;; (tsx "https://github.com/tree-sitter/tree-sitter-typescript" nil "tsx/src")
+        ;; (typscript "https://github.com/tree-sitter/tree-sitter-typescript" nil "typescript/src")
+        (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "tsx/src")
+        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src")
+        (json "https://github.com/tree-sitter/tree-sitter-json")
+        (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
+        (go "https://github.com/tree-sitter/tree-sitter-go")
+        (c "https://github.com/tree-sitter/tree-sitter-c")))
 
-;;; ============================================================================
+(defun install-treesit-languages ()
+  "Install all treesit languages."
+  (interactive)
+  (mapc (lambda (lang-alist)
+          (let ((lang (car lang-alist)))
+            (unless (treesit-language-available-p lang)
+              (message "Language %s not available" lang))
+            (treesit-install-language-grammar lang)))
+        treesit-language-source-alist))
+
+
+;; Remap major modes to their treesit equivalent
+(setq major-mode-remap-alist
+      '((ruby-mode . ruby-ts-mode)
+        (tsx-mode . tsx-ts-mode)
+        (typescript-mode . typescript-ts-mode)
+        (json-mode . json-ts-mode)
+        (dockerfile-mode . dockerfile-ts-mode)
+        (c-mode . c-ts-mode)))
+
+
 ;;; Org
-;;; ============================================================================
 
 (use-package org
   :preface
@@ -597,13 +621,11 @@
   (global-org-modern-mode))
 
 (use-package toc-org
-  :defer t
   :hook ((org-mode      . toc-org-mode)
          (markdown-mode . toc-org-mode)))
 
-;;; ============================================================================
+
 ;;; Text
-;;; ============================================================================
 
 (require 'isearch-transient)
 
@@ -631,8 +653,6 @@
 ;;   :config
 ;;   (evil-set-undo-system 'undo-redo)
 ;;   (evil-mode 1))
-
-(use-package iedit)
 
 ;; Auto insert mode
 (auto-insert-mode t)
@@ -696,16 +716,18 @@
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
-;;; ============================================================================
+(use-package altcaps)
+
+
 ;;; Project
-;;; ============================================================================
 
 (defmacro with-current-project-root (root &rest body)
   "Execute BODY with ROOT as the current project root."
   (declare (indent 1))
-  `(let* ((project (project-current t))
-          (root (project-root project)))
-     ,@body))
+  (let ((project (gensym)))
+    `(let* ((,project (project-current t))
+            (root (project-root ,project)))
+       ,@body)))
 
 ;; Copy file absolute path
 (defun project-absolute-file-path ()
@@ -736,12 +758,15 @@
   (with-current-project-root (root)
     (inf-ruby-console-rails root)))
 
-;;; ============================================================================
+(global-unset-key (kbd "s-p"))
+(define-key global-map (kbd "s-p") 'project-find-file)
+(define-key global-map (kbd "s-r") 'consult-ripgrep)
+(define-key global-map (kbd "s-t") 'project-vterm)
+
+
 ;;; Git
-;;; ============================================================================
 
 (use-package magit
-  :defer t
   :bind (("C-x g" . 'magit-status)
          :map magit-file-section-map
          ("RET" . magit-diff-visit-file-other-window)
@@ -761,9 +786,8 @@
   (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
-;;; ============================================================================
+
 ;;; Utils
-;;; ============================================================================
 
 (defun add-to-path (path)
   "Add a path to variable `exec-path' and Emacs \"PATH\" variable."
@@ -772,8 +796,9 @@
 
 (defun chez-scheme-set-env (dir)
   "List dirs in chez scheme lib DIR and sets the proper env."
-  (let* ((scheme-lib-dirs (directory-files dir t
-                                           directory-files-no-dot-files-regexp))
+  (let* ((scheme-lib-dirs
+          (directory-files dir t
+                           directory-files-no-dot-files-regexp))
          (env (string-join scheme-lib-dirs ":")))
     (setenv "CHEZSCHEMELIBDIRS" (concat env ":."))))
 
@@ -827,9 +852,8 @@
 
 (put 'list-timers 'disabled nil)
 
-;;; ============================================================================
+
 ;;; Window
-;;; ============================================================================
 
 ;; Move between windows
 (defun other-window-backward ()
@@ -847,12 +871,14 @@
 (defun scroll-half-page-up-command ()
   "Scroll up half the height of a window."
   (interactive)
-  (scroll-up-command (window-half-height)))
+  (let ((scroll-preserve-screen-position t))
+    (scroll-up-command (window-half-height))))
 
 (defun scroll-half-page-down-command ()
   "Scroll down half the height of a window."
   (interactive)
-  (scroll-down-command (window-half-height)))
+  (let ((scroll-preserve-screen-position t))
+    (scroll-down-command (window-half-height))))
 
 (global-set-key (kbd "C-v") 'scroll-half-page-up-command)
 (global-set-key (kbd "M-v") 'scroll-half-page-down-command)
@@ -872,21 +898,38 @@
 (global-set-key (kbd "C-x 2") 'split-window-below-focus)
 (global-set-key (kbd "C-x 3") 'split-window-right-focus)
 
-;;; ============================================================================
+
 ;;; Tools
-;;; ============================================================================
 
-(use-package vterm
-  :load-path (lambda ()
-               (expand-file-name "emacs-libvterm" user-emacs-directory)))
+(cl-defun vc-install (&key (fetcher "github") repo name rev backend)
+  "Install a package from a remote if it's not already installed.
+This is a thin wrapper around `package-vc-install' in order to
+make non-interactive usage more ergonomic.  Takes the following
+named arguments:
+
+- FETCHER the remote where to get the package (e.g., \"gitlab\").
+  If omitted, this defaults to \"github\".
+
+- REPO should be the name of the repository (e.g.,
+  \"slotThe/arXiv-citation\".
+
+- NAME, REV, and BACKEND are as in `package-vc-install' (which
+  see)."
+  (let* ((url (format "https://www.%s.com/%s" fetcher repo))
+         (iname (when name (intern name)))
+         (pac-name (or iname (intern (file-name-base repo)))))
+    (unless (package-installed-p pac-name)
+      (package-vc-install url iname rev backend))))
 
 (use-package copilot
-  :load-path (lambda ()
-               (expand-file-name "copilot.el" user-emacs-directory))
+  :ensure nil
+  :init (vc-install :fetcher "github" :repo "copilot-emacs/copilot.el")
   :hook (prog-mode . copilot-mode)
   :bind (:map copilot-completion-map
               ("M-<tab>" . copilot-accept-completion)
               ("M-TAB" . copilot-accept-completion)))
+
+(use-package vterm)
 
 (provide 'init)
 
