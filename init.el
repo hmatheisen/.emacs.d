@@ -41,6 +41,7 @@
  '(display-line-numbers nil)
  '(display-line-numbers-width 4)
  '(display-time-24hr-format t)
+ '(display-time-default-load-average nil)
  '(display-time-mode t)
  '(dynamic-completion-mode t)
  '(ediff-merge-split-window-function 'split-window-vertically)
@@ -57,19 +58,21 @@
  '(global-tab-line-mode nil)
  '(go-ts-mode-indent-offset 4)
  '(indent-tabs-mode nil)
+ '(js-indent-level 2)
  '(lua-indent-level 4)
  '(mode-line-compact nil)
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
    '(acme-theme altcaps cape cider copilot corfu diff-hl diredfl dogears
-                doom-modeline ef-themes embark-consult emmet-mode fennel-mode
-                flymake-eslint flymake-kondor geiser-chez glsl-mode helpful
-                ibuffer-project lua-mode magit marginalia markdown-mode
-                multiple-cursors nerd-icons-corfu orderless org-modern
-                page-break-lines prettier rainbow-delimiters ruby-electric
-                sass-mode standard-themes toc-org treemacs vertico vterm vundo
-                wgrep yaml-mode yasnippet))
+                doom-modeline ef-themes eglot embark-consult emmet-mode
+                fennel-mode flymake-eslint flymake-kondor gcmh geiser-chez
+                glsl-mode helpful ibuffer-project inf-ruby lua-mode magit
+                marginalia markdown-mode multiple-cursors nerd-icons-corfu
+                orderless org-modern page-break-lines prettier
+                rainbow-delimiters rg ruby-electric sass-mode sly
+                standard-themes toc-org treemacs vertico vterm vundo wgrep
+                yaml-mode yari yasnippet))
  '(package-vc-selected-packages
    '((copilot :vc-backend Git :url
               "https://www.github.com/copilot-emacs/copilot.el")))
@@ -103,7 +106,8 @@
  '(org-document-title ((t (:height 1.7))))
  '(org-level-1 ((t (:height 1.5))))
  '(org-level-2 ((t (:height 1.3))))
- '(org-level-3 ((t (:height 1.1)))))
+ '(org-level-3 ((t (:height 1.1))))
+ '(variable-pitch ((t (:height 150 :family "Go")))))
 
 
 ;;; Consts
@@ -121,6 +125,12 @@
 ;; Load lisp code in other directories
 (add-to-list 'load-path
              (expand-file-name "lisp" user-emacs-directory))
+
+
+;;; System
+
+(use-package gcmh
+  :config (gcmh-mode 1))
 
 
 ;;; UI
@@ -170,7 +180,7 @@
 
 (use-package doom-modeline
   :custom
-  (doom-modeline-height 20)
+  (doom-modeline-height (+ 4 (frame-char-height)))
   (doom-modeline-buffer-encoding nil)
   (doom-modeline-icon nil)
   (doom-modeline-time-analogue-clock nil)
@@ -205,6 +215,14 @@
   (setq mac-option-modifier 'meta
         mac-command-modifier 'super
         mac-right-option-modifier 'nil))
+
+(defun pulse-current-region (&rest _)
+  "Pulse the current implicit or active region."
+  (if mark-active
+      (pulse-momentary-highlight-region (region-beginning) (region-end))
+    (pulse-momentary-highlight-region (mark) (point))))
+
+(advice-add #'kill-ring-save :before #'pulse-current-region)
 
 
 ;;; Completion & Navigation
@@ -318,14 +336,14 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
-(use-package dogears
-  :config (dogears-mode t)
-  :bind
-  (("M-g d" . dogears-go)
-   ("M-g M-b" . dogears-back)
-   ("M-g M-f" . dogears-forward)
-   ("M-g M-d" . dogears-list)
-   ("M-g M-D" . dogears-sidebar)))
+;; (use-package dogears
+;;   :config (dogears-mode t)
+;;   :bind
+;;   (("M-g d" . dogears-go)
+;;    ("M-g M-b" . dogears-back)
+;;    ("M-g M-f" . dogears-forward)
+;;    ("M-g M-d" . dogears-list)
+;;    ("M-g M-D" . dogears-sidebar)))
 
 (use-package multiple-cursors
   :config
@@ -662,13 +680,6 @@
     "# frozen_string_literal: true\n"
     "\n"))
 
-;; Visual undo tree
-;; (use-package undo-tree
-;;   :config
-;;   (setq undo-tree-history-directory-alist
-;;         `(("." . ,(concat user-emacs-directory "undo"))))
-;;   (global-undo-tree-mode))
-
 ;; Redo binding with super
 (global-set-key (kbd "s-Z") 'undo-redo)
 
@@ -718,6 +729,7 @@
 
 (use-package altcaps)
 
+(global-set-key (kbd "C-S-j") 'join-line)
 
 ;;; Project
 
@@ -752,11 +764,26 @@
 
 (define-key project-prefix-map "T" 'project-vterm)
 
+;; Too slow on current project and messes up with completion
+;; (defun project-rails-console ()
+;;   "Open a rails console at the root of the current project."
+;;   (interactive)
+;;   (with-current-project-root (root)
+;;     (inf-ruby-console-rails root)))
+
+(defvar project-rails-console-buffer nil
+  "Reference to the currently open rails console buffer.")
+
 (defun project-rails-console ()
   "Open a rails console at the root of the current project."
   (interactive)
-  (with-current-project-root (root)
-    (inf-ruby-console-rails root)))
+  (if (buffer-live-p project-rails-console-buffer)
+      (switch-to-buffer project-rails-console-buffer)
+    (with-current-project-root (root)
+      (term shell-file-name)
+      (term-send-string (get-buffer-process (current-buffer))
+                        (concat "cd " root " && bin/rails c\n"))
+      (setq project-rails-console-buffer (current-buffer)))))
 
 (global-unset-key (kbd "s-p"))
 (define-key global-map (kbd "s-p") 'project-find-file)
@@ -864,6 +891,10 @@
 (global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "M-O") 'other-window-backward)
 
+(use-package ace-window
+  :ensure nil
+  :bind ("C-x o" . ace-window))
+
 (defun window-half-height ()
   "Return half the height of a window."
   (max 1 (/ (1- (window-height (selected-window))) 2)))
@@ -898,14 +929,17 @@
 (global-set-key (kbd "C-x 2") 'split-window-below-focus)
 (global-set-key (kbd "C-x 3") 'split-window-right-focus)
 
+;; Unbind suspend frame in GUI mode
+(when (display-graphic-p)
+  (global-unset-key (kbd "C-z")))
+
 
 ;;; Tools
 
 (cl-defun vc-install (&key (fetcher "github") repo name rev backend)
   "Install a package from a remote if it's not already installed.
-This is a thin wrapper around `package-vc-install' in order to
-make non-interactive usage more ergonomic.  Takes the following
-named arguments:
+This is a thin wrapper around `package-vc-install' in order to make
+non-interactive usage more ergonomic.  Takes the following named arguments:
 
 - FETCHER the remote where to get the package (e.g., \"gitlab\").
   If omitted, this defaults to \"github\".

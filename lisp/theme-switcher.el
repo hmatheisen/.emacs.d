@@ -71,13 +71,15 @@ Default is 5pm."
 (defun theme-switcher--switch-theme ()
   "Compute the current time and load the appropriate theme."
   (let ((now (string-to-number (format-time-string "%H"))))
-    (if (and (>= now theme-switcher-day-start) (< now theme-switcher-night-start))
+    (if (and (>= now theme-switcher-day-start)
+             (< now theme-switcher-night-start))
         (theme-switcher--load-theme theme-switcher-day-theme)
       (theme-switcher--load-theme theme-switcher-night-theme))))
 
 (defun theme-switcher--create-timer ()
   "Set a timer to check every minute if the theme needs to be changed."
-  (setq theme-switcher--timer (run-with-timer 0 (* 1 60) 'theme-switcher--switch-theme)))
+  (setq theme-switcher--timer
+        (run-with-timer 0 (* 1 60) 'theme-switcher--switch-theme)))
 
 (defun theme-switcher--delete-timer ()
   "Cancel the timer and reset the timer variable."
