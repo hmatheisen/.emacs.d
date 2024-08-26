@@ -3,9 +3,10 @@
 !README.org
 
 !init.el
+!early-init.el
 
 !snippets
 !snippets/*
 
 !lisp
-!lisp/*
+!lisp/*.el

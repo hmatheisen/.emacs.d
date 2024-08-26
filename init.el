@@ -788,6 +788,13 @@
                         (concat "cd " root " && bin/rails c\n"))
       (setq project-rails-console-buffer (current-buffer)))))
 
+(defun project-rails-console-send-region (start end)
+  "Send the current region to the rails console from START to END."
+  (interactive "r")
+  (with-current-project-root (root)
+    (term-send-string (get-buffer-process project-rails-console-buffer)
+                      (buffer-substring-no-properties start end))))
+
 (global-unset-key (kbd "s-p"))
 (define-key global-map (kbd "s-p") 'project-find-file)
 (define-key global-map (kbd "s-r") 'consult-ripgrep)
