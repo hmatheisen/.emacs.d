@@ -34,7 +34,9 @@
  '(completion-styles '(orderless basic partial-completion emacs22))
  '(confirm-kill-emacs 'y-or-n-p)
  '(custom-safe-themes
-   '("841b6a0350ae5029d6410d27cc036b9f35d3bf657de1c08af0b7cbe3974d19ac"
+   '("c3e62e14eb625e02e5aeb03d315180d5bb6627785e48f23ba35eb7b974a940af"
+     "587ce9a1a961792114991fd488ef9c3fc37f165f6fea8b89d155640e81d165a3"
+     "841b6a0350ae5029d6410d27cc036b9f35d3bf657de1c08af0b7cbe3974d19ac"
      "ffdf8617d6e0f1264e5879d3ac919d0f1d8c91d38f2c769e4fa633ddbab248bf" default))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
@@ -65,11 +67,11 @@
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
    '(acme-theme altcaps cape cider copilot corfu diff-hl diredfl dogears
-                doom-modeline ef-themes eglot embark-consult emmet-mode
+                doom-themes ef-themes eglot embark-consult emmet-mode
                 fennel-mode flymake-eslint flymake-kondor gcmh geiser-chez
                 glsl-mode helpful ibuffer-project inf-ruby lua-mode magit
                 marginalia markdown-mode multiple-cursors nerd-icons-corfu
-                orderless org-modern page-break-lines prettier
+                olivetti orderless org-modern page-break-lines prettier
                 rainbow-delimiters rg ruby-electric sass-mode sly
                 standard-themes toc-org treemacs vertico vterm vundo wgrep
                 yaml-mode yari yasnippet))
@@ -178,15 +180,6 @@
   (treemacs-width-is-initially-locked nil)
   :bind (("s-b" . treemacs)))
 
-(use-package doom-modeline
-  :custom
-  (doom-modeline-height (+ 4 (frame-char-height)))
-  (doom-modeline-buffer-encoding nil)
-  (doom-modeline-icon nil)
-  (doom-modeline-time-analogue-clock nil)
-  :config
-  (doom-modeline-mode 1))
-
 ;; A better *help* buffer
 (use-package helpful
   :bind (("C-h v" . helpful-variable)
@@ -224,6 +217,51 @@
 
 (advice-add #'kill-ring-save :before #'pulse-current-region)
 
+;; Display buffer alist
+(add-to-list 'display-buffer-alist
+             '("\\*eldoc\\*"
+               (display-buffer-below-selected)
+               (window-height . 0.25)))
+
+(add-to-list 'display-buffer-alist
+             '("\\*Flymake diag.+\\*"
+               (display-buffer-below-selected)
+               (window-height . 0.25)))
+
+;; (add-to-list 'display-buffer-alist
+;;              '("\\*Customize.+\\*"
+;;                (display-buffer-reuse-window)
+;;                (side . right)))
+
+;; (add-to-list 'display-buffer-alist
+;;              '("\\*info\\*"
+;;                (display-buffer-reuse-window)
+;;                (side . right)))
+
+(defvar init-minor-mode-alist minor-mode-alist)
+
+(defvar mode-line-hidden-minor-modes
+  '(diff-hl-mode
+    emmet-mode
+    ruby-electric-mode
+    copilot-mode
+    yas-minor-mode
+    page-break-lines-mode
+    which-key-mode
+    gcmh-mode
+    eldoc-mode
+    abbrev-mode
+    with-editor-mode))
+
+(defun clean-minor-mode-line ()
+  "Clean up minor mode line."
+  (interactive)
+  (dolist (mode mode-line-hidden-minor-modes nil)
+    (let ((cell (cdr (assoc mode minor-mode-alist))))
+      (when cell
+        (setcar cell "")))))
+
+(add-hook 'after-change-major-mode-hook 'clean-minor-mode-line)
 
 ;;; Completion & Navigation
 
@@ -339,21 +377,12 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
-;; (use-package dogears
-;;   :config (dogears-mode t)
-;;   :bind
-;;   (("M-g d" . dogears-go)
-;;    ("M-g M-b" . dogears-back)
-;;    ("M-g M-f" . dogears-forward)
-;;    ("M-g M-d" . dogears-list)
-;;    ("M-g M-D" . dogears-sidebar)))
-
 (use-package multiple-cursors
   :config
   (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
   (global-set-key (kbd "C->") 'mc/mark-next-like-this)
   (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+  (global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
   (global-unset-key (kbd "M-<down-mouse-1>"))
   (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))
 
@@ -447,10 +476,13 @@
 
 ;; Typescript
 (use-package prettier
-  :bind (:map tsx-ts-mode-map
-         ("C-c f" . 'prettier-prettify)
-         :map typescript-ts-mode-map
-         ("C-c f" . 'prettier-prettify)))
+  :config
+  (add-hook 'typescript-ts-mode-hook
+            (lambda ()
+              (local-set-key (kbd "C-c f") 'prettier-prettify)))
+  (add-hook 'tsx-ts-mode-hook
+            (lambda ()
+              (local-set-key (kbd "C-c f") 'prettier-prettify))))
 
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
@@ -551,8 +583,6 @@
 ;; Treesit
 (setq treesit-language-source-alist
       '((ruby "https://github.com/tree-sitter/tree-sitter-ruby")
-        ;; (tsx "https://github.com/tree-sitter/tree-sitter-typescript" nil "tsx/src")
-        ;; (typscript "https://github.com/tree-sitter/tree-sitter-typescript" nil "typescript/src")
         (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "tsx/src")
         (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src")
         (json "https://github.com/tree-sitter/tree-sitter-json")
@@ -974,6 +1004,10 @@ non-interactive usage more ergonomic.  Takes the following named arguments:
               ("M-TAB" . copilot-accept-completion)))
 
 (use-package vterm)
+
+(require 'server)
+(unless (server-running-p)
+  (server-start))
 
 (provide 'init)
 
