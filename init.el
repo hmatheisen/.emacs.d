@@ -34,7 +34,11 @@
  '(completion-styles '(orderless basic partial-completion emacs22))
  '(confirm-kill-emacs 'y-or-n-p)
  '(custom-safe-themes
-   '("c3e62e14eb625e02e5aeb03d315180d5bb6627785e48f23ba35eb7b974a940af"
+   '("835d934a930142d408a50b27ed371ba3a9c5a30286297743b0d488e94b225c5f"
+     "f4d1b183465f2d29b7a2e9dbe87ccc20598e79738e5d29fc52ec8fb8c576fcfd"
+     "48042425e84cd92184837e01d0b4fe9f912d875c43021c3bcb7eeb51f1be5710"
+     "691d671429fa6c6d73098fc6ff05d4a14a323ea0a18787daeb93fde0e48ab18b"
+     "c3e62e14eb625e02e5aeb03d315180d5bb6627785e48f23ba35eb7b974a940af"
      "587ce9a1a961792114991fd488ef9c3fc37f165f6fea8b89d155640e81d165a3"
      "841b6a0350ae5029d6410d27cc036b9f35d3bf657de1c08af0b7cbe3974d19ac"
      "ffdf8617d6e0f1264e5879d3ac919d0f1d8c91d38f2c769e4fa633ddbab248bf" default))
@@ -62,7 +66,7 @@
  '(indent-tabs-mode nil)
  '(js-indent-level 2)
  '(lua-indent-level 4)
- '(mode-line-compact nil)
+ '(mode-line-compact 'long)
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
@@ -70,15 +74,19 @@
                 doom-themes ef-themes eglot embark-consult emmet-mode
                 fennel-mode flymake-eslint flymake-kondor gcmh geiser-chez
                 glsl-mode helpful ibuffer-project inf-ruby lua-mode magit
-                marginalia markdown-mode multiple-cursors nerd-icons-corfu
-                olivetti orderless org-modern page-break-lines prettier
-                rainbow-delimiters rg ruby-electric sass-mode sly
-                standard-themes toc-org treemacs vertico vterm vundo wgrep
-                yaml-mode yari yasnippet))
+                marginalia markdown-mode moe-theme multiple-cursors
+                nerd-icons-corfu olivetti orderless org-modern page-break-lines
+                prettier rainbow-delimiters ruby-electric sass-mode sly
+                standard-themes toc-org treemacs uwu-theme vertico vterm vundo
+                wgrep yaml-mode yari yasnippet))
  '(package-vc-selected-packages
    '((copilot :vc-backend Git :url
               "https://www.github.com/copilot-emacs/copilot.el")))
  '(pixel-scroll-precision-mode t)
+ '(project-switch-commands
+   '((project-find-file "Find file" nil) (project-find-regexp "Find regexp" nil)
+     (project-find-dir "Find directory" nil) (project-vc-dir "VC-Dir" nil)
+     (project-eshell "Eshell" nil) (project-any-command "Other" nil)))
  '(recentf-mode t)
  '(repeat-mode t)
  '(ring-bell-function 'ignore)
@@ -143,8 +151,8 @@
   :ensure nil
   :after ef-themes
   :custom
-  (theme-switcher-day-theme 'ef-reverie)
-  (theme-switcher-night-theme 'ef-dream)
+  (theme-switcher-day-theme 'acme)
+  (theme-switcher-night-theme 'doom-ir-black)
   :config
   (theme-switcher-mode t))
 
@@ -178,7 +186,7 @@
   (treemacs-no-png-images t)
   (treemacs-width 50)
   (treemacs-width-is-initially-locked nil)
-  :bind (("s-b" . treemacs)))
+  :bind (("s-t" . treemacs)))
 
 ;; A better *help* buffer
 (use-package helpful
@@ -322,6 +330,7 @@
          ;; C-x bindings in `ctl-x-map'
          ("C-x M-:" . consult-complex-command)
          ("C-x b" . consult-buffer)
+         ("s-b" . consult-buffer)
          ("C-x 4 b" . consult-buffer-other-window)
          ("C-x 5 b" . consult-buffer-other-frame)
          ("C-x t b" . consult-buffer-other-tab)
@@ -825,11 +834,9 @@
     (term-send-string (get-buffer-process project-rails-console-buffer)
                       (buffer-substring-no-properties start end))))
 
-(global-unset-key (kbd "s-p"))
-(define-key global-map (kbd "s-p") 'project-find-file)
-(define-key global-map (kbd "s-r") 'consult-ripgrep)
-(define-key global-map (kbd "s-t") 'project-vterm)
-
+(define-key global-map (kbd "s-p") project-prefix-map)
+(define-key project-prefix-map (kbd "C-r") 'consult-ripgrep)
+(define-key project-prefix-map (kbd "t") 'project-vterm)
 
 ;;; Git
 
