@@ -33,15 +33,6 @@
  '(column-number-mode t)
  '(completion-styles '(orderless basic partial-completion emacs22))
  '(confirm-kill-emacs 'y-or-n-p)
- '(custom-safe-themes
-   '("835d934a930142d408a50b27ed371ba3a9c5a30286297743b0d488e94b225c5f"
-     "f4d1b183465f2d29b7a2e9dbe87ccc20598e79738e5d29fc52ec8fb8c576fcfd"
-     "48042425e84cd92184837e01d0b4fe9f912d875c43021c3bcb7eeb51f1be5710"
-     "691d671429fa6c6d73098fc6ff05d4a14a323ea0a18787daeb93fde0e48ab18b"
-     "c3e62e14eb625e02e5aeb03d315180d5bb6627785e48f23ba35eb7b974a940af"
-     "587ce9a1a961792114991fd488ef9c3fc37f165f6fea8b89d155640e81d165a3"
-     "841b6a0350ae5029d6410d27cc036b9f35d3bf657de1c08af0b7cbe3974d19ac"
-     "ffdf8617d6e0f1264e5879d3ac919d0f1d8c91d38f2c769e4fa633ddbab248bf" default))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
  '(display-line-numbers nil)
@@ -70,15 +61,14 @@
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
-   '(acme-theme altcaps cape casual-suite cider copilot corfu diff-hl diredfl
-                dogears doom-themes ef-themes eglot embark-consult emmet-mode
-                fennel-mode flymake-eslint flymake-kondor gcmh geiser-chez
-                glsl-mode helpful ibuffer-project inf-ruby lua-mode magit
-                marginalia markdown-mode multiple-cursors nerd-icons-corfu
-                olivetti orderless org-modern page-break-lines prettier
-                rainbow-delimiters ruby-electric sass-mode sly standard-themes
-                toc-org treemacs uwu-theme vertico vterm vundo wgrep yaml-mode
-                yari yasnippet))
+   '(acme-theme altcaps cape cider copilot corfu diff-hl diredfl dogears eglot
+                embark-consult emmet-mode fennel-mode flymake-eslint
+                flymake-kondor gcmh geiser-chez glsl-mode helpful
+                ibuffer-project inf-ruby lua-mode magit marginalia markdown-mode
+                multiple-cursors nerd-icons-corfu olivetti orderless org-modern
+                page-break-lines prettier rainbow-delimiters ruby-electric
+                sass-mode sly toc-org treemacs uwu-theme vertico vterm vundo
+                wgrep yaml-mode yari yasnippet))
  '(package-vc-selected-packages
    '((copilot :vc-backend Git :url
               "https://www.github.com/copilot-emacs/copilot.el")))
@@ -114,10 +104,6 @@
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "Go Mono" :foundry "nil" :slant normal :weight regular :height 140 :width normal))))
  '(emoji ((t (:height 1))))
- '(org-document-title ((t (:height 1.7))))
- '(org-level-1 ((t (:height 1.5))))
- '(org-level-2 ((t (:height 1.3))))
- '(org-level-3 ((t (:height 1.1))))
  '(variable-pitch ((t (:height 150 :family "Go")))))
 
 
@@ -145,15 +131,33 @@
 
 
 ;;; UI
-
-(use-package ef-themes)
+(use-package modus-themes
+  :ensure nil
+  :custom
+  (modus-themes-bold-constructs t)
+  (modus-themes-italic-constructs t)
+  (modus-themes-variable-pitch-ui nil)
+  (modus-themes-headings '((0 . (1.7))
+                           (1 . (1.5))
+                           (2 . (1.3))
+                           (3 . (1.1))))
+  (modus-themes-common-palette-overrides
+   '(;; Invisible fringe
+     (fringe unspecified)
+     ;; Less intense Line numbers
+     (fg-line-number-inactive "gray50")
+     (fg-line-number-active fg-main)
+     (bg-line-number-inactive unspecified)
+     (bg-line-number-active unspecified)
+     ;; borderless mode line
+     (border-mode-line-active bg-mode-line-active)
+     (border-mode-line-inactive bg-mode-line-inactive))))
 
 (use-package theme-switcher
   :ensure nil
-  :after ef-themes
   :custom
-  (theme-switcher-day-theme 'acme)
-  (theme-switcher-night-theme 'doom-ir-black)
+  (theme-switcher-day-theme 'modus-operandi-tinted)
+  (theme-switcher-night-theme 'modus-vivendi)
   :config
   (theme-switcher-mode t))
 
@@ -263,22 +267,6 @@
         (setcar cell "")))))
 
 (add-hook 'after-change-major-mode-hook 'clean-minor-mode-line)
-
-(use-package casual-suite
-  :config
-  (require 'casual-suite)
-  (keymap-set calc-mode-map "C-o" #'casual-calc-tmenu)
-  (keymap-set dired-mode-map "C-o" #'casual-dired-tmenu)
-  (keymap-set isearch-mode-map "C-o" #'casual-isearch-tmenu)
-  (keymap-set ibuffer-mode-map "C-o" #'casual-ibuffer-tmenu)
-  (keymap-set ibuffer-mode-map "F" #'casual-ibuffer-filter-tmenu)
-  (keymap-set ibuffer-mode-map "s" #'casual-ibuffer-sortby-tmenu)
-  (keymap-set Info-mode-map "C-o" #'casual-info-tmenu)
-  (keymap-set reb-mode-map "C-o" #'casual-re-builder-tmenu)
-  (keymap-set reb-lisp-mode-map "C-o" #'casual-re-builder-tmenu)
-  (keymap-set bookmark-bmenu-mode-map "C-o" #'casual-bookmarks-tmenu)
-  (keymap-set org-agenda-mode-map "C-o" #'casual-agenda-tmenu)
-  (keymap-global-set "M-g" #'casual-avy-tmenu))
 
 ;;; Completion & Navigation
 
@@ -865,7 +853,7 @@
   :custom
   (diff-hl-draw-borders nil)
   :config
-  (diff-hl-margin-mode t)
+  (diff-hl-dired-mode t)
   (global-diff-hl-mode)
   (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
@@ -879,7 +867,7 @@
   (setenv "PATH" (concat (getenv "PATH") ":" path)))
 
 (defun chez-scheme-set-env (dir)
-  "List dirs in chez scheme lib DIR and sets the proper env."
+  "List dirs in chez scheme lib DIR and set the proper env."
   (let* ((scheme-lib-dirs
           (directory-files dir t
                            directory-files-no-dot-files-regexp))
