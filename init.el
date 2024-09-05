@@ -70,15 +70,15 @@
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
-   '(acme-theme altcaps cape cider copilot corfu diff-hl diredfl dogears
-                doom-themes ef-themes eglot embark-consult emmet-mode
+   '(acme-theme altcaps cape casual-suite cider copilot corfu diff-hl diredfl
+                dogears doom-themes ef-themes eglot embark-consult emmet-mode
                 fennel-mode flymake-eslint flymake-kondor gcmh geiser-chez
                 glsl-mode helpful ibuffer-project inf-ruby lua-mode magit
-                marginalia markdown-mode moe-theme multiple-cursors
-                nerd-icons-corfu olivetti orderless org-modern page-break-lines
-                prettier rainbow-delimiters ruby-electric sass-mode sly
-                standard-themes toc-org treemacs uwu-theme vertico vterm vundo
-                wgrep yaml-mode yari yasnippet))
+                marginalia markdown-mode multiple-cursors nerd-icons-corfu
+                olivetti orderless org-modern page-break-lines prettier
+                rainbow-delimiters ruby-electric sass-mode sly standard-themes
+                toc-org treemacs uwu-theme vertico vterm vundo wgrep yaml-mode
+                yari yasnippet))
  '(package-vc-selected-packages
    '((copilot :vc-backend Git :url
               "https://www.github.com/copilot-emacs/copilot.el")))
@@ -113,6 +113,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "Go Mono" :foundry "nil" :slant normal :weight regular :height 140 :width normal))))
+ '(emoji ((t (:height 1))))
  '(org-document-title ((t (:height 1.7))))
  '(org-level-1 ((t (:height 1.5))))
  '(org-level-2 ((t (:height 1.3))))
@@ -217,14 +218,6 @@
         mac-command-modifier 'super
         mac-right-option-modifier 'nil))
 
-(defun pulse-current-region (&rest _)
-  "Pulse the current implicit or active region."
-  (if mark-active
-      (pulse-momentary-highlight-region (region-beginning) (region-end))
-    (pulse-momentary-highlight-region (mark) (point))))
-
-(advice-add #'kill-ring-save :before #'pulse-current-region)
-
 ;; Display buffer alist
 (add-to-list 'display-buffer-alist
              '("\\*eldoc\\*"
@@ -270,6 +263,22 @@
         (setcar cell "")))))
 
 (add-hook 'after-change-major-mode-hook 'clean-minor-mode-line)
+
+(use-package casual-suite
+  :config
+  (require 'casual-suite)
+  (keymap-set calc-mode-map "C-o" #'casual-calc-tmenu)
+  (keymap-set dired-mode-map "C-o" #'casual-dired-tmenu)
+  (keymap-set isearch-mode-map "C-o" #'casual-isearch-tmenu)
+  (keymap-set ibuffer-mode-map "C-o" #'casual-ibuffer-tmenu)
+  (keymap-set ibuffer-mode-map "F" #'casual-ibuffer-filter-tmenu)
+  (keymap-set ibuffer-mode-map "s" #'casual-ibuffer-sortby-tmenu)
+  (keymap-set Info-mode-map "C-o" #'casual-info-tmenu)
+  (keymap-set reb-mode-map "C-o" #'casual-re-builder-tmenu)
+  (keymap-set reb-lisp-mode-map "C-o" #'casual-re-builder-tmenu)
+  (keymap-set bookmark-bmenu-mode-map "C-o" #'casual-bookmarks-tmenu)
+  (keymap-set org-agenda-mode-map "C-o" #'casual-agenda-tmenu)
+  (keymap-global-set "M-g" #'casual-avy-tmenu))
 
 ;;; Completion & Navigation
 
@@ -432,6 +441,8 @@
 ;; Eglot
 (use-package eglot
   :ensure nil
+  :config
+  (add-to-list 'eglot-server-programs '((ruby-mode ruby-ts-mode) "ruby-lsp"))
   :preface
   (defun setup-other-flymake-backends ()
     "Add other backends to flymake when using eglot"
@@ -444,9 +455,7 @@
          (typescript-ts-mode . eglot-ensure)
          (tsx-ts-mode . eglot-ensure)
          (go-ts-mode . eglot-ensure)
-         (eglot-managed-mode . setup-other-flymake-backends)
-         (eglot-managed-mode . (lambda ()
-                                 (eglot-inlay-hints-mode -1)))))
+         (eglot-managed-mode . setup-other-flymake-backends)))
 
 ;; Ruby
 (format-lang ruby-ts
@@ -627,8 +636,6 @@
   (defun my-org-mode-hook ()
     (org-indent-mode 1)
     (visual-line-mode 1)
-    (auto-fill-mode 1)
-    (abbrev-mode 1)
     (windmove-mode -1))
   :hook ((org-mode . my-org-mode-hook))
   :bind (("C-c l" . org-store-link)
@@ -750,6 +757,9 @@
   (setq wgrep-auto-save-buffer t))
 
 (add-to-list 'grep-find-ignored-directories "node_modules")
+(add-to-list 'grep-find-ignored-directories "log")
+(add-to-list 'grep-find-ignored-directories "tmp")
+(add-to-list 'grep-find-ignored-directories "coverage")
 (add-to-list 'grep-find-ignored-directories "vendor")
 
 (defun kill-ring-save-whole-buffer ()
@@ -835,7 +845,7 @@
                       (buffer-substring-no-properties start end))))
 
 (define-key global-map (kbd "s-p") project-prefix-map)
-(define-key project-prefix-map (kbd "C-r") 'consult-ripgrep)
+(define-key project-prefix-map (kbd "g") 'consult-ripgrep)
 (define-key project-prefix-map (kbd "t") 'project-vterm)
 
 ;;; Git
@@ -1012,9 +1022,10 @@ non-interactive usage more ergonomic.  Takes the following named arguments:
 
 (use-package vterm)
 
-(require 'server)
-(unless (server-running-p)
-  (server-start))
+(use-package server
+  :config
+  (unless (server-running-p)
+    (server-start)))
 
 (provide 'init)
 
