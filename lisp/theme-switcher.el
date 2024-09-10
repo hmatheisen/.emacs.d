@@ -51,7 +51,7 @@ Default is 8am."
   :type 'integer
   :group 'theme-switcher)
 
-(defcustom theme-switcher-night-start 16
+(defcustom theme-switcher-night-start 15
   "The hour when the theme goes from light to dark in the evening.
 Default is 5pm."
   :type 'integer
@@ -78,8 +78,9 @@ Default is 5pm."
 
 (defun theme-switcher--create-timer ()
   "Set a timer to check every minute if the theme needs to be changed."
-  (setq theme-switcher--timer
-        (run-with-timer 0 (* 1 60) 'theme-switcher--switch-theme)))
+  (unless theme-switcher--timer
+    (setq theme-switcher--timer
+          (run-with-timer 0 (* 1 60) 'theme-switcher--switch-theme))))
 
 (defun theme-switcher--delete-timer ()
   "Cancel the timer and reset the timer variable."

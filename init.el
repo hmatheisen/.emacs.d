@@ -33,6 +33,9 @@
  '(column-number-mode t)
  '(completion-styles '(orderless basic partial-completion emacs22))
  '(confirm-kill-emacs 'y-or-n-p)
+ '(custom-safe-themes
+   '("99d1e29934b9e712651d29735dd8dcd431a651dfbe039df158aa973461af003e"
+     "e410458d3e769c33e0865971deb6e8422457fad02bf51f7862fa180ccc42c032" default))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
  '(display-line-numbers nil)
@@ -61,14 +64,14 @@
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
-   '(acme-theme altcaps cape cider copilot corfu diff-hl diredfl dogears eglot
-                embark-consult emmet-mode fennel-mode flymake-eslint
-                flymake-kondor gcmh geiser-chez glsl-mode helpful
-                ibuffer-project inf-ruby lua-mode magit marginalia markdown-mode
-                multiple-cursors nerd-icons-corfu olivetti orderless org-modern
-                page-break-lines prettier rainbow-delimiters ruby-electric
-                sass-mode sly toc-org treemacs uwu-theme vertico vterm vundo
-                wgrep yaml-mode yari yasnippet))
+   '(altcaps cape cider copilot corfu diredfl dogears ef-themes eglot
+             embark-consult emmet-mode fennel-mode flymake-eslint flymake-kondor
+             gcmh geiser-chez glsl-mode helpful hl-todo ibuffer-project inf-ruby
+             lorem-ipsum lua-mode magit marginalia markdown-mode modus-themes
+             multiple-cursors nerd-icons-corfu olivetti orderless org-modern
+             page-break-lines prettier rainbow-delimiters ruby-electric
+             sass-mode sly toc-org treemacs vertico vterm vundo wgrep yaml-mode
+             yari yasnippet))
  '(package-vc-selected-packages
    '((copilot :vc-backend Git :url
               "https://www.github.com/copilot-emacs/copilot.el")))
@@ -131,8 +134,15 @@
 
 
 ;;; UI
+
+(use-package ef-themes
+  :custom
+  (ef-themes-headings '((0 1.7)
+                        (1 1.5)
+                        (2 1.3)
+                        (3 1.1))))
+
 (use-package modus-themes
-  :ensure nil
   :custom
   (modus-themes-bold-constructs t)
   (modus-themes-italic-constructs t)
@@ -180,6 +190,8 @@
               ("DEL" . vertico-directory-delete-char)))
 
 (use-package marginalia
+  :custom
+  (marginalia-field-width 100)
   :init
   (marginalia-mode))
 
@@ -267,6 +279,21 @@
         (setcar cell "")))))
 
 (add-hook 'after-change-major-mode-hook 'clean-minor-mode-line)
+
+(use-package hl-todo
+  ;; TODO: test todo
+  ;; FIXME: test fixme
+  :custom
+  (hl-todo-highlight-punctuation ":")
+  (hl-todo-require-punctuation t)
+  :bind
+  (:map hl-todo-mode-map
+        ("C-c p" . hl-todo-previous)
+        ("C-c n" . hl-todo-next)
+        ("C-c o" . hl-todo-occur)
+        ("C-c i" . hl-todo-insert))
+  :config
+  (global-hl-todo-mode t))
 
 ;;; Completion & Navigation
 
@@ -502,9 +529,6 @@
 ;; Enable eslint for flymake
 (use-package flymake-eslint)
 
-;; Emacs lisp
-(add-hook 'emacs-lisp-mode-hook 'flymake-mode)
-
 ;; XML
 (format-lang nxml
   :command "xmllint"
@@ -517,11 +541,13 @@
 ;; Flymake
 (use-package flymake
   :hook
-  ((prog-mode-hook . flymake-mode-hook))
+  ((prog-mode . flymake-mode))
   :bind
   (:map flymake-mode-map
         ("M-n" . 'flymake-goto-next-error)
-        ("M-p" . 'flymake-goto-prev-error)))
+        ("M-p" . 'flymake-goto-prev-error)
+        ;; TODO: Maybe find a better keybinding
+        ("C-x M-n" . 'flymake-show-buffer-diagnostics)))
 
 ;; YAML mode
 (use-package yaml-mode)
@@ -668,7 +694,17 @@
     "* Tickets\n")
   (define-auto-insert
     '("refinements/.*\.org" . "Refinement template")
-    'org-refinement-skeleton))
+    'org-refinement-skeleton)
+  (define-skeleton org-tmp-skeleton
+    "tmp notes/to be imported elsewhere."
+    "Insert title: "
+    "# -*- eval: (auto-fill-mode -1) -*-"
+    "#+TITLE: " str "\n"
+    "#+DATE: " "<" (format-time-string "%Y-%m-%d") ">" "\n"
+    "#+OPTIONS: toc:nil\n\n")
+  (define-auto-insert
+    '("tmp/.*\.org" . "Tmp notes")
+    'org-tmp-skeleton))
 
 ;; Beautiful Org mode
 (use-package org-modern
@@ -848,16 +884,17 @@
   (transient-append-suffix 'magit-log "-A"
     '("-m" "No Merges" "--no-merges")))
 
-(use-package diff-hl
-  :after (magit)
-  :custom
-  (diff-hl-draw-borders nil)
-  :config
-  (diff-hl-dired-mode t)
-  (global-diff-hl-mode)
-  (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
-  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
-
+;; (use-package diff-hl
+;;   :after (magit)
+;;   :custom
+;;   (diff-hl-draw-borders nil)
+;;   (diff-hl-margin-symbols-alist
+;;    '((insert . "") (delete . " ") (change . " ") (unknown . " ") (ignored . " ")))
+;;   :config
+;;   (diff-hl-dired-mode t)
+;;   (global-diff-hl-mode)
+;;   (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
+;;   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
 ;;; Utils
 
