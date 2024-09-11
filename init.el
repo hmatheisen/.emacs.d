@@ -34,15 +34,14 @@
  '(completion-styles '(orderless basic partial-completion emacs22))
  '(confirm-kill-emacs 'y-or-n-p)
  '(custom-safe-themes
-   '("99d1e29934b9e712651d29735dd8dcd431a651dfbe039df158aa973461af003e"
+   '("8a3d04fd24afde8333c1437a3ecaa616f121554041a4e7e48f21b28f13b50246"
+     "144aa208033b570b4c31e054b77afa01b9e2349cdba14bb17c3e484c82effa30"
+     "99d1e29934b9e712651d29735dd8dcd431a651dfbe039df158aa973461af003e"
      "e410458d3e769c33e0865971deb6e8422457fad02bf51f7862fa180ccc42c032" default))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
  '(display-line-numbers nil)
  '(display-line-numbers-width 4)
- '(display-time-24hr-format t)
- '(display-time-default-load-average nil)
- '(display-time-mode t)
  '(dynamic-completion-mode t)
  '(ediff-merge-split-window-function 'split-window-vertically)
  '(ediff-split-window-function 'split-window-vertically)
@@ -64,18 +63,18 @@
  '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
  '(package-selected-packages
-   '(altcaps cape cider copilot corfu diredfl dogears ef-themes eglot
-             embark-consult emmet-mode fennel-mode flymake-eslint flymake-kondor
-             gcmh geiser-chez glsl-mode helpful hl-todo ibuffer-project inf-ruby
-             lorem-ipsum lua-mode magit marginalia markdown-mode modus-themes
-             multiple-cursors nerd-icons-corfu olivetti orderless org-modern
-             page-break-lines prettier rainbow-delimiters ruby-electric
-             sass-mode sly toc-org treemacs vertico vterm vundo wgrep yaml-mode
-             yari yasnippet))
+   '(altcaps cape cider copilot corfu diredfl ef-themes embark-consult emmet-mode
+             exec-path-from-shell fennel-mode flymake-eslint flymake-kondor gcmh
+             geiser-chez glsl-mode helpful hl-todo ibuffer-project lua-mode
+             magit marginalia markdown-mode modus-themes multiple-cursors
+             nerd-icons-corfu orderless org-modern page-break-lines prettier
+             rainbow-delimiters ruby-electric sass-mode toc-org treemacs vertico
+             vterm vundo wgrep yaml-mode yasnippet))
  '(package-vc-selected-packages
    '((copilot :vc-backend Git :url
               "https://www.github.com/copilot-emacs/copilot.el")))
  '(pixel-scroll-precision-mode t)
+ '(project-mode-line t)
  '(project-switch-commands
    '((project-find-file "Find file" nil) (project-find-regexp "Find regexp" nil)
      (project-find-dir "Find directory" nil) (project-vc-dir "VC-Dir" nil)
@@ -166,8 +165,8 @@
 (use-package theme-switcher
   :ensure nil
   :custom
-  (theme-switcher-day-theme 'modus-operandi-tinted)
-  (theme-switcher-night-theme 'modus-vivendi)
+  (theme-switcher-day-theme 'ef-eagle)
+  (theme-switcher-night-theme 'ef-trio-dark)
   :config
   (theme-switcher-mode t))
 
@@ -245,40 +244,27 @@
                (display-buffer-below-selected)
                (window-height . 0.25)))
 
-;; (add-to-list 'display-buffer-alist
-;;              '("\\*Customize.+\\*"
-;;                (display-buffer-reuse-window)
-;;                (side . right)))
-
-;; (add-to-list 'display-buffer-alist
-;;              '("\\*info\\*"
-;;                (display-buffer-reuse-window)
-;;                (side . right)))
-
 (defvar init-minor-mode-alist minor-mode-alist)
 
-(defvar mode-line-hidden-minor-modes
-  '(diff-hl-mode
-    emmet-mode
-    ruby-electric-mode
-    copilot-mode
-    yas-minor-mode
-    page-break-lines-mode
-    which-key-mode
-    gcmh-mode
-    eldoc-mode
-    abbrev-mode
-    with-editor-mode))
-
-(defun clean-minor-mode-line ()
-  "Clean up minor mode line."
-  (interactive)
-  (dolist (mode mode-line-hidden-minor-modes nil)
-    (let ((cell (cdr (assoc mode minor-mode-alist))))
-      (when cell
-        (setcar cell "")))))
-
-(add-hook 'after-change-major-mode-hook 'clean-minor-mode-line)
+(setq-default mode-line-format
+              '("%e"
+                mode-line-front-space
+                (:propertize
+                 (""
+                  mode-line-mule-info
+                  mode-line-client
+                  mode-line-modified
+                  mode-line-remote
+                  mode-line-window-dedicated)
+                 display (min-width (6.0)))
+                mode-line-frame-identification
+                mode-line-buffer-identification
+                "  "
+                mode-line-position
+                (vc-mode vc-mode)
+                "  "
+                mode-line-misc-info
+                mode-line-end-spaces))
 
 (use-package hl-todo
   ;; TODO: test todo
@@ -456,8 +442,6 @@
 ;; Eglot
 (use-package eglot
   :ensure nil
-  :config
-  (add-to-list 'eglot-server-programs '((ruby-mode ruby-ts-mode) "ruby-lsp"))
   :preface
   (defun setup-other-flymake-backends ()
     "Add other backends to flymake when using eglot"
@@ -547,7 +531,7 @@
         ("M-n" . 'flymake-goto-next-error)
         ("M-p" . 'flymake-goto-prev-error)
         ;; TODO: Maybe find a better keybinding
-        ("C-x M-n" . 'flymake-show-buffer-diagnostics)))
+        ("C-c M-n" . 'flymake-show-buffer-diagnostics)))
 
 ;; YAML mode
 (use-package yaml-mode)
@@ -587,8 +571,6 @@
 ;; Glsl
 (use-package glsl-mode)
 
-;; Quicklisp
-;; (load (expand-file-name "~/.quicklisp/slime-helper.el"))
 ;; Replace "sbcl" with the path to your implementation
 (setq inferior-lisp-program "sbcl")
 
@@ -733,18 +715,6 @@
 ;; Whitespace cleanup on save
 (add-hook 'before-save-hook 'whitespace-cleanup)
 
-;; (use-package evil
-;;   :init
-;;   (setq evil-want-C-u-scroll t
-;;         evil-default-state 'emacs
-;;         evil-insert-state-modes nil
-;;         evil-motion-state-modes nil
-;;         evil-disable-insert-state-bindings t
-;;         evil-insert-state-cursor nil)
-;;   :config
-;;   (evil-set-undo-system 'undo-redo)
-;;   (evil-mode 1))
-
 ;; Auto insert mode
 (auto-insert-mode t)
 (define-auto-insert
@@ -780,6 +750,7 @@
   :config
   (setq wgrep-auto-save-buffer t))
 
+(require 'grep)
 (add-to-list 'grep-find-ignored-directories "node_modules")
 (add-to-list 'grep-find-ignored-directories "log")
 (add-to-list 'grep-find-ignored-directories "tmp")
@@ -840,13 +811,6 @@
 
 (define-key project-prefix-map "T" 'project-vterm)
 
-;; Too slow on current project and messes up with completion
-;; (defun project-rails-console ()
-;;   "Open a rails console at the root of the current project."
-;;   (interactive)
-;;   (with-current-project-root (root)
-;;     (inf-ruby-console-rails root)))
-
 (defvar project-rails-console-buffer nil
   "Reference to the currently open rails console buffer.")
 
@@ -883,18 +847,6 @@
   :config
   (transient-append-suffix 'magit-log "-A"
     '("-m" "No Merges" "--no-merges")))
-
-;; (use-package diff-hl
-;;   :after (magit)
-;;   :custom
-;;   (diff-hl-draw-borders nil)
-;;   (diff-hl-margin-symbols-alist
-;;    '((insert . "") (delete . " ") (change . " ") (unknown . " ") (ignored . " ")))
-;;   :config
-;;   (diff-hl-dired-mode t)
-;;   (global-diff-hl-mode)
-;;   (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
-;;   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
 ;;; Utils
 
@@ -918,6 +870,11 @@
 (add-to-path "/Library/TeX/texbin")
 (add-to-path "/Users/henry/.rbenv/shims")
 (add-to-path "/Users/henry/.local/bin")
+
+(use-package exec-path-from-shell
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
 
 (when *is-a-mac*
   (setenv "DYLD_LIBRARY_PATH" "/opt/homebrew/lib")
@@ -1040,7 +997,7 @@ non-interactive usage more ergonomic.  Takes the following named arguments:
 (use-package copilot
   :ensure nil
   :init (vc-install :fetcher "github" :repo "copilot-emacs/copilot.el")
-  :hook (prog-mode . copilot-mode)
+  ;; :hook (prog-mode . copilot-mode)
   :bind (:map copilot-completion-map
               ("M-<tab>" . copilot-accept-completion)
               ("M-TAB" . copilot-accept-completion)))
