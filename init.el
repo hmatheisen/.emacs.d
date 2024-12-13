@@ -29,12 +29,21 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(auto-insert-mode t)
  '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(completion-styles '(orderless basic partial-completion emacs22))
  '(confirm-kill-emacs 'y-or-n-p)
  '(custom-safe-themes
-   '("c3e62e14eb625e02e5aeb03d315180d5bb6627785e48f23ba35eb7b974a940af" "8a3d04fd24afde8333c1437a3ecaa616f121554041a4e7e48f21b28f13b50246" "144aa208033b570b4c31e054b77afa01b9e2349cdba14bb17c3e484c82effa30" "99d1e29934b9e712651d29735dd8dcd431a651dfbe039df158aa973461af003e" "e410458d3e769c33e0865971deb6e8422457fad02bf51f7862fa180ccc42c032" default))
+   '("00d7122017db83578ef6fba39c131efdcb59910f0fac0defbe726da8072a0729" "b41d0a9413fb0034cea34eb8c9f89f6e243bdd76bccecf8292eb1fefa42eaf0a" "36c5acdaf85dda0dad1dd3ad643aacd478fb967960ee1f83981d160c52b3c8ac" default))
+ '(default-frame-alist
+   '((ns-transparent-titlebar . t)
+     (width . 110)
+     (height . 60)
+     (top . 0)
+     (right . 10)
+     (horizontal-scroll-bars)
+     (vertical-scroll-bars)))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
  '(display-line-numbers nil)
@@ -45,33 +54,23 @@
  '(ediff-window-setup-function 'ediff-setup-windows-plain)
  '(electric-pair-mode t)
  '(fill-column 80)
- '(follow-auto t)
- '(geiser-chez-binary "chez")
  '(global-auto-revert-mode t)
  '(global-goto-address-mode t)
- '(global-revert-mode t)
  '(global-so-long-mode t)
- '(global-tab-line-mode nil)
- '(go-ts-mode-indent-offset 4)
+ '(grep-command "rg --no-heading ")
+ '(grep-use-null-device nil)
  '(indent-tabs-mode nil)
- '(js-indent-level 2)
- '(lua-indent-level 4)
  '(mode-line-compact 'long)
- '(ns-auto-hide-menu-bar nil)
  '(ns-use-fullscreen-animation t)
+ '(package-archives
+   '(("gnu" . "https://elpa.gnu.org/packages/")
+     ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+     ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(altcaps cape cider copilot corfu diredfl ef-themes embark-consult emmet-mode exec-path-from-shell fennel-mode flymake-eslint flymake-kondor gcmh geiser-chez glsl-mode helpful hl-todo ibuffer-project lua-mode magit marginalia markdown-mode modus-themes multiple-cursors nerd-icons-corfu orderless org-modern page-break-lines prettier rainbow-delimiters ruby-electric sass-mode toc-org treemacs vertico vterm vundo wgrep yaml-mode yasnippet))
+   '(geiser-guile geiser acme-theme rg cape yasnippet yaml-mode which-key wgrep vterm vertico treemacs sass-mode rich-minority rainbow-delimiters page-break-lines orderless markdown-mode marginalia magit flymake-eslint ef-themes diredfl corfu copilot consult))
  '(package-vc-selected-packages
    '((copilot :vc-backend Git :url "https://www.github.com/copilot-emacs/copilot.el")))
  '(pixel-scroll-precision-mode t)
- '(project-mode-line t)
- '(project-switch-commands
-   '((project-find-file "Find file" nil)
-     (project-find-regexp "Find regexp" nil)
-     (project-find-dir "Find directory" nil)
-     (project-vc-dir "VC-Dir" nil)
-     (project-eshell "Eshell" nil)
-     (project-any-command "Other" nil)))
  '(recentf-mode t)
  '(repeat-mode t)
  '(ring-bell-function 'ignore)
@@ -79,9 +78,6 @@
  '(scroll-bar-mode nil)
  '(scroll-conservatively 1000)
  '(show-paren-delay 0)
- '(show-trailing-whitespace nil)
- '(smtpmail-smtp-server "posteo.de")
- '(smtpmail-smtp-service 25)
  '(tab-width 4)
  '(tool-bar-mode nil)
  '(tooltip-mode nil)
@@ -98,8 +94,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:height 140 :family "Go Mono"))))
- '(emoji ((t (:height 1))))
- '(variable-pitch ((t (:height 150 :family "Go")))))
+ '(variable-pitch ((t (:height 140 :family "Futura")))))
 
 
 ;;; Consts
@@ -107,22 +102,12 @@
 (defconst *is-a-mac* (eq system-type 'darwin))
 
 
-;;; Packages
-
-(require 'package)
-
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/") t)
+;;; Load my own lisp code
 
 ;; Load lisp code in other directories
-(add-to-list 'load-path
-             (expand-file-name "lisp" user-emacs-directory))
-
-
-;;; System
-
-(use-package gcmh
-  :config (gcmh-mode 1))
+(let ((path (expand-file-name "lisp" user-emacs-directory)))
+  (add-to-list 'load-path path)
+  (add-to-list 'elisp-flymake-byte-compile-load-path path))
 
 
 ;;; UI
@@ -134,32 +119,11 @@
                         (2 1.3)
                         (3 1.1))))
 
-(use-package modus-themes
-  :custom
-  (modus-themes-bold-constructs t)
-  (modus-themes-italic-constructs t)
-  (modus-themes-variable-pitch-ui nil)
-  (modus-themes-headings '((0 . (1.7))
-                           (1 . (1.5))
-                           (2 . (1.3))
-                           (3 . (1.1))))
-  (modus-themes-common-palette-overrides
-   '(;; Invisible fringe
-     (fringe unspecified)
-     ;; Less intense Line numbers
-     (fg-line-number-inactive "gray50")
-     (fg-line-number-active fg-main)
-     (bg-line-number-inactive unspecified)
-     (bg-line-number-active unspecified)
-     ;; borderless mode line
-     (border-mode-line-active bg-mode-line-active)
-     (border-mode-line-inactive bg-mode-line-inactive))))
-
 (use-package theme-switcher
   :ensure nil
   :custom
-  (theme-switcher-day-theme 'ef-dream)
-  (theme-switcher-night-theme 'ef-dream)
+  (theme-switcher-day-theme 'ef-arbutus)
+  (theme-switcher-night-theme 'ef-autumn)
   :config
   (theme-switcher-mode t))
 
@@ -197,67 +161,40 @@
   (treemacs-width-is-initially-locked nil)
   :bind (("s-t" . treemacs)))
 
-;; A better *help* buffer
-(use-package helpful
-  :bind (("C-h v" . helpful-variable)
-         ("C-h f" . helpful-callable)
-         ("C-h k" . helpful-key)
-         ("C-h x" . helpful-command)))
-
-(use-package ibuffer
-  :custom
-  (ibuffer-use-other-window t)
-  (ibuffer-expert t)
-  :ensure nil
-  :bind ("C-x C-b" . ibuffer))
-
-;; Group ibuffer's list by project
-(use-package ibuffer-project
-  :preface
-  (defun ibuffer-hook ()
-    "Group ibuffer's list by project."
-    (setq ibuffer-filter-groups (ibuffer-project-generate-filter-groups))
-    (unless (eq ibuffer-sorting-mode 'project-file-relative)
-      (ibuffer-do-sort-by-project-file-relative)))
-  :hook (ibuffer . ibuffer-hook))
-
 (when *is-a-mac*
   (setq mac-option-modifier 'meta
         mac-command-modifier 'super
         mac-right-option-modifier 'nil))
 
 ;; Display buffer alist
-(add-to-list 'display-buffer-alist
-             '("\\*eldoc\\*"
-               (display-buffer-below-selected)
-               (window-height . 0.25)))
+(defun display-buffer-below (buffer-name)
+  "Display BUFFER-NAME below the selected window."
+  (add-to-list 'display-buffer-alist
+               `(,buffer-name
+                 (display-buffer-below-selected)
+                 (window-height . 0.3))))
 
-(add-to-list 'display-buffer-alist
-             '("\\*Flymake diag.+\\*"
-               (display-buffer-below-selected)
-               (window-height . 0.25)))
+(display-buffer-below "\\*Async Shell Command\\*")
+(display-buffer-below "\\*Flymake diag.+\\*")
+(display-buffer-below "\\*eldoc.*\\*")
 
-(use-package hl-todo
-  ;; TODO: test todo
-  ;; FIXME: test fixme
+;; Clean modeline
+(use-package rich-minority
   :custom
-  (hl-todo-highlight-punctuation ":")
-  (hl-todo-require-punctuation t)
-  :bind
-  (:map hl-todo-mode-map
-        ("C-c p" . hl-todo-previous)
-        ("C-c n" . hl-todo-next)
-        ("C-c o" . hl-todo-occur)
-        ("C-c i" . hl-todo-insert))
+  (rm-blacklist (mapconcat 'identity '() "\\|"))
   :config
-  (global-hl-todo-mode t))
+  (rich-minority-mode t))
 
 ;; Line spacing
 (setq-default line-spacing 1)
+
+;; Remove `vc-mode' from modeline
+(setq-default mode-line-format
+              (delete '(vc-mode vc-mode) mode-line-format))
 
 ;;; Completion & Navigation
 
-;; Completions
+;; Orderless completion mode
 (use-package orderless)
 
 ;; Replace dabbrev-expand with hippie-expand
@@ -276,19 +213,10 @@
         try-complete-lisp-symbol-partially
         try-complete-lisp-symbol))
 
-(use-package nerd-icons-corfu)
-
 ;; In buffer completion
 (use-package corfu
-  :custom
-  (corfu-cycle t)
-  (corfu-auto t)
-  (corfu-auto-delay 0)
-  (corfu-auto-prefix 3)
   :bind
   (:map corfu-map ("M-SPC" . corfu-insert-separator))
-  :config
-  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter)
   :init
   (global-corfu-mode)
   (corfu-popupinfo-mode)
@@ -303,81 +231,16 @@
   :config (yas-global-mode t))
 
 ;; Search and navigation
-(use-package consult
-  :bind (;; C-c bindings in `mode-specific-map'
-         ("C-c M-x" . consult-mode-command)
-         ("C-c h" . consult-history)
-         ("C-c k" . consult-kmacro)
-         ("C-c m" . consult-man)
-         ("C-c i" . consult-info)
-         ([remap Info-search] . consult-info)
-         ;; C-x bindings in `ctl-x-map'
-         ("C-x M-:" . consult-complex-command)
-         ("C-x b" . consult-buffer)
-         ("s-b" . consult-buffer)
-         ("C-x 4 b" . consult-buffer-other-window)
-         ("C-x 5 b" . consult-buffer-other-frame)
-         ("C-x t b" . consult-buffer-other-tab)
-         ("C-x r b" . consult-bookmark)
-         ("C-x p b" . consult-project-buffer)
-         ;; Custom M-# bindings for fast register access
-         ("M-#" . consult-register-load)
-         ("M-'" . consult-register-store)
-         ("C-M-#" . consult-register)
-         ;; Other custom bindings
-         ("M-y" . consult-yank-pop)
-         ;; M-g bindings in `goto-map'
-         ("M-g e" . consult-compile-error)
-         ("M-g f" . consult-flymake)
-         ("M-g g" . consult-goto-line)
-         ("M-g M-g" . consult-goto-line)
-         ("M-g o" . consult-outline)
-         ("M-g m" . consult-mark)
-         ("M-g k" . consult-global-mark)
-         ("M-g i" . consult-imenu)
-         ("M-g I" . consult-imenu-multi)
-         ;; M-s bindings in `search-map'
-         ("M-s d" . consult-find)
-         ("M-s c" . consult-locate)
-         ("M-s g" . consult-grep)
-         ("M-s G" . consult-git-grep)
-         ("M-s r" . consult-ripgrep)
-         ("M-s l" . consult-line)
-         ("M-s L" . consult-line-multi)
-         ("M-s k" . consult-keep-lines)
-         ("M-s u" . consult-focus-lines)
-         ;; Isearch integration
-         ("M-s e" . consult-isearch-history)
-         :map isearch-mode-map
-         ("M-e" . consult-isearch-history)
-         ("M-s e" . consult-isearch-history)
-         ("M-s l" . consult-line)
-         ("M-s L" . consult-line-multi)
-         ;; Minibuffer history
-         :map minibuffer-local-map
-         ("M-s" . consult-history)
-         ("M-r" . consult-history))
-  :init
-  (setq xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref))
+(use-package consult)
 
-(use-package embark
-  :bind
-  (("C-." . embark-act)
-   ("C-h B" . embark-bindings)))
-
-(use-package embark-consult
-  :hook
-  (embark-collect-mode . consult-preview-at-point-mode))
-
-(use-package multiple-cursors
-  :config
-  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-  (global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
-  (global-unset-key (kbd "M-<down-mouse-1>"))
-  (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))
+;; (use-package multiple-cursors
+;;   :config
+;;   (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+;;   (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+;;   (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+;;   (global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
+;;   (global-unset-key (kbd "M-<down-mouse-1>"))
+;;   (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))
 
 
 ;;; Files
@@ -385,6 +248,7 @@
 ;; Backup files live in user emacs directory
 (setq backup-directory-alist
       `(("." . ,(concat user-emacs-directory "backups"))))
+
 ;; Auto save files live in temporary file directory
 (setq auto-save-file-name-transforms
       `((".*" ,temporary-file-directory t)))
@@ -395,9 +259,10 @@
   :bind (:map dired-mode-map
               ("C-c C-q" . wdired-change-to-wdired-mode))
   :config
-  (when (and *is-a-mac* (executable-find "gls"))
+  (when (executable-find "gls")
     (setq insert-directory-program "gls"
-          dired-listing-switches "-aGFhlv --dired --group-directories-first --time-style=long-iso"))
+          dired-listing-switches "-aGFhlv --dired --group-directories-first
+          --time-style=long-iso"))
   ;; Always delete and copy recursively
   (setq dired-recursive-deletes 'always
         dired-recursive-copies 'always)
@@ -407,11 +272,15 @@
 (use-package diredfl
   :config (diredfl-global-mode))
 
+;; Quicker switch to buffer
+(global-set-key (kbd "s-b") 'switch-to-buffer)
+
+;; Ripgrep
+(use-package rg
+  :config
+  (rg-enable-default-bindings))
 
 ;;; Languages
-
-(require 'format-buffer)
-(require 'tasks)
 
 ;; Eglot
 (use-package eglot
@@ -427,59 +296,10 @@
   :hook ((ruby-ts-mode . eglot-ensure)
          (typescript-ts-mode . eglot-ensure)
          (tsx-ts-mode . eglot-ensure)
-         (go-ts-mode . eglot-ensure)
          (eglot-managed-mode . setup-other-flymake-backends)))
-
-;; Ruby
-(format-lang ruby-ts
-  :command "stree"
-  :args '("format" "--print-width=100"))
-
-(use-package ruby-electric
-  :hook ((ruby-ts-mode . ruby-electric-mode)))
-
-;; Rails commands
-(define-task rails-gettext
-  :command "bundle exec rails gettext:update"
-  :project-path "~/Code/elevo-rails/"
-  :description "Update gettext entries")
-
-(define-task rails-migrate
-  :command "bundle exec rails db:migrate"
-  :project-path "~/Code/elevo-rails/"
-  :description "Run rails migration")
-
-(define-task sort-forestschema
-  :command "bin/sort_forestschema"
-  :project-path "~/Code/elevo-rails/"
-  :description "Sort `.forestadmin-schema.json' file"
-  :async nil)
-
-(define-task yarn-client-tests
-  :command "yarn client:test"
-  :project-path "~/Code/elevo-rails/"
-  :description "Run all client tests")
-
-(define-task annotate-models
-  :command "bundle exec rails annotate_models"
-  :project-path "~/Code/elevo-rails/"
-  :description "Annotate rails models")
-
-;; Typescript
-(use-package prettier
-  :config
-  (add-hook 'typescript-ts-mode-hook
-            (lambda ()
-              (local-set-key (kbd "C-c f") 'prettier-prettify)))
-  (add-hook 'tsx-ts-mode-hook
-            (lambda ()
-              (local-set-key (kbd "C-c f") 'prettier-prettify))))
 
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
-
-(use-package emmet-mode
-  :hook ((tsx-ts-mode . emmet-mode)))
 
 ;; Sass
 (use-package sass-mode)
@@ -487,35 +307,25 @@
 ;; Enable eslint for flymake
 (use-package flymake-eslint)
 
-;; XML
-(format-lang nxml
-  :command "xmllint"
-  :args '("--format" "-"))
-
-;; SQL
-(format-lang sql
-  :command "pg_format")
-
 ;; Flymake
 (use-package flymake
-  :hook
-  ((prog-mode . flymake-mode))
   :bind
   (:map flymake-mode-map
         ("M-n" . 'flymake-goto-next-error)
         ("M-p" . 'flymake-goto-prev-error)
-        ;; TODO: Maybe find a better keybinding
-        ("C-c M-n" . 'flymake-show-buffer-diagnostics)))
+        ("M-g f" . 'flymake-show-buffer-diagnostics)))
 
 ;; YAML mode
 (use-package yaml-mode)
 
 ;; Markdown
 (use-package markdown-mode
-  :hook ((markdown-mode . (lambda ()
-                            ;; Do not remove trailing whitespace when cleaning in markdown mode
-                            (setq-local whitespace-style
-                                        (delq 'trailing whitespace-style)))))
+  :hook
+  ((markdown-mode . (lambda ()
+                      ;; Do not remove trailing whitespace when cleaning in
+                      ;; markdown mode
+                      (setq-local whitespace-style
+                                  (delq 'trailing whitespace-style)))))
   :config
   (define-skeleton markdown-release-skeleton
     "Release template."
@@ -530,53 +340,17 @@
   (define-auto-insert
     '("release.md" . "Release template") 'markdown-release-skeleton))
 
-;; Golang
-(add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.mod\\'" . go-mod-ts-mode))
-
-(format-lang c
-  :command "clang-format"
-  :args '("--style=file"))
-
-(add-hook 'c-mode-hook (lambda ()
-                         (display-fill-column-indicator-mode 1)))
-(setq-default c-basic-offset 4)
-
-;; Glsl
-(use-package glsl-mode)
-
-;; Replace "sbcl" with the path to your implementation
-(setq inferior-lisp-program "sbcl")
-
-;; Clojure
-(use-package cider)
-(use-package clojure-mode)
-(use-package flymake-kondor
-  :ensure t
-  :hook (clojure-mode . flymake-kondor-setup))
-
-;; Lua
-(format-lang lua
-  :command "lua-format"
-  :args '("-i"))
-
-;; Fennel
-(use-package fennel-mode)
-(use-package lua-mode)
-
-;; Scheme
-(use-package geiser)
-(use-package geiser-chez)
-
 ;; Treesit
-(setq treesit-language-source-alist
+(defvar treesit-language-source-alist
       '((ruby "https://github.com/tree-sitter/tree-sitter-ruby")
-        (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "tsx/src")
-        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src")
+        (typescript
+         "https://github.com/tree-sitter/tree-sitter-typescript"
+         "master" "typescript/src")
+        (tsx
+         "https://github.com/tree-sitter/tree-sitter-typescript"
+         "master" "tsx/src")
         (json "https://github.com/tree-sitter/tree-sitter-json")
-        (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
-        (go "https://github.com/tree-sitter/tree-sitter-go")
-        (c "https://github.com/tree-sitter/tree-sitter-c")))
+        (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")))
 
 (defun install-treesit-languages ()
   "Install all treesit languages."
@@ -588,16 +362,20 @@
             (treesit-install-language-grammar lang)))
         treesit-language-source-alist))
 
-
 ;; Remap major modes to their treesit equivalent
 (setq major-mode-remap-alist
       '((ruby-mode . ruby-ts-mode)
         (tsx-mode . tsx-ts-mode)
         (typescript-mode . typescript-ts-mode)
         (json-mode . json-ts-mode)
-        (dockerfile-mode . dockerfile-ts-mode)
-        (c-mode . c-ts-mode)))
+        (dockerfile-mode . dockerfile-ts-mode)))
 
+;; Ruby auto insert header on new files
+(define-auto-insert
+  '("\\.rb\\'" . "Ruby frozen string header")
+  '(nil
+    "# frozen_string_literal: true\n"
+    "\n"))
 
 ;;; Org
 
@@ -620,16 +398,19 @@
   (setq org-log-done 'time)
   (setq org-todo-keywords
         '((sequence "TODO(t)" "ON GOING(g)" "|" "DONE(d)" "WON'T DO(w)")
-          (sequence "TODO(T)" "IN PROGRESS(P)" "TO REVIEW(R)" "TO TEST(F)" "READY TO MERGE(M)" "|" "DONE(D)")))
+          (sequence "TODO(T)" "IN PROGRESS(P)" "TO REVIEW(R)" "TO TEST(F)"
+          "READY TO MERGE(M)" "|" "DONE(D)")))
   (setq org-capture-templates
         '(("t" "Todo" entry
            (file (lambda () (concat org-directory "tasks.org")))
            "* TODO %?\n")
           ("i" "Emacs Ideas" entry
-           (file+headline (lambda () (concat org-directory "journal.org")) "Ideas")
+           (file+headline (lambda () (concat org-directory "journal.org"))
+                          "Ideas")
            "* %?\nEntered on: %u")
           ("T" "Ticket" entry
-           (file+headline (lambda () (concat org-directory "sprint.org")) "Tickets")
+           (file+headline (lambda () (concat org-directory "sprint.org"))
+                          "Tickets")
            "* IN PROGRESS %?\nSCHEDULED: %t")))
   (define-skeleton org-refinement-skeleton
     "Refinement Template."
@@ -661,16 +442,6 @@
   (define-auto-insert
     '("tmp/.*\.org" . "Tmp notes")
     'org-tmp-skeleton))
-
-;; Beautiful Org mode
-(use-package org-modern
-  :init
-  (global-org-modern-mode))
-
-(use-package toc-org
-  :hook ((org-mode      . toc-org-mode)
-         (markdown-mode . toc-org-mode)))
-
 
 ;;; Text
 
@@ -680,6 +451,7 @@
 (put 'upcase-region 'disabled nil)
 (put 'set-goal-column 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
+(put 'list-timers 'disabled nil)
 
 (defun align-equals (beg end)
   "Align `=' signs in a given region, from BEG to END."
@@ -691,17 +463,9 @@
 
 ;; Auto insert mode
 (auto-insert-mode t)
-(define-auto-insert
-  '("\\.rb\\'" . "Ruby frozen string header")
-  '(nil
-    "# frozen_string_literal: true\n"
-    "\n"))
 
 ;; Redo binding with super
 (global-set-key (kbd "s-Z") 'undo-redo)
-
-(use-package vundo
-  :bind (("C-x u" . vundo)))
 
 ;; Kill to end of line
 (defun kill-beg-line ()
@@ -714,22 +478,12 @@
 ;; Auto fill in text mode
 (add-hook 'text-mode-hook 'auto-fill-mode)
 
-;; Ispell
-(setq ispell-program-name "aspell")
-
 ;; Abbrev mode by default in all buffers
 (setq-default abbrev-mode t)
 
 (use-package wgrep
-  :config
-  (setq wgrep-auto-save-buffer t))
-
-(require 'grep)
-(add-to-list 'grep-find-ignored-directories "node_modules")
-(add-to-list 'grep-find-ignored-directories "log")
-(add-to-list 'grep-find-ignored-directories "tmp")
-(add-to-list 'grep-find-ignored-directories "coverage")
-(add-to-list 'grep-find-ignored-directories "vendor")
+  :custom
+  (wgrep-auto-save-buffer t))
 
 (defun kill-ring-save-whole-buffer ()
   "Save whole buffer to the kill ring."
@@ -748,8 +502,6 @@
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
-(use-package altcaps)
-
 (global-set-key (kbd "C-S-j") 'join-line)
 
 ;;; Project
@@ -759,31 +511,31 @@
   (declare (indent 1))
   (let ((project (gensym)))
     `(let* ((,project (project-current t))
-            (root (project-root ,project)))
+            (,root (project-root ,project)))
        ,@body)))
 
 ;; Copy file absolute path
 (defun project-absolute-file-path ()
   "Print and kill the absolute file path of the current buffer in a project."
   (interactive)
-  (with-current-project-root (root)
+  (with-current-project-root root
     (let ((absolute-file-path (file-relative-name buffer-file-name root)))
       (kill-new absolute-file-path)
       (message (concat "Saved \"" absolute-file-path "\" to kill ring")))))
 
 (define-key project-prefix-map "\C-y" 'project-absolute-file-path)
 
-;; Open vterm at root of project
+;; open vterm at root of project
 (defun project-vterm ()
   "Open a vterm at the root of the current project."
   (interactive)
-  (with-current-project-root (root)
+  (with-current-project-root root
     (vterm)
     (vterm-send-string (concat "cd " root))
     (vterm-send-return)
     (vterm-clear)))
 
-(define-key project-prefix-map "T" 'project-vterm)
+(define-key project-prefix-map "t" 'project-vterm)
 
 (defvar project-rails-console-buffer nil
   "Reference to the currently open rails console buffer.")
@@ -793,18 +545,10 @@
   (interactive)
   (if (buffer-live-p project-rails-console-buffer)
       (switch-to-buffer project-rails-console-buffer)
-    (with-current-project-root (root)
-      (term shell-file-name)
-      (term-send-string (get-buffer-process (current-buffer))
-                        (concat "cd " root " && bin/rails c\n"))
+    (with-current-project-root root
+      (vterm)
+      (vterm-send-string (concat "cd " root " && bin/rails c\n"))
       (setq project-rails-console-buffer (current-buffer)))))
-
-(defun project-rails-console-send-region (start end)
-  "Send the current region to the rails console from START to END."
-  (interactive "r")
-  (with-current-project-root (root)
-    (term-send-string (get-buffer-process project-rails-console-buffer)
-                      (buffer-substring-no-properties start end))))
 
 (define-key global-map (kbd "s-p") project-prefix-map)
 (define-key project-prefix-map (kbd "g") 'consult-ripgrep)
@@ -819,8 +563,7 @@
          :map magit-hunk-section-map
          ("RET" . magit-diff-visit-file-other-window))
   :config
-  (transient-append-suffix 'magit-log "-A"
-    '("-m" "No Merges" "--no-merges")))
+  (transient-append-suffix 'magit-log "-A" '("-m" "No Merges" "--no-merges")))
 
 ;;; Utils
 
@@ -836,9 +579,6 @@
                            directory-files-no-dot-files-regexp))
          (env (string-join scheme-lib-dirs ":")))
     (setenv "CHEZSCHEMELIBDIRS" (concat env ":."))))
-
-;; (when *is-a-mac*
-;;   (chez-scheme-set-env "/Users/henry/Code/scheme/lib"))
 
 (add-to-path "/usr/local/bin")
 (add-to-path "/Library/TeX/texbin")
@@ -882,11 +622,7 @@
 (defun repeat-last-async-shell-command ()
   "Repeats the last shell command in as an `async-shell-command'."
   (interactive)
-  (async-shell-command
-   (car shell-command-history)))
-
-(put 'list-timers 'disabled nil)
-
+  (async-shell-command (car shell-command-history)))
 
 ;;; Window
 
@@ -898,10 +634,6 @@
 
 (global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "M-O") 'other-window-backward)
-
-(use-package ace-window
-  :ensure nil
-  :bind ("C-x o" . ace-window))
 
 (defun window-half-height ()
   "Return half the height of a window."
@@ -944,6 +676,7 @@
 
 ;;; Tools
 
+;; Temporary before Emacs 30 fixes this
 (cl-defun vc-install (&key (fetcher "github") repo name rev backend)
   "Install a package from a remote if it's not already installed.
 This is a thin wrapper around `package-vc-install' in order to make
@@ -981,3 +714,4 @@ non-interactive usage more ergonomic.  Takes the following named arguments:
 (provide 'init)
 
 ;;; init.el ends here
+(put 'scroll-left 'disabled nil)

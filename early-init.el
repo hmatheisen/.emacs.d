@@ -30,17 +30,8 @@
 
 (defconst *is-a-mac* (eq system-type 'darwin))
 
-;; Set high garbage collection threshold during startup.
-;; This is reset to a more reasonable value in init.el by the gcmh package.
-(setq gc-cons-threshold most-positive-fixnum)
-
-(when *is-a-mac*
-  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-  (add-to-list 'default-frame-alist '(undecorated-round . t)))
-
-(add-to-list 'default-frame-alist '(height . 60))
-(add-to-list 'default-frame-alist '(width . 200))
-(add-to-list 'default-frame-alist '(vertical-scroll-bars . nil))
+(when (not (display-graphic-p))
+  (menu-bar-mode -1))
 
 (setq inhibit-startup-screen t)
 
