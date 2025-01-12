@@ -32,42 +32,45 @@
  '(auto-insert-mode t)
  '(blink-cursor-mode nil)
  '(column-number-mode t)
- '(completion-styles '(orderless basic partial-completion emacs22))
  '(confirm-kill-emacs 'y-or-n-p)
  '(custom-safe-themes
-   '("00d7122017db83578ef6fba39c131efdcb59910f0fac0defbe726da8072a0729" "b41d0a9413fb0034cea34eb8c9f89f6e243bdd76bccecf8292eb1fefa42eaf0a" "36c5acdaf85dda0dad1dd3ad643aacd478fb967960ee1f83981d160c52b3c8ac" default))
+   '("b754d3a03c34cfba9ad7991380d26984ebd0761925773530e24d8dd8b6894738" "ff24d14f5f7d355f47d53fd016565ed128bf3af30eb7ce8cae307ee4fe7f3fd0" "30d174000ea9cbddecd6cc695943afb7dba66b302a14f9db5dd65074e70cc744" "00d7122017db83578ef6fba39c131efdcb59910f0fac0defbe726da8072a0729" "b41d0a9413fb0034cea34eb8c9f89f6e243bdd76bccecf8292eb1fefa42eaf0a" "36c5acdaf85dda0dad1dd3ad643aacd478fb967960ee1f83981d160c52b3c8ac" default))
  '(default-frame-alist
    '((ns-transparent-titlebar . t)
      (width . 110)
-     (height . 60)
+     (height . 80)
      (top . 0)
      (right . 10)
-     (horizontal-scroll-bars)
-     (vertical-scroll-bars)))
+     (horizontal-scroll-bars)))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
  '(display-line-numbers nil)
  '(display-line-numbers-width 4)
+ '(doom-modeline-mode t)
  '(dynamic-completion-mode t)
  '(ediff-merge-split-window-function 'split-window-vertically)
  '(ediff-split-window-function 'split-window-vertically)
  '(ediff-window-setup-function 'ediff-setup-windows-plain)
+ '(eglot-ignored-server-capabilities '(:inlayHintProvider))
+ '(eldoc-echo-area-use-multiline-p nil)
  '(electric-pair-mode t)
  '(fill-column 80)
  '(global-auto-revert-mode t)
  '(global-goto-address-mode t)
+ '(global-page-break-lines-mode t nil (page-break-lines))
  '(global-so-long-mode t)
  '(grep-command "rg --no-heading ")
  '(grep-use-null-device nil)
  '(indent-tabs-mode nil)
  '(mode-line-compact 'long)
+ '(ns-antialias-text t)
  '(ns-use-fullscreen-animation t)
  '(package-archives
    '(("gnu" . "https://elpa.gnu.org/packages/")
      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(geiser-guile geiser acme-theme rg cape yasnippet yaml-mode which-key wgrep vterm vertico treemacs sass-mode rich-minority rainbow-delimiters page-break-lines orderless markdown-mode marginalia magit flymake-eslint ef-themes diredfl corfu copilot consult))
+   '(centaur-tabs helpful doom-modeline doom-themes sly almost-mono-themes embark prettier acme-theme rg cape yasnippet yaml-mode which-key wgrep vterm vertico treemacs sass-mode rich-minority rainbow-delimiters page-break-lines orderless markdown-mode marginalia magit flymake-eslint ef-themes diredfl corfu copilot consult))
  '(package-vc-selected-packages
    '((copilot :vc-backend Git :url "https://www.github.com/copilot-emacs/copilot.el")))
  '(pixel-scroll-precision-mode t)
@@ -93,7 +96,10 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:height 140 :family "Go Mono"))))
+ '(default ((t (:height 150 :family "Anonymous Pro"))))
+ '(flymake-error ((t (:underline nil))))
+ '(flymake-note ((t (:underline nil))))
+ '(flymake-warning ((t (:underline nil))))
  '(variable-pitch ((t (:height 140 :family "Futura")))))
 
 
@@ -112,6 +118,12 @@
 
 ;;; UI
 
+(use-package doom-themes)
+
+(use-package doom-modeline
+  :custom
+  ((doom-modeline-icon nil)))
+
 (use-package ef-themes
   :custom
   (ef-themes-headings '((0 1.7)
@@ -119,13 +131,15 @@
                         (2 1.3)
                         (3 1.1))))
 
-(use-package theme-switcher
-  :ensure nil
-  :custom
-  (theme-switcher-day-theme 'ef-arbutus)
-  (theme-switcher-night-theme 'ef-autumn)
-  :config
-  (theme-switcher-mode t))
+(load-theme 'doom-old-hope)
+
+;; (use-package theme-switcher
+;;   :ensure nil
+;;   :custom
+;;   (theme-switcher-day-theme 'ef-arbutus)
+;;   (theme-switcher-night-theme 'ef-autumn)
+;;   :config
+;;   (theme-switcher-mode t))
 
 ;; Line numbers in prog mode only
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
@@ -138,7 +152,15 @@
   :init
   (which-key-mode))
 
+(use-package helpful
+  :defer t
+  :bind
+  (("C-h f" . helpful-callable)
+   ("C-h v" . helpful-variable)
+   ("C-h k" . helpful-key)))
+
 ;; Minibuffer
+
 (use-package vertico
   :init
   (vertico-mode)
@@ -177,6 +199,7 @@
 (display-buffer-below "\\*Async Shell Command\\*")
 (display-buffer-below "\\*Flymake diag.+\\*")
 (display-buffer-below "\\*eldoc.*\\*")
+(display-buffer-below "\\*compilation\\*")
 
 ;; Clean modeline
 (use-package rich-minority
@@ -195,7 +218,9 @@
 ;;; Completion & Navigation
 
 ;; Orderless completion mode
-(use-package orderless)
+(use-package orderless
+  :custom
+  (completion-styles '(orderless)))
 
 ;; Replace dabbrev-expand with hippie-expand
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
@@ -278,7 +303,14 @@
 ;; Ripgrep
 (use-package rg
   :config
-  (rg-enable-default-bindings))
+  (rg-enable-default-bindings)
+  (rg-define-search project-search-regex
+    "Search in project using regex."
+    :query ask
+    :format regexp
+    :files "everything"
+    :dir project)
+  (define-key project-prefix-map (kbd "g") 'project-search-regex))
 
 ;;; Languages
 
@@ -292,10 +324,11 @@
            (flymake-eslint-enable))
           ((derived-mode-p 'ruby-ts-mode)
            (add-hook 'flymake-diagnostic-functions
-                     'ruby-flymake-auto))))
+                     'ruby-flymake-auto)))) ; Enables rubocop
   :hook ((ruby-ts-mode . eglot-ensure)
          (typescript-ts-mode . eglot-ensure)
          (tsx-ts-mode . eglot-ensure)
+         (c++-ts-mode . eglot-ensure)
          (eglot-managed-mode . setup-other-flymake-backends)))
 
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
@@ -343,14 +376,11 @@
 ;; Treesit
 (defvar treesit-language-source-alist
       '((ruby "https://github.com/tree-sitter/tree-sitter-ruby")
-        (typescript
-         "https://github.com/tree-sitter/tree-sitter-typescript"
-         "master" "typescript/src")
-        (tsx
-         "https://github.com/tree-sitter/tree-sitter-typescript"
-         "master" "tsx/src")
+        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+        (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
         (json "https://github.com/tree-sitter/tree-sitter-json")
-        (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")))
+        (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
+        (c++ "https://github.com/tree-sitter/tree-sitter-cpp")))
 
 (defun install-treesit-languages ()
   "Install all treesit languages."
@@ -368,7 +398,8 @@
         (tsx-mode . tsx-ts-mode)
         (typescript-mode . typescript-ts-mode)
         (json-mode . json-ts-mode)
-        (dockerfile-mode . dockerfile-ts-mode)))
+        (dockerfile-mode . dockerfile-ts-mode)
+        (c++-mode . c++-ts-mode)))
 
 ;; Ruby auto insert header on new files
 (define-auto-insert
@@ -376,6 +407,65 @@
   '(nil
     "# frozen_string_literal: true\n"
     "\n"))
+
+;; C++
+(add-hook 'c++-ts-mode-hook (lambda ()
+                             (display-fill-column-indicator-mode t)))
+
+;; Lisp
+(use-package sly
+  :config
+  (setq inferior-lisp-program "sbcl --dynamic-space-size 4096"))
+
+;;; Site lisp config
+
+;; Run commands in given directories
+(require 'tasks)
+
+(define-task rails-migrate
+  :command "bundle exec rails db:migrate"
+  :description "Run migrations in rails project"
+  :project-path "~/Code/elevo-rails/")
+
+(define-task rails-gettext
+  :command "bundle exec rails gettext:update"
+  :description "Regenerate translation files in rails project"
+  :project-path "~/Code/elevo-rails/")
+
+(define-task sort-forestschema
+  :command "bin/sort_forestschema"
+  :project-path "~/Code/elevo-rails/"
+  :description "Sort `.forestadmin-schema.json' file"
+  :async nil)
+
+(define-task annotate-models
+  :command "bundle exec rails annotate_models"
+  :project-path "~/Code/elevo-rails/"
+  :description "Annotate rails models")
+
+;; Format buffer with the given command
+(require 'format-buffer)
+
+(format-lang ruby-ts
+  :command "stree"
+  :args '("format" "--print-width=100"))
+
+(format-lang nxml
+  :command "xmllint"
+  :args '("--format" "-"))
+
+(format-lang sql
+  :command "pg_format")
+
+(format-lang c
+  :command "clang-format")
+
+(use-package prettier
+  :config
+  (let ((prettify-hook (lambda ()
+                         (local-set-key (kbd "C-c f") 'prettier-prettify))))
+    (add-hook 'typescript-ts-mode-hook prettify-hook)
+    (add-hook 'tsx-ts-mode-hook prettify-hook)))
 
 ;;; Org
 
@@ -499,8 +589,8 @@
   :bind (("M-i" . avy-goto-char)
          ("M-j" . avy-goto-char-timer)))
 
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
+;; (use-package rainbow-delimiters
+;;   :hook (prog-mode . rainbow-delimiters-mode))
 
 (global-set-key (kbd "C-S-j") 'join-line)
 
@@ -551,7 +641,6 @@
       (setq project-rails-console-buffer (current-buffer)))))
 
 (define-key global-map (kbd "s-p") project-prefix-map)
-(define-key project-prefix-map (kbd "g") 'consult-ripgrep)
 (define-key project-prefix-map (kbd "t") 'project-vterm)
 
 ;;; Git
@@ -699,10 +788,9 @@ non-interactive usage more ergonomic.  Takes the following named arguments:
 (use-package copilot
   :ensure nil
   :init (vc-install :fetcher "github" :repo "copilot-emacs/copilot.el")
-  ;; :hook (prog-mode . copilot-mode)
   :bind (:map copilot-completion-map
-              ("M-<tab>" . copilot-accept-completion)
-              ("M-TAB" . copilot-accept-completion)))
+              ("C-<return>" . copilot-accept-completion)
+              ("C-RET" . copilot-accept-completion)))
 
 (use-package vterm)
 

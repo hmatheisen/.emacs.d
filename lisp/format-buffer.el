@@ -36,7 +36,7 @@
         (progn
           ;; Write region to input-file
           (write-region beg end input-file nil :quiet)
-          (let ((error-buffer (get-buffer-create (concat "*" program " Error Buffer*"))) ; create error buffer
+          (let ((error-buffer (get-buffer-create (concat "*" program " Error*"))) ; create error buffer
                 (return-code
                  (apply 'call-process
                         program
@@ -56,8 +56,7 @@
                   (save-restriction
                     (narrow-to-region beg end)
                     (insert-file-contents stdout-file nil nil nil t)
-                    (goto-char point-pos)
-                    (delete-windows-on error-buffer)))
+                    (goto-char point-pos)))
               (display-buffer error-buffer))))
       (delete-file input-file)
       (delete-file stdout-file)
