@@ -70,7 +70,7 @@
      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(centaur-tabs helpful doom-modeline doom-themes sly almost-mono-themes embark prettier acme-theme rg cape yasnippet yaml-mode which-key wgrep vterm vertico treemacs sass-mode rich-minority rainbow-delimiters page-break-lines orderless markdown-mode marginalia magit flymake-eslint ef-themes diredfl corfu copilot consult))
+   '(rainbow-mode ns-auto-titlebar emmet-mode ibuffer-project cider gcmh centaur-tabs helpful doom-modeline doom-themes sly almost-mono-themes embark prettier acme-theme rg cape yasnippet yaml-mode which-key wgrep vterm vertico treemacs sass-mode rich-minority rainbow-delimiters page-break-lines orderless markdown-mode marginalia magit flymake-eslint ef-themes diredfl corfu copilot consult))
  '(package-vc-selected-packages
    '((copilot :vc-backend Git :url "https://www.github.com/copilot-emacs/copilot.el")))
  '(pixel-scroll-precision-mode t)
@@ -87,7 +87,7 @@
  '(trash-directory "~/.Trash")
  '(truncate-lines t)
  '(use-package-always-ensure t)
- '(user-mail-address "haineriz@posteo.de")
+ '(user-mail-address "haineriz@posteo.net")
  '(warning-minimum-level :emergency)
  '(windmove-default-keybindings '([ignore]))
  '(winner-mode t))
@@ -96,7 +96,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:height 150 :family "Anonymous Pro"))))
+ '(default ((t (:height 140 :family "JetBrains Mono"))))
+ '(fixed-pitch ((t (:inherit 'default))))
  '(flymake-error ((t (:underline nil))))
  '(flymake-note ((t (:underline nil))))
  '(flymake-warning ((t (:underline nil))))
@@ -116,13 +117,21 @@
   (add-to-list 'elisp-flymake-byte-compile-load-path path))
 
 
+;;; System
+
+(use-package gcmh
+  :config
+  (gcmh-mode t))
+
+
 ;;; UI
 
 (use-package doom-themes)
 
 (use-package doom-modeline
   :custom
-  ((doom-modeline-icon nil)))
+  ((doom-modeline-icon nil)
+   (doom-modeline-buffer-encoding nil)))
 
 (use-package ef-themes
   :custom
@@ -201,6 +210,19 @@
 (display-buffer-below "\\*eldoc.*\\*")
 (display-buffer-below "\\*compilation\\*")
 
+;; ibuffer
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+(setq ibuffer-expert t)
+
+(use-package ibuffer-project
+  :config
+  (add-hook
+   'ibuffer-hook
+   (lambda ()
+     (setq ibuffer-filter-groups (ibuffer-project-generate-filter-groups))
+     (unless (eq ibuffer-sorting-mode 'project-file-relative)
+       (ibuffer-do-sort-by-project-file-relative)))))
+
 ;; Clean modeline
 (use-package rich-minority
   :custom
@@ -211,9 +233,13 @@
 ;; Line spacing
 (setq-default line-spacing 1)
 
+;; Unused with doom-modeline
 ;; Remove `vc-mode' from modeline
-(setq-default mode-line-format
-              (delete '(vc-mode vc-mode) mode-line-format))
+;; (setq-default mode-line-format
+;;               (delete '(vc-mode vc-mode) mode-line-format))
+
+;; Remove frame title
+(setq frame-title-format "")
 
 ;;; Completion & Navigation
 
@@ -300,10 +326,14 @@
 ;; Quicker switch to buffer
 (global-set-key (kbd "s-b") 'switch-to-buffer)
 
+;; Invoke recentf
+(global-set-key (kbd "s-r") 'recentf)
+
 ;; Ripgrep
 (use-package rg
   :config
   (rg-enable-default-bindings)
+  (rg-define-toggle "--context=10" "C" nil)
   (rg-define-search project-search-regex
     "Search in project using regex."
     :query ask
@@ -375,12 +405,13 @@
 
 ;; Treesit
 (defvar treesit-language-source-alist
-      '((ruby "https://github.com/tree-sitter/tree-sitter-ruby")
-        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-        (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-        (json "https://github.com/tree-sitter/tree-sitter-json")
-        (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
-        (c++ "https://github.com/tree-sitter/tree-sitter-cpp")))
+  '((ruby "https://github.com/tree-sitter/tree-sitter-ruby")
+    (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+    (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+    (json "https://github.com/tree-sitter/tree-sitter-json")
+    (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
+    (go "https://github.com/tree-sitter/tree-sitter-go")
+    (c++ "https://github.com/tree-sitter/tree-sitter-cpp")))
 
 (defun install-treesit-languages ()
   "Install all treesit languages."
@@ -401,6 +432,10 @@
         (dockerfile-mode . dockerfile-ts-mode)
         (c++-mode . c++-ts-mode)))
 
+;; Golang
+(add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
+(setq go-ts-mode-indent-offset 4)
+
 ;; Ruby auto insert header on new files
 (define-auto-insert
   '("\\.rb\\'" . "Ruby frozen string header")
@@ -409,8 +444,10 @@
     "\n"))
 
 ;; C++
-(add-hook 'c++-ts-mode-hook (lambda ()
-                             (display-fill-column-indicator-mode t)))
+(add-hook 'c++-ts-mode-hook
+          (lambda ()
+            (display-fill-column-indicator-mode t)
+            (local-set-key (kbd "C-c f") 'eglot-format-buffer)))
 
 ;; Lisp
 (use-package sly
@@ -505,9 +542,11 @@
   (define-skeleton org-refinement-skeleton
     "Refinement Template."
     "Insert Refinement subject: "
+    "# -*- eval: (auto-fill-mode -1) -*-"
     "#+TITLE: " str "\n"
     "#+OPTIONS: toc:nil\n\n"
-    "* Notes\n"
+    "* Notes :noexport:\n"
+    "* Context\n"
     "* Tech Solution\n"
     "** Backend\n"
     "*** Routes\n"
@@ -542,6 +581,7 @@
 (put 'set-goal-column 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
 (put 'list-timers 'disabled nil)
+(put 'scroll-left 'disabled nil)
 
 (defun align-equals (beg end)
   "Align `=' signs in a given region, from BEG to END."
@@ -802,4 +842,3 @@ non-interactive usage more ergonomic.  Takes the following named arguments:
 (provide 'init)
 
 ;;; init.el ends here
-(put 'scroll-left 'disabled nil)
