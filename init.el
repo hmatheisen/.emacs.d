@@ -34,7 +34,7 @@
  '(column-number-mode t)
  '(confirm-kill-emacs 'y-or-n-p)
  '(custom-safe-themes
-   '("b754d3a03c34cfba9ad7991380d26984ebd0761925773530e24d8dd8b6894738" "ff24d14f5f7d355f47d53fd016565ed128bf3af30eb7ce8cae307ee4fe7f3fd0" "30d174000ea9cbddecd6cc695943afb7dba66b302a14f9db5dd65074e70cc744" "00d7122017db83578ef6fba39c131efdcb59910f0fac0defbe726da8072a0729" "b41d0a9413fb0034cea34eb8c9f89f6e243bdd76bccecf8292eb1fefa42eaf0a" "36c5acdaf85dda0dad1dd3ad643aacd478fb967960ee1f83981d160c52b3c8ac" default))
+   '("8f5b54bf6a36fe1c138219960dd324aad8ab1f62f543bed73ef5ad60956e36ae" "b754d3a03c34cfba9ad7991380d26984ebd0761925773530e24d8dd8b6894738" "ff24d14f5f7d355f47d53fd016565ed128bf3af30eb7ce8cae307ee4fe7f3fd0" "30d174000ea9cbddecd6cc695943afb7dba66b302a14f9db5dd65074e70cc744" "00d7122017db83578ef6fba39c131efdcb59910f0fac0defbe726da8072a0729" "b41d0a9413fb0034cea34eb8c9f89f6e243bdd76bccecf8292eb1fefa42eaf0a" "36c5acdaf85dda0dad1dd3ad643aacd478fb967960ee1f83981d160c52b3c8ac" default))
  '(default-frame-alist
    '((ns-transparent-titlebar . t)
      (width . 110)
@@ -54,6 +54,7 @@
  '(eglot-ignored-server-capabilities '(:inlayHintProvider))
  '(eldoc-echo-area-use-multiline-p nil)
  '(electric-pair-mode t)
+ '(epg-pinentry-mode 'loopback)
  '(fill-column 80)
  '(global-auto-revert-mode t)
  '(global-goto-address-mode t)
@@ -128,10 +129,17 @@
 
 (use-package doom-themes)
 
+(use-package almost-mono-themes
+  :config
+  (load-theme 'almost-mono-black))
+
 (use-package doom-modeline
   :custom
   ((doom-modeline-icon nil)
-   (doom-modeline-buffer-encoding nil)))
+   (doom-modeline-buffer-encoding nil))
+  :config
+  ;; (load-theme 'doom-old-hope)
+  )
 
 (use-package ef-themes
   :custom
@@ -139,8 +147,6 @@
                         (1 1.5)
                         (2 1.3)
                         (3 1.1))))
-
-(load-theme 'doom-old-hope)
 
 ;; (use-package theme-switcher
 ;;   :ensure nil
@@ -411,7 +417,7 @@
     (json "https://github.com/tree-sitter/tree-sitter-json")
     (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
     (go "https://github.com/tree-sitter/tree-sitter-go")
-    (c++ "https://github.com/tree-sitter/tree-sitter-cpp")))
+    (cpp "https://github.com/tree-sitter/tree-sitter-cpp")))
 
 (defun install-treesit-languages ()
   "Install all treesit languages."
@@ -479,6 +485,11 @@
   :command "bundle exec rails annotate_models"
   :project-path "~/Code/elevo-rails/"
   :description "Annotate rails models")
+
+(define-task pre-commit
+  :command "pre-commit run --all-files"
+  :project-path "~/Code/elevo-rails"
+  :description "Run all pre-commit checks against all files")
 
 ;; Format buffer with the given command
 (require 'format-buffer)
