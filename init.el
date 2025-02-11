@@ -34,7 +34,7 @@
  '(column-number-mode t)
  '(confirm-kill-emacs 'y-or-n-p)
  '(custom-safe-themes
-   '("8f5b54bf6a36fe1c138219960dd324aad8ab1f62f543bed73ef5ad60956e36ae" "b754d3a03c34cfba9ad7991380d26984ebd0761925773530e24d8dd8b6894738" "ff24d14f5f7d355f47d53fd016565ed128bf3af30eb7ce8cae307ee4fe7f3fd0" "30d174000ea9cbddecd6cc695943afb7dba66b302a14f9db5dd65074e70cc744" "00d7122017db83578ef6fba39c131efdcb59910f0fac0defbe726da8072a0729" "b41d0a9413fb0034cea34eb8c9f89f6e243bdd76bccecf8292eb1fefa42eaf0a" "36c5acdaf85dda0dad1dd3ad643aacd478fb967960ee1f83981d160c52b3c8ac" default))
+   '("d6b369a3f09f34cdbaed93eeefcc6a0e05e135d187252e01b0031559b1671e97" "e85a354f77ae6c2e47667370a8beddf02e8772a02e1f7edb7089e793f4762a45" "8f5b54bf6a36fe1c138219960dd324aad8ab1f62f543bed73ef5ad60956e36ae" "b754d3a03c34cfba9ad7991380d26984ebd0761925773530e24d8dd8b6894738" "ff24d14f5f7d355f47d53fd016565ed128bf3af30eb7ce8cae307ee4fe7f3fd0" "30d174000ea9cbddecd6cc695943afb7dba66b302a14f9db5dd65074e70cc744" "00d7122017db83578ef6fba39c131efdcb59910f0fac0defbe726da8072a0729" "b41d0a9413fb0034cea34eb8c9f89f6e243bdd76bccecf8292eb1fefa42eaf0a" "36c5acdaf85dda0dad1dd3ad643aacd478fb967960ee1f83981d160c52b3c8ac" default))
  '(default-frame-alist
    '((ns-transparent-titlebar . t)
      (width . 110)
@@ -71,7 +71,7 @@
      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(rainbow-mode ns-auto-titlebar emmet-mode ibuffer-project cider gcmh centaur-tabs helpful doom-modeline doom-themes sly almost-mono-themes embark prettier acme-theme rg cape yasnippet yaml-mode which-key wgrep vterm vertico treemacs sass-mode rich-minority rainbow-delimiters page-break-lines orderless markdown-mode marginalia magit flymake-eslint ef-themes diredfl corfu copilot consult))
+   '(csv-mode rainbow-mode ns-auto-titlebar emmet-mode ibuffer-project cider gcmh centaur-tabs helpful doom-modeline doom-themes sly almost-mono-themes embark prettier acme-theme rg cape yasnippet yaml-mode which-key wgrep vterm vertico treemacs sass-mode rich-minority rainbow-delimiters page-break-lines orderless markdown-mode marginalia magit flymake-eslint ef-themes diredfl corfu copilot consult))
  '(package-vc-selected-packages
    '((copilot :vc-backend Git :url "https://www.github.com/copilot-emacs/copilot.el")))
  '(pixel-scroll-precision-mode t)
@@ -97,7 +97,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:height 140 :family "JetBrains Mono"))))
+ '(default ((t (:height 140 :family "Iosevka"))))
  '(fixed-pitch ((t (:inherit 'default))))
  '(flymake-error ((t (:underline nil))))
  '(flymake-note ((t (:underline nil))))
@@ -129,17 +129,11 @@
 
 (use-package doom-themes)
 
-(use-package almost-mono-themes
-  :config
-  (load-theme 'almost-mono-black))
-
+(use-package almost-mono-themes)
 (use-package doom-modeline
   :custom
   ((doom-modeline-icon nil)
-   (doom-modeline-buffer-encoding nil))
-  :config
-  ;; (load-theme 'doom-old-hope)
-  )
+   (doom-modeline-buffer-encoding nil)))
 
 (use-package ef-themes
   :custom
@@ -148,13 +142,14 @@
                         (2 1.3)
                         (3 1.1))))
 
-;; (use-package theme-switcher
-;;   :ensure nil
-;;   :custom
-;;   (theme-switcher-day-theme 'ef-arbutus)
-;;   (theme-switcher-night-theme 'ef-autumn)
-;;   :config
-;;   (theme-switcher-mode t))
+(use-package theme-switcher
+  :ensure nil
+  :after ef-themes doom-themes almost-mono-themes
+  :custom
+  (theme-switcher-day-theme 'ef-eagle)
+  (theme-switcher-night-theme 'ef-duo-dark)
+  :config
+  (theme-switcher-mode t))
 
 ;; Line numbers in prog mode only
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
@@ -175,6 +170,13 @@
    ("C-h k" . helpful-key)))
 
 ;; Minibuffer
+;; (setq ido-enable-flex-matching t
+;;       ido-everywhere t
+;;       ido-enable-regexp t
+;;       ido-use-filename-at-point t
+;;       ido-create-new-buffer 'always)
+;; (fido-mode 1)
+;; (ido-mode 1)
 
 (use-package vertico
   :init
