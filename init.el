@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2023  Henry MATHEISEN
 
-;; Author: Henry MATHEISEN <haineriz@posteo.de>
+;; Author: Henry MATHEISEN <henry.mthsn@gmail.com>
 ;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <https://www.gnu.orglicenses/>.
+;; along with this program.  If not, see <https://www.gnu.icenses/>.
 
 ;;; Commentary:
 
@@ -34,19 +34,12 @@
  '(column-number-mode t)
  '(confirm-kill-emacs 'y-or-n-p)
  '(custom-safe-themes
-   '("d6b369a3f09f34cdbaed93eeefcc6a0e05e135d187252e01b0031559b1671e97" "e85a354f77ae6c2e47667370a8beddf02e8772a02e1f7edb7089e793f4762a45" "8f5b54bf6a36fe1c138219960dd324aad8ab1f62f543bed73ef5ad60956e36ae" "b754d3a03c34cfba9ad7991380d26984ebd0761925773530e24d8dd8b6894738" "ff24d14f5f7d355f47d53fd016565ed128bf3af30eb7ce8cae307ee4fe7f3fd0" "30d174000ea9cbddecd6cc695943afb7dba66b302a14f9db5dd65074e70cc744" "00d7122017db83578ef6fba39c131efdcb59910f0fac0defbe726da8072a0729" "b41d0a9413fb0034cea34eb8c9f89f6e243bdd76bccecf8292eb1fefa42eaf0a" "36c5acdaf85dda0dad1dd3ad643aacd478fb967960ee1f83981d160c52b3c8ac" default))
- '(default-frame-alist
-   '((ns-transparent-titlebar . t)
-     (width . 110)
-     (height . 80)
-     (top . 0)
-     (right . 10)
-     (horizontal-scroll-bars)))
+   '("59c36051a521e3ea68dc530ded1c7be169cd19e8873b7994bfc02a216041bf3b" default))
+ '(default-frame-alist '((ns-transparent-titlebar . t) (horizontal-scroll-bars)))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
  '(display-line-numbers nil)
  '(display-line-numbers-width 4)
- '(doom-modeline-mode t)
  '(dynamic-completion-mode t)
  '(ediff-merge-split-window-function 'split-window-vertically)
  '(ediff-split-window-function 'split-window-vertically)
@@ -71,13 +64,23 @@
      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(csv-mode rainbow-mode ns-auto-titlebar emmet-mode ibuffer-project cider gcmh centaur-tabs helpful doom-modeline doom-themes sly almost-mono-themes embark prettier acme-theme rg cape yasnippet yaml-mode which-key wgrep vterm vertico treemacs sass-mode rich-minority rainbow-delimiters page-break-lines orderless markdown-mode marginalia magit flymake-eslint ef-themes diredfl corfu copilot consult))
+   '(avy cape consult copilot corfu diredfl doom-themes ef-themes
+         exec-path-from-shell flymake-eslint gcmh google-translate helpful
+         ibuffer-project magit marginalia markdown-mode multiple-cursors
+         orderless page-break-lines prettier rg rich-minority sass-mode sly
+         treemacs vertico vterm yaml-mode yasnippet))
  '(package-vc-selected-packages
-   '((copilot :vc-backend Git :url "https://www.github.com/copilot-emacs/copilot.el")))
+   '((copilot :vc-backend Git :url
+              "https://www.github.com/copilot-emacs/copilot.el")))
  '(pixel-scroll-precision-mode t)
  '(recentf-mode t)
  '(repeat-mode t)
  '(ring-bell-function 'ignore)
+ '(safe-local-variable-values
+   '((etags-regen-ignores "test/manual/etags/")
+     (etags-regen-regexp-alist
+      (("c" "objc") "/[ \11]*DEFVAR_[A-Z_ \11(]+\"\\([^\"]+\\)\"/\\1/"
+       "/[ \11]*DEFVAR_[A-Z_ \11(]+\"[^\"]+\",[ \11]\\([A-Za-z0-9_]+\\)/\\1/"))))
  '(savehist-mode t)
  '(scroll-bar-mode nil)
  '(scroll-conservatively 1000)
@@ -88,7 +91,7 @@
  '(trash-directory "~/.Trash")
  '(truncate-lines t)
  '(use-package-always-ensure t)
- '(user-mail-address "haineriz@posteo.net")
+ '(user-mail-address "henry.mthsn@gmail.com")
  '(warning-minimum-level :emergency)
  '(windmove-default-keybindings '([ignore]))
  '(winner-mode t))
@@ -97,12 +100,15 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:height 140 :family "Iosevka"))))
- '(fixed-pitch ((t (:inherit 'default))))
+ '(default ((t (:inherit nil :height 140 :family "Iosevka"))))
+ '(error ((t :underline nil)))
+ '(fixed-pitch ((t (:inherit 'default :familiy "Iosevka Slab"))))
  '(flymake-error ((t (:underline nil))))
  '(flymake-note ((t (:underline nil))))
  '(flymake-warning ((t (:underline nil))))
- '(variable-pitch ((t (:height 140 :family "Futura")))))
+ '(highlight ((t (:background "pkeyboardFocusIndicatorColor"))))
+ '(variable-pitch ((t (:inherit 'default :family "Iosevka Etoile"))))
+ '(warning ((t :underline nil))))
 
 
 ;;; Consts
@@ -124,32 +130,43 @@
   :config
   (gcmh-mode t))
 
+(use-package exec-path-from-shell
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
+
 
 ;;; UI
 
-(use-package doom-themes)
+(use-package doom-themes
+  :config
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t)
+  (doom-themes-org-config))
 
-(use-package almost-mono-themes)
-(use-package doom-modeline
-  :custom
-  ((doom-modeline-icon nil)
-   (doom-modeline-buffer-encoding nil)))
+;; (use-package doom-modeline
+;;   :custom
+;;   ((doom-modeline-mode t)
+;;    (doom-modeline-icon nil)
+;;    (doom-modeline-buffer-encoding nil)))
 
 (use-package ef-themes
   :custom
   (ef-themes-headings '((0 1.7)
                         (1 1.5)
                         (2 1.3)
-                        (3 1.1))))
-
-(use-package theme-switcher
-  :ensure nil
-  :after ef-themes doom-themes almost-mono-themes
-  :custom
-  (theme-switcher-day-theme 'ef-eagle)
-  (theme-switcher-night-theme 'ef-duo-dark)
+                        (3 1.1)))
   :config
-  (theme-switcher-mode t))
+  (load-theme 'ef-dream))
+
+;; (use-package theme-switcher
+;;   :ensure nil
+;;   :after ef-themes doom-themes
+;;   :custom
+;;   (theme-switcher-day-theme 'doom-plain)
+;;   (theme-switcher-night-theme 'doom-plain-dark)
+;;   :config
+;;   (theme-switcher-mode t))
 
 ;; Line numbers in prog mode only
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
@@ -170,6 +187,13 @@
    ("C-h k" . helpful-key)))
 
 ;; Minibuffer
+
+(use-package vertico
+  :init
+  (vertico-mode)
+  :bind (:map vertico-map
+              ("DEL" . vertico-directory-delete-char)))
+
 ;; (setq ido-enable-flex-matching t
 ;;       ido-everywhere t
 ;;       ido-enable-regexp t
@@ -177,12 +201,6 @@
 ;;       ido-create-new-buffer 'always)
 ;; (fido-mode 1)
 ;; (ido-mode 1)
-
-(use-package vertico
-  :init
-  (vertico-mode)
-  :bind (:map vertico-map
-              ("DEL" . vertico-directory-delete-char)))
 
 (use-package marginalia
   :custom
@@ -213,10 +231,10 @@
                  (display-buffer-below-selected)
                  (window-height . 0.3))))
 
-(display-buffer-below "\\*Async Shell Command\\*")
 (display-buffer-below "\\*Flymake diag.+\\*")
 (display-buffer-below "\\*eldoc.*\\*")
-(display-buffer-below "\\*compilation\\*")
+;; (display-buffer-below "\\*Async Shell Command\\*")
+;; (display-buffer-below "\\*compilation\\*")
 
 ;; ibuffer
 (global-set-key (kbd "C-x C-b") 'ibuffer)
@@ -232,6 +250,11 @@
        (ibuffer-do-sort-by-project-file-relative)))))
 
 ;; Clean modeline
+
+;; Remove `vc-mode' from modeline
+(setq-default mode-line-format
+              (delete '(vc-mode vc-mode) mode-line-format))
+
 (use-package rich-minority
   :custom
   (rm-blacklist (mapconcat 'identity '() "\\|"))
@@ -241,13 +264,10 @@
 ;; Line spacing
 (setq-default line-spacing 1)
 
-;; Unused with doom-modeline
-;; Remove `vc-mode' from modeline
-;; (setq-default mode-line-format
-;;               (delete '(vc-mode vc-mode) mode-line-format))
 
 ;; Remove frame title
-(setq frame-title-format "")
+(setq-default frame-title-format nil)
+(setq-default icon-title-format nil)
 
 ;;; Completion & Navigation
 
@@ -287,19 +307,20 @@
   (add-to-list 'completion-at-point-functions #'cape-file))
 
 (use-package yasnippet
+  :custom (yas-indent-line 'fixed)
   :config (yas-global-mode t))
 
 ;; Search and navigation
 (use-package consult)
 
-;; (use-package multiple-cursors
-;;   :config
-;;   (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-;;   (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-;;   (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-;;   (global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
-;;   (global-unset-key (kbd "M-<down-mouse-1>"))
-;;   (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))
+(use-package multiple-cursors
+  :config
+  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
+  (global-unset-key (kbd "M-<down-mouse-1>"))
+  (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))
 
 
 ;;; Files
@@ -367,6 +388,7 @@
          (typescript-ts-mode . eglot-ensure)
          (tsx-ts-mode . eglot-ensure)
          (c++-ts-mode . eglot-ensure)
+         (go-ts-mode . eglot-ensure)
          (eglot-managed-mode . setup-other-flymake-backends)))
 
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
@@ -443,6 +465,11 @@
 ;; Golang
 (add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
 (setq go-ts-mode-indent-offset 4)
+(add-hook 'go-ts-mode-hook
+          (lambda ()
+            (setq-local fill-column 100)
+            (display-fill-column-indicator-mode t)
+            (local-set-key (kbd "C-c f") 'eglot-format-buffer)))
 
 ;; Ruby auto insert header on new files
 (define-auto-insert
@@ -450,6 +477,10 @@
   '(nil
     "# frozen_string_literal: true\n"
     "\n"))
+
+(add-hook 'ruby-ts-mode-hook
+          (lambda ()
+            (set-fill-column 100)))
 
 ;; C++
 (add-hook 'c++-ts-mode-hook
@@ -478,7 +509,7 @@
   :project-path "~/Code/elevo-rails/")
 
 (define-task sort-forestschema
-  :command "bin/sort_forestschema"
+  :command "bundle exec bin/sort_forestschema"
   :project-path "~/Code/elevo-rails/"
   :description "Sort `.forestadmin-schema.json' file"
   :async nil)
@@ -522,7 +553,7 @@
 (use-package org
   :preface
   (defun my-org-mode-hook ()
-    (org-indent-mode 1)
+    ;; (org-indent-mode 1)
     (visual-line-mode 1)
     (windmove-mode -1))
   :hook ((org-mode . my-org-mode-hook))
@@ -586,6 +617,13 @@
     'org-tmp-skeleton))
 
 ;;; Text
+
+(use-package google-translate
+  :config
+  (setq google-translate-translation-directions-alist '(("en" . "fr")
+                                                        ("fr" . "en")))
+  :bind
+  (("C-c t" . google-translate-smooth-translate)))
 
 (require 'isearch-transient)
 
@@ -751,15 +789,15 @@
 (global-set-key (kbd "C-x B") 'new-buffer)
 
 ;; Set async shell command output buffer to view-mode
-(defun set-buffer-to-view-mode (_command &optional output-buffer _error-buffer)
-  "Advice function to set async shell command OUTPUT-BUFFER to view mode."
-  (let ((buffer (or output-buffer shell-command-buffer-name-async)))
-    (with-current-buffer buffer
-      (view-mode))))
+;; (defun set-buffer-to-view-mode (_command &optional output-buffer _error-buffer)
+;;   "Advice function to set async shell command OUTPUT-BUFFER to view mode."
+;;   (let ((buffer (or output-buffer shell-command-buffer-name-async)))
+;;     (with-current-buffer buffer
+;;       (view-mode))))
 
-(advice-add 'async-shell-command
-            :after
-            #'set-buffer-to-view-mode)
+;; (advice-add 'async-shell-command
+;;             :after
+;;             #'set-buffer-to-view-mode)
 
 (defun repeat-last-async-shell-command ()
   "Repeats the last shell command in as an `async-shell-command'."
@@ -813,7 +851,9 @@
 
 ;; Unbind suspend frame in GUI mode
 (when (display-graphic-p)
-  (global-unset-key (kbd "C-z")))
+  (global-unset-key (kbd "C-z"))
+  (global-unset-key (kbd "C-<wheel-up>"))
+  (global-unset-key (kbd "C-<wheel-down>")))
 
 
 ;;; Tools
