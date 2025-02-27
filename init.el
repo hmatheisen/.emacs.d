@@ -59,16 +59,17 @@
  '(mode-line-compact 'long)
  '(ns-antialias-text t)
  '(ns-use-fullscreen-animation t)
+ '(ns-use-proxy-icon nil)
  '(package-archives
    '(("gnu" . "https://elpa.gnu.org/packages/")
      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(avy cape consult copilot corfu diredfl doom-themes ef-themes
-         exec-path-from-shell flymake-eslint gcmh google-translate helpful
-         ibuffer-project magit marginalia markdown-mode multiple-cursors
-         orderless page-break-lines prettier rg rich-minority sass-mode sly
-         treemacs vertico vterm yaml-mode yasnippet))
+   '(cape consult copilot copilot-chat corfu diredfl doom-themes ef-themes
+          exec-path-from-shell flymake-eslint gcmh google-translate helpful
+          ibuffer-project magit marginalia markdown-mode multiple-cursors
+          orderless page-break-lines prettier rainbow-delimiters rg
+          rich-minority sass-mode sly treemacs vertico vterm yaml-mode yasnippet))
  '(package-vc-selected-packages
    '((copilot :vc-backend Git :url
               "https://www.github.com/copilot-emacs/copilot.el")))
@@ -106,9 +107,16 @@
  '(flymake-error ((t (:underline nil))))
  '(flymake-note ((t (:underline nil))))
  '(flymake-warning ((t (:underline nil))))
- '(highlight ((t (:background "pkeyboardFocusIndicatorColor"))))
  '(variable-pitch ((t (:inherit 'default :family "Iosevka Etoile"))))
  '(warning ((t :underline nil))))
+
+(setq user-mail-address "henry.mthsn@gmail.com"
+      smtpmail-smtp-service 587
+      smtpmail-smtp-server "smtp.gmail.com"
+      send-mail-function 'smtpmail-send-it)
+
+(setq gnus-select-method
+      '(nnimap "imap.gmail.com"))
 
 
 ;;; Consts
@@ -144,12 +152,6 @@
         doom-themes-enable-italic t)
   (doom-themes-org-config))
 
-;; (use-package doom-modeline
-;;   :custom
-;;   ((doom-modeline-mode t)
-;;    (doom-modeline-icon nil)
-;;    (doom-modeline-buffer-encoding nil)))
-
 (use-package ef-themes
   :custom
   (ef-themes-headings '((0 1.7)
@@ -158,15 +160,6 @@
                         (3 1.1)))
   :config
   (load-theme 'ef-dream))
-
-;; (use-package theme-switcher
-;;   :ensure nil
-;;   :after ef-themes doom-themes
-;;   :custom
-;;   (theme-switcher-day-theme 'doom-plain)
-;;   (theme-switcher-night-theme 'doom-plain-dark)
-;;   :config
-;;   (theme-switcher-mode t))
 
 ;; Line numbers in prog mode only
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
@@ -192,15 +185,9 @@
   :init
   (vertico-mode)
   :bind (:map vertico-map
-              ("DEL" . vertico-directory-delete-char)))
-
-;; (setq ido-enable-flex-matching t
-;;       ido-everywhere t
-;;       ido-enable-regexp t
-;;       ido-use-filename-at-point t
-;;       ido-create-new-buffer 'always)
-;; (fido-mode 1)
-;; (ido-mode 1)
+              ("DEL" . vertico-directory-delete-char))
+  :custom
+  (vertico-count 15))
 
 (use-package marginalia
   :custom
@@ -233,8 +220,6 @@
 
 (display-buffer-below "\\*Flymake diag.+\\*")
 (display-buffer-below "\\*eldoc.*\\*")
-;; (display-buffer-below "\\*Async Shell Command\\*")
-;; (display-buffer-below "\\*compilation\\*")
 
 ;; ibuffer
 (global-set-key (kbd "C-x C-b") 'ibuffer)
@@ -250,7 +235,6 @@
        (ibuffer-do-sort-by-project-file-relative)))))
 
 ;; Clean modeline
-
 ;; Remove `vc-mode' from modeline
 (setq-default mode-line-format
               (delete '(vc-mode vc-mode) mode-line-format))
@@ -264,10 +248,8 @@
 ;; Line spacing
 (setq-default line-spacing 1)
 
-
-;; Remove frame title
-(setq-default frame-title-format nil)
-(setq-default icon-title-format nil)
+;; Clean title bar
+(setq frame-title-format nil)
 
 ;;; Completion & Navigation
 
@@ -293,13 +275,39 @@
         try-complete-lisp-symbol))
 
 ;; In buffer completion
-(use-package corfu
-  :bind
-  (:map corfu-map ("M-SPC" . corfu-insert-separator))
-  :init
-  (global-corfu-mode)
-  (corfu-popupinfo-mode)
-  (corfu-history-mode))
+;; (use-package corfu
+;;   :bind
+;;   (:map corfu-map ("M-SPC" . corfu-insert-separator))
+;;   :init
+;;   (global-corfu-mode)
+;;   (corfu-popupinfo-mode)
+;;   (corfu-history-mode))
+
+;; Test new completion-preview-mode
+;; (global-completion-preview-mode)
+;; (define-key completion-preview-active-mode-map
+;;             (kbd "M-n")
+;;             'completion-preview-next-candidate)
+;; (define-key completion-preview-active-mode-map
+;;             (kbd "M-p")
+;;             'completion-preview-prev-candidate)
+;; (define-key completion-preview-active-mode-map
+;;             (kbd "M-TAB")
+;;             'completion-preview-insert)
+
+;; Setup *Completions* buffer
+(setq completion-auto-help 'always
+      completion-auto-select 'second-tab
+      completions-max-height 15
+      completions-format 'one-column
+      completions-sort 'historical)
+
+(define-key completion-list-mode-map
+            (kbd "M-n")
+            'minibuffer-next-completion)
+(define-key completion-list-mode-map
+            (kbd "M-p")
+            'minibuffer-previous-completion)
 
 ;; Completion at point extensions
 (use-package cape
@@ -404,8 +412,8 @@
 (use-package flymake
   :bind
   (:map flymake-mode-map
-        ("M-n" . 'flymake-goto-next-error)
-        ("M-p" . 'flymake-goto-prev-error)
+        ("M-<down>" . 'flymake-goto-next-error)
+        ("M-<up>" . 'flymake-goto-prev-error)
         ("M-g f" . 'flymake-show-buffer-diagnostics)))
 
 ;; YAML mode
@@ -482,7 +490,13 @@
           (lambda ()
             (set-fill-column 100)))
 
-;; C++
+;; C/C++
+(add-hook 'c-mode-hook
+          (lambda ()
+            (display-fill-column-indicator-mode t)
+            (setq indent-tabs-mode t)
+            (setq tab-width 4)
+            (setq c-basic-offset 4)))
 (add-hook 'c++-ts-mode-hook
           (lambda ()
             (display-fill-column-indicator-mode t)
@@ -676,14 +690,10 @@
 
 (global-set-key (kbd "C-x C-y") 'kill-ring-save-whole-buffer)
 
-(use-package avy
-  :bind (("M-i" . avy-goto-char)
-         ("M-j" . avy-goto-char-timer)))
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
 
-;; (use-package rainbow-delimiters
-;;   :hook (prog-mode . rainbow-delimiters-mode))
-
-(global-set-key (kbd "C-S-j") 'join-line)
+(global-set-key (kbd "M-j") 'join-line)
 
 ;;; Project
 
@@ -788,17 +798,6 @@
 
 (global-set-key (kbd "C-x B") 'new-buffer)
 
-;; Set async shell command output buffer to view-mode
-;; (defun set-buffer-to-view-mode (_command &optional output-buffer _error-buffer)
-;;   "Advice function to set async shell command OUTPUT-BUFFER to view mode."
-;;   (let ((buffer (or output-buffer shell-command-buffer-name-async)))
-;;     (with-current-buffer buffer
-;;       (view-mode))))
-
-;; (advice-add 'async-shell-command
-;;             :after
-;;             #'set-buffer-to-view-mode)
-
 (defun repeat-last-async-shell-command ()
   "Repeats the last shell command in as an `async-shell-command'."
   (interactive)
@@ -858,32 +857,15 @@
 
 ;;; Tools
 
-;; Temporary before Emacs 30 fixes this
-(cl-defun vc-install (&key (fetcher "github") repo name rev backend)
-  "Install a package from a remote if it's not already installed.
-This is a thin wrapper around `package-vc-install' in order to make
-non-interactive usage more ergonomic.  Takes the following named arguments:
-
-- FETCHER the remote where to get the package (e.g., \"gitlab\").
-  If omitted, this defaults to \"github\".
-
-- REPO should be the name of the repository (e.g.,
-  \"slotThe/arXiv-citation\".
-
-- NAME, REV, and BACKEND are as in `package-vc-install' (which
-  see)."
-  (let* ((url (format "https://www.%s.com/%s" fetcher repo))
-         (iname (when name (intern name)))
-         (pac-name (or iname (intern (file-name-base repo)))))
-    (unless (package-installed-p pac-name)
-      (package-vc-install url iname rev backend))))
-
 (use-package copilot
-  :ensure nil
-  :init (vc-install :fetcher "github" :repo "copilot-emacs/copilot.el")
+  :vc (:url "https://github.com/copilot-emacs/copilot.el"
+            :rev :newest
+            :branch "main")
   :bind (:map copilot-completion-map
               ("C-<return>" . copilot-accept-completion)
               ("C-RET" . copilot-accept-completion)))
+
+(use-package copilot-chat)
 
 (use-package vterm)
 
