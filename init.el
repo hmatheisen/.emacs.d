@@ -35,7 +35,7 @@
  '(confirm-kill-emacs 'y-or-n-p)
  '(custom-safe-themes
    '("59c36051a521e3ea68dc530ded1c7be169cd19e8873b7994bfc02a216041bf3b" default))
- '(default-frame-alist '((ns-transparent-titlebar . t) (horizontal-scroll-bars)))
+ '(default-frame-alist '((ns-transparent-titlebar . t)))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
  '(display-line-numbers nil)
@@ -59,17 +59,17 @@
  '(mode-line-compact 'long)
  '(ns-antialias-text t)
  '(ns-use-fullscreen-animation t)
- '(ns-use-proxy-icon nil)
  '(package-archives
    '(("gnu" . "https://elpa.gnu.org/packages/")
      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(cape consult copilot copilot-chat corfu diredfl doom-themes ef-themes
-          exec-path-from-shell flymake-eslint gcmh google-translate helpful
-          ibuffer-project magit marginalia markdown-mode multiple-cursors
-          orderless page-break-lines prettier rainbow-delimiters rg
-          rich-minority sass-mode sly treemacs vertico vterm yaml-mode yasnippet))
+   '(cape consult copilot copilot-chat corfu dbml-mode diredfl doom-themes
+          ef-themes exec-path-from-shell flymake-eslint forge gcmh
+          google-translate helpful ibuffer-project magit marginalia
+          markdown-mode multiple-cursors orderless page-break-lines prettier
+          rainbow-delimiters rg rich-minority sass-mode sly treemacs vertico
+          vterm yaml-mode yasnippet))
  '(package-vc-selected-packages
    '((copilot :vc-backend Git :url
               "https://www.github.com/copilot-emacs/copilot.el")))
@@ -249,7 +249,7 @@
 (setq-default line-spacing 1)
 
 ;; Clean title bar
-(setq frame-title-format nil)
+(setq-default ns-use-proxy-icon nil)
 
 ;;; Completion & Navigation
 
@@ -397,7 +397,15 @@
          (tsx-ts-mode . eglot-ensure)
          (c++-ts-mode . eglot-ensure)
          (go-ts-mode . eglot-ensure)
-         (eglot-managed-mode . setup-other-flymake-backends)))
+         (eglot-managed-mode . setup-other-flymake-backends))
+  :config
+  ;; Ruby LSP is prmoising but sucks ass right now
+  ;; (add-to-list
+  ;;  'eglot-server-programs
+  ;;  '((ruby-mode ruby-ts-mode) "ruby-lsp"))
+  )
+
+(setq eglot-server-programs (cdr eglot-server-programs))
 
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
@@ -412,8 +420,8 @@
 (use-package flymake
   :bind
   (:map flymake-mode-map
-        ("M-<down>" . 'flymake-goto-next-error)
-        ("M-<up>" . 'flymake-goto-prev-error)
+        ("M-n" . 'flymake-goto-next-error)
+        ("M-p" . 'flymake-goto-prev-error)
         ("M-g f" . 'flymake-show-buffer-diagnostics)))
 
 ;; YAML mode
@@ -449,7 +457,8 @@
     (json "https://github.com/tree-sitter/tree-sitter-json")
     (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
     (go "https://github.com/tree-sitter/tree-sitter-go")
-    (cpp "https://github.com/tree-sitter/tree-sitter-cpp")))
+    (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+    (bash "https://github.com/tree-sitter/tree-sitter-bash")))
 
 (defun install-treesit-languages ()
   "Install all treesit languages."
@@ -600,18 +609,18 @@
   (define-skeleton org-refinement-skeleton
     "Refinement Template."
     "Insert Refinement subject: "
-    "# -*- eval: (auto-fill-mode -1) -*-"
+    "# -*- eval: (auto-fill-mode -1) -*-'\n"
     "#+TITLE: " str "\n"
     "#+OPTIONS: toc:nil\n\n"
     "* Notes :noexport:\n"
-    "* Context\n"
     "* Tech Solution\n"
-    "** Backend\n"
-    "*** Routes\n"
-    "*** Validations\n"
-    "*** Serializers/Presenters\n"
-    "*** Policies\n"
-    "** Frontend\n"
+    "** Models\n"
+    "** Services\n"
+    "** Controllers\n"
+    "** Serializers\n"
+    "** Policies/Abilities\n"
+    "** Scenes\n"
+    "** Components\n"
     "* Questions\n"
     "** Product\n"
     "** Tech\n"
@@ -754,6 +763,9 @@
          ("RET" . magit-diff-visit-file-other-window))
   :config
   (transient-append-suffix 'magit-log "-A" '("-m" "No Merges" "--no-merges")))
+
+(use-package forge
+  :after magit)
 
 ;;; Utils
 
