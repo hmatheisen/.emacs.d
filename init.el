@@ -34,7 +34,8 @@
  '(column-number-mode t)
  '(confirm-kill-emacs 'y-or-n-p)
  '(custom-safe-themes
-   '("59c36051a521e3ea68dc530ded1c7be169cd19e8873b7994bfc02a216041bf3b" default))
+   '("48042425e84cd92184837e01d0b4fe9f912d875c43021c3bcb7eeb51f1be5710"
+     "59c36051a521e3ea68dc530ded1c7be169cd19e8873b7994bfc02a216041bf3b" default))
  '(default-frame-alist '((ns-transparent-titlebar . t)))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
@@ -66,10 +67,10 @@
  '(package-selected-packages
    '(cape consult copilot copilot-chat corfu dbml-mode diredfl doom-themes
           ef-themes exec-path-from-shell flymake-eslint forge gcmh
-          google-translate helpful ibuffer-project magit marginalia
-          markdown-mode multiple-cursors orderless page-break-lines prettier
-          rainbow-delimiters rg rich-minority sass-mode sly treemacs vertico
-          vterm yaml-mode yasnippet))
+          google-translate helpful ibuffer-project lorem-ipsum magit marginalia
+          markdown-mode multiple-cursors ns-auto-titlebar orderless
+          page-break-lines prettier rainbow-delimiters rg rich-minority
+          sass-mode sly treemacs vertico vterm yaml-mode yasnippet))
  '(package-vc-selected-packages
    '((copilot :vc-backend Git :url
               "https://www.github.com/copilot-emacs/copilot.el")))
@@ -101,13 +102,13 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :height 140 :family "Iosevka"))))
+ '(default ((t (:inherit nil :height 140 :family "Go Mono"))))
  '(error ((t :underline nil)))
- '(fixed-pitch ((t (:inherit 'default :familiy "Iosevka Slab"))))
+ '(fixed-pitch ((t (:inherit 'default :familiy "Go Mono"))))
  '(flymake-error ((t (:underline nil))))
  '(flymake-note ((t (:underline nil))))
  '(flymake-warning ((t (:underline nil))))
- '(variable-pitch ((t (:inherit 'default :family "Iosevka Etoile"))))
+ '(variable-pitch ((t (:inherit 'default :family "Go"))))
  '(warning ((t :underline nil))))
 
 (setq user-mail-address "henry.mthsn@gmail.com"
@@ -150,19 +151,21 @@
   :config
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic t)
-  (doom-themes-org-config))
+  (doom-themes-org-config)
+  (load-theme 'doom-gruvbox))
 
 (use-package ef-themes
   :custom
   (ef-themes-headings '((0 1.7)
                         (1 1.5)
                         (2 1.3)
-                        (3 1.1)))
-  :config
-  (load-theme 'ef-dream))
+                        (3 1.1))))
 
 ;; Line numbers in prog mode only
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (display-line-numbers-mode t)
+            (hl-line-mode t)))
 
 (global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
 
@@ -185,7 +188,9 @@
   :init
   (vertico-mode)
   :bind (:map vertico-map
-              ("DEL" . vertico-directory-delete-char))
+              ("DEL" . vertico-directory-delete-char)
+              ("C-v" . vertico-scroll-up)
+              ("M-v" . vertico-scroll-down))
   :custom
   (vertico-count 15))
 
@@ -256,7 +261,7 @@
 ;; Orderless completion mode
 (use-package orderless
   :custom
-  (completion-styles '(orderless)))
+  (completion-styles '(orderless basic)))
 
 ;; Replace dabbrev-expand with hippie-expand
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
@@ -319,7 +324,10 @@
   :config (yas-global-mode t))
 
 ;; Search and navigation
-(use-package consult)
+(use-package consult
+  :config
+  ;; Use consult/vertico for completion
+  (setq completion-in-region-function #'consult-completion-in-region))
 
 (use-package multiple-cursors
   :config
@@ -399,13 +407,11 @@
          (go-ts-mode . eglot-ensure)
          (eglot-managed-mode . setup-other-flymake-backends))
   :config
-  ;; Ruby LSP is prmoising but sucks ass right now
+  ;; Ruby LSP is promising but sucks ass right now
   ;; (add-to-list
   ;;  'eglot-server-programs
   ;;  '((ruby-mode ruby-ts-mode) "ruby-lsp"))
   )
-
-(setq eglot-server-programs (cdr eglot-server-programs))
 
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
@@ -497,7 +503,7 @@
 
 (add-hook 'ruby-ts-mode-hook
           (lambda ()
-            (set-fill-column 100)))
+            (setq fill-column 100)))
 
 ;; C/C++
 (add-hook 'c-mode-hook
