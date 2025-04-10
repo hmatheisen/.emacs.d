@@ -58,6 +58,8 @@
  '(grep-use-null-device nil)
  '(indent-tabs-mode nil)
  '(mode-line-compact 'long)
+ '(modus-themes-bold-constructs t)
+ '(modus-themes-italic-constructs t)
  '(ns-antialias-text t)
  '(ns-use-fullscreen-animation t)
  '(package-archives
@@ -65,15 +67,14 @@
      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(cape consult copilot copilot-chat corfu dbml-mode diredfl doom-themes
-          ef-themes exec-path-from-shell flymake-eslint forge gcmh
-          google-translate helpful ibuffer-project lorem-ipsum magit marginalia
-          markdown-mode multiple-cursors ns-auto-titlebar orderless
-          page-break-lines prettier rainbow-delimiters rg rich-minority
-          sass-mode sly treemacs vertico vterm yaml-mode yasnippet))
+   '(acme-theme cape consult copilot copilot-chat diredfl doom-themes ef-themes
+                emmet-mode exec-path-from-shell flymake-eslint forge gcmh
+                google-translate helpful ibuffer-project marginalia
+                multiple-cursors ns-auto-titlebar orderless page-break-lines
+                prettier rainbow-delimiters rg rich-minority sass-mode sly
+                treemacs vertico vterm vundo yaml-mode yasnippet))
  '(package-vc-selected-packages
-   '((copilot :vc-backend Git :url
-              "https://www.github.com/copilot-emacs/copilot.el")))
+   '((copilot :url "https://github.com/copilot-emacs/copilot.el" :branch "main")))
  '(pixel-scroll-precision-mode t)
  '(recentf-mode t)
  '(repeat-mode t)
@@ -96,7 +97,7 @@
  '(user-mail-address "henry.mthsn@gmail.com")
  '(warning-minimum-level :emergency)
  '(windmove-default-keybindings '([ignore]))
- '(winner-mode t))
+ '(winner-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -110,14 +111,6 @@
  '(flymake-warning ((t (:underline nil))))
  '(variable-pitch ((t (:inherit 'default :family "Go"))))
  '(warning ((t :underline nil))))
-
-(setq user-mail-address "henry.mthsn@gmail.com"
-      smtpmail-smtp-service 587
-      smtpmail-smtp-server "smtp.gmail.com"
-      send-mail-function 'smtpmail-send-it)
-
-(setq gnus-select-method
-      '(nnimap "imap.gmail.com"))
 
 
 ;;; Consts
@@ -135,9 +128,17 @@
 
 ;;; System
 
-(use-package gcmh
-  :config
-  (gcmh-mode t))
+;; (use-package gcmh
+;;   :config
+;;   (gcmh-mode t))
+
+(setq user-mail-address "henry.mthsn@gmail.com"
+      smtpmail-smtp-service 587
+      smtpmail-smtp-server "smtp.gmail.com"
+      send-mail-function 'smtpmail-send-it)
+
+(setq gnus-select-method
+      '(nnimap "imap.gmail.com"))
 
 (use-package exec-path-from-shell
   :config
@@ -147,12 +148,16 @@
 
 ;;; UI
 
-(use-package doom-themes
-  :config
-  (setq doom-themes-enable-bold t
-        doom-themes-enable-italic t)
-  (doom-themes-org-config)
-  (load-theme 'doom-gruvbox))
+;; Modus themes
+
+(setq modus-themes-common-palette-overrides
+      '(;; Make line numbers less intense
+        (fg-line-number-inactive "gray50")
+        (fg-line-number-active fg-main)
+        (bg-line-number-inactive unspecified)
+        (bg-line-number-active unspecified)
+        ;; Make the fringe invisible
+        (fringe unspecified)))
 
 (use-package ef-themes
   :custom
@@ -160,6 +165,13 @@
                         (1 1.5)
                         (2 1.3)
                         (3 1.1))))
+
+(use-package doom-themes
+  :custom
+  ((doom-themes-enable-bold  t)
+   (doom-themes-enable-italic t)
+   (doom-gruvbox-dark-variant "hard")
+   (doom-gruvbox-light-variant "soft")))
 
 ;; Line numbers in prog mode only
 (add-hook 'prog-mode-hook
@@ -558,7 +570,7 @@
 
 (format-lang ruby-ts
   :command "stree"
-  :args '("format" "--print-width=100"))
+  :args '("format" "--print-width=100" "--plugin=plugin/trailing_comma"))
 
 (format-lang nxml
   :command "xmllint"
@@ -580,6 +592,7 @@
 ;;; Org
 
 (use-package org
+  :ensure nil
   :preface
   (defun my-org-mode-hook ()
     ;; (org-indent-mode 1)
@@ -601,15 +614,19 @@
           (sequence "TODO(T)" "IN PROGRESS(P)" "TO REVIEW(R)" "TO TEST(F)"
           "READY TO MERGE(M)" "|" "DONE(D)")))
   (setq org-capture-templates
-        '(("t" "Todo" entry
-           (file (lambda () (concat org-directory "tasks.org")))
-           "* TODO %?\n")
-          ("i" "Emacs Ideas" entry
+        '(("i" "Emacs Ideas" entry
            (file+headline (lambda () (concat org-directory "journal.org"))
                           "Ideas")
            "* %?\nEntered on: %u")
+          ("m" "Merge Request" entry
+           (file (lambda () (concat org-directory "tasks.org"))
+                 "Merge Requests")
+           "* %?\n")
+          ("t" "Todo" entry
+           (file (lambda () (concat org-directory "tasks.org")))
+           "* TODO %?\n")
           ("T" "Ticket" entry
-           (file+headline (lambda () (concat org-directory "sprint.org"))
+           (file+headline (lambda () (concat org-directory "tasks.org"))
                           "Tickets")
            "* IN PROGRESS %?\nSCHEDULED: %t")))
   (define-skeleton org-refinement-skeleton
@@ -712,6 +729,8 @@
 
 ;;; Project
 
+(define-key global-map (kbd "s-p") project-prefix-map)
+
 (defmacro with-current-project-root (root &rest body)
   "Execute BODY with ROOT as the current project root."
   (declare (indent 1))
@@ -731,35 +750,54 @@
 
 (define-key project-prefix-map "\C-y" 'project-absolute-file-path)
 
+(defvar main-session 1)
+(defvar rails-console-session 2)
+
 ;; open vterm at root of project
 (defun project-vterm ()
   "Open a vterm at the root of the current project."
   (interactive)
   (with-current-project-root root
-    (vterm)
+    (vterm main-session)
     (vterm-send-string (concat "cd " root))
     (vterm-send-return)
     (vterm-clear)))
 
 (define-key project-prefix-map "t" 'project-vterm)
 
-(defvar project-rails-console-buffer nil
-  "Reference to the currently open rails console buffer.")
-
 (defun project-rails-console ()
   "Open a rails console at the root of the current project."
   (interactive)
-  (if (buffer-live-p project-rails-console-buffer)
-      (switch-to-buffer project-rails-console-buffer)
-    (with-current-project-root root
-      (vterm)
-      (vterm-send-string (concat "cd " root " && bin/rails c\n"))
-      (setq project-rails-console-buffer (current-buffer)))))
+  (with-current-project-root root
+    (vterm rails-console-session)
+    (vterm-send-string (concat "cd " root " && bin/rails c\n"))
+    (vterm-send-return)
+    (vterm-clear)))
 
-(define-key global-map (kbd "s-p") project-prefix-map)
 (define-key project-prefix-map (kbd "t") 'project-vterm)
+
+(defun project-clean-buffers ()
+  "Like `project-kill-buffers' but keeps some arbitrary ones."
+  (interactive)
+  (save-some-buffers)
+  (let* ((project (project-current t))
+         (project-root (project-root project))
+         (project-buffers (project-buffers project))
+         (dired-buffer-name (buffer-name (dired-noselect project-root))))
+    (mapcar (lambda (buffer)
+              (let ((buffer-name (buffer-name buffer)))
+                (unless (or (string-equal buffer-name dired-buffer-name)
+                            (string-equal buffer-name (concat "magit: " dired-buffer-name))
+                            (string-equal buffer-name "*vterm*")
+                            (string-match-p "*EGLOT" buffer-name))
+                  (kill-buffer buffer))))
+            project-buffers)))
+
+(define-key project-prefix-map (kbd "k") 'project-clean-buffers)
 
 ;;; Git
+
+(use-package transient)
 
 (use-package magit
   :bind (("C-x g" . 'magit-status)
@@ -888,6 +926,7 @@
 (use-package vterm)
 
 (use-package server
+  :ensure nil
   :config
   (unless (server-running-p)
     (server-start)))

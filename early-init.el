@@ -30,10 +30,8 @@
 
 (defconst *is-a-mac* (eq system-type 'darwin))
 
-(when (not (display-graphic-p))
-  (menu-bar-mode -1))
-
 (setq inhibit-startup-screen t)
+(setf gc-cons-threshold #x40000000)
 
 (provide 'early-init)
 ;;; early-init.el ends here
