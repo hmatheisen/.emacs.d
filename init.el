@@ -33,9 +33,6 @@
  '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(confirm-kill-emacs 'y-or-n-p)
- '(custom-safe-themes
-   '("48042425e84cd92184837e01d0b4fe9f912d875c43021c3bcb7eeb51f1be5710"
-     "59c36051a521e3ea68dc530ded1c7be169cd19e8873b7994bfc02a216041bf3b" default))
  '(default-frame-alist '((ns-transparent-titlebar . t)))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
@@ -67,15 +64,17 @@
      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(acme-theme cape consult copilot copilot-chat diredfl doom-themes ef-themes
-                emmet-mode exec-path-from-shell flymake-eslint forge gcmh
-                google-translate helpful ibuffer-project marginalia
-                multiple-cursors ns-auto-titlebar orderless page-break-lines
-                prettier rainbow-delimiters rg rich-minority sass-mode sly
-                treemacs vertico vterm vundo yaml-mode yasnippet))
+   '(acme-theme cape cider consult copilot copilot-chat corfu diredfl doom-modeline
+                doom-themes ef-themes emmet-mode exec-path-from-shell
+                flymake-eslint forge gcmh google-translate helpful
+                ibuffer-project marginalia multiple-cursors ns-auto-titlebar
+                orderless page-break-lines prettier rainbow-delimiters rg
+                rich-minority sass-mode sly standard-themes treemacs vertico
+                vterm vundo yaml-mode yasnippet))
  '(package-vc-selected-packages
    '((copilot :url "https://github.com/copilot-emacs/copilot.el" :branch "main")))
  '(pixel-scroll-precision-mode t)
+ '(recentf-max-menu-items 100)
  '(recentf-mode t)
  '(repeat-mode t)
  '(ring-bell-function 'ignore)
@@ -103,15 +102,14 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :height 140 :family "Go Mono"))))
+ '(default ((t (:inherit nil :height 130 :family "JetBrains Mono"))))
  '(error ((t :underline nil)))
- '(fixed-pitch ((t (:inherit 'default :familiy "Go Mono"))))
+ '(fixed-pitch ((t (:inherit 'default :familiy "JetBrains Mono"))))
  '(flymake-error ((t (:underline nil))))
  '(flymake-note ((t (:underline nil))))
  '(flymake-warning ((t (:underline nil))))
- '(variable-pitch ((t (:inherit 'default :family "Go"))))
+ '(variable-pitch ((t (:inherit 'default :family "Noto Sans"))))
  '(warning ((t :underline nil))))
-
 
 ;;; Consts
 
@@ -127,10 +125,6 @@
 
 
 ;;; System
-
-;; (use-package gcmh
-;;   :config
-;;   (gcmh-mode t))
 
 (setq user-mail-address "henry.mthsn@gmail.com"
       smtpmail-smtp-service 587
@@ -263,7 +257,7 @@
   (rich-minority-mode t))
 
 ;; Line spacing
-(setq-default line-spacing 1)
+(setq-default line-spacing 0)
 
 ;; Clean title bar
 (setq-default ns-use-proxy-icon nil)
@@ -273,7 +267,11 @@
 ;; Orderless completion mode
 (use-package orderless
   :custom
-  (completion-styles '(orderless basic)))
+  (orderless-component-separator #'orderless-escapable-split-on-space)
+  (orderless-matching-styles '(orderless-literal orderless-regexp))
+  (completion-styles '(orderless basic))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles partial-completion)))))
 
 ;; Replace dabbrev-expand with hippie-expand
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
@@ -292,39 +290,20 @@
         try-complete-lisp-symbol))
 
 ;; In buffer completion
-;; (use-package corfu
-;;   :bind
-;;   (:map corfu-map ("M-SPC" . corfu-insert-separator))
-;;   :init
-;;   (global-corfu-mode)
-;;   (corfu-popupinfo-mode)
-;;   (corfu-history-mode))
-
-;; Test new completion-preview-mode
-;; (global-completion-preview-mode)
-;; (define-key completion-preview-active-mode-map
-;;             (kbd "M-n")
-;;             'completion-preview-next-candidate)
-;; (define-key completion-preview-active-mode-map
-;;             (kbd "M-p")
-;;             'completion-preview-prev-candidate)
-;; (define-key completion-preview-active-mode-map
-;;             (kbd "M-TAB")
-;;             'completion-preview-insert)
+(use-package corfu
+  :bind
+  (:map corfu-map ("M-SPC" . corfu-insert-separator))
+  :init
+  (global-corfu-mode)
+  (corfu-popupinfo-mode)
+  (corfu-history-mode))
 
 ;; Setup *Completions* buffer
 (setq completion-auto-help 'always
       completion-auto-select 'second-tab
       completions-max-height 15
       completions-format 'one-column
-      completions-sort 'historical)
-
-(define-key completion-list-mode-map
-            (kbd "M-n")
-            'minibuffer-next-completion)
-(define-key completion-list-mode-map
-            (kbd "M-p")
-            'minibuffer-previous-completion)
+      completions-sort 'alphabetical)
 
 ;; Completion at point extensions
 (use-package cape
@@ -338,8 +317,9 @@
 ;; Search and navigation
 (use-package consult
   :config
-  ;; Use consult/vertico for completion
-  (setq completion-in-region-function #'consult-completion-in-region))
+  ;; Use consult/vertico for completion when not graphics mode
+  (unless (display-graphic-p)
+    (setq completion-in-region-function #'consult-completion-in-region)))
 
 (use-package multiple-cursors
   :config
@@ -428,6 +408,9 @@
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
 
+(use-package emmet-mode
+  :hook (tsx-ts-mode . emmet-mode))
+
 ;; Sass
 (use-package sass-mode)
 
@@ -476,7 +459,8 @@
     (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
     (go "https://github.com/tree-sitter/tree-sitter-go")
     (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
-    (bash "https://github.com/tree-sitter/tree-sitter-bash")))
+    (bash "https://github.com/tree-sitter/tree-sitter-bash")
+    (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
 
 (defun install-treesit-languages ()
   "Install all treesit languages."
@@ -490,15 +474,16 @@
 
 ;; Remap major modes to their treesit equivalent
 (setq major-mode-remap-alist
-      '((ruby-mode . ruby-ts-mode)
-        (tsx-mode . tsx-ts-mode)
+      '((ruby-mode       . ruby-ts-mode)
+        (tsx-mode        . tsx-ts-mode)
         (typescript-mode . typescript-ts-mode)
-        (json-mode . json-ts-mode)
+        (json-mode       . json-ts-mode)
         (dockerfile-mode . dockerfile-ts-mode)
-        (c++-mode . c++-ts-mode)))
+        (c++-mode        . c++-ts-mode)
+        (yaml-mode       . yaml-ts-mode)
+        (go-mode         . go-ts-mode)))
 
 ;; Golang
-(add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
 (setq go-ts-mode-indent-offset 4)
 (add-hook 'go-ts-mode-hook
           (lambda ()
@@ -726,6 +711,8 @@
   :hook (prog-mode . rainbow-delimiters-mode))
 
 (global-set-key (kbd "M-j") 'join-line)
+
+(use-package vundo)
 
 ;;; Project
 
@@ -750,15 +737,15 @@
 
 (define-key project-prefix-map "\C-y" 'project-absolute-file-path)
 
-(defvar main-session 1)
-(defvar rails-console-session 2)
+(defvar vterm-main-session 1)
+(defvar vterm-rails-console-session 2)
 
 ;; open vterm at root of project
 (defun project-vterm ()
   "Open a vterm at the root of the current project."
   (interactive)
   (with-current-project-root root
-    (vterm main-session)
+    (vterm vterm-main-session)
     (vterm-send-string (concat "cd " root))
     (vterm-send-return)
     (vterm-clear)))
@@ -769,7 +756,7 @@
   "Open a rails console at the root of the current project."
   (interactive)
   (with-current-project-root root
-    (vterm rails-console-session)
+    (vterm vterm-rails-console-session)
     (vterm-send-string (concat "cd " root " && bin/rails c\n"))
     (vterm-send-return)
     (vterm-clear)))
@@ -796,6 +783,14 @@
 (define-key project-prefix-map (kbd "k") 'project-clean-buffers)
 
 ;;; Git
+
+(defun kill-ring-save-forestadmin-url ()
+  (interactive)
+  (if-let* ((current-branch (magit-get-current-branch)))
+      (let ((url (concat "https://app.forestadmin.com/Elevo/" current-branch)))
+        (kill-new url)
+        (message (concat "Saved '" url "' to kill ring.")))
+    (error "Not in a git repository")))
 
 (use-package transient)
 
