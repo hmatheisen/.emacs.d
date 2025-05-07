@@ -33,14 +33,16 @@
  '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(confirm-kill-emacs 'y-or-n-p)
+ '(custom-safe-themes
+   '("bf4d25079f7d052cb656e099d9c2af9fb61ee377e8e72b7f13cecf8dffb74f92" default))
  '(default-frame-alist '((ns-transparent-titlebar . t)))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
  '(display-line-numbers nil)
  '(display-line-numbers-width 4)
  '(dynamic-completion-mode t)
- '(ediff-merge-split-window-function 'split-window-vertically)
- '(ediff-split-window-function 'split-window-vertically)
+ '(ediff-merge-split-window-function 'split-window-horizontally)
+ '(ediff-split-window-function 'split-window-horizontally)
  '(ediff-window-setup-function 'ediff-setup-windows-plain)
  '(eglot-ignored-server-capabilities '(:inlayHintProvider))
  '(eldoc-echo-area-use-multiline-p nil)
@@ -57,6 +59,7 @@
  '(mode-line-compact 'long)
  '(modus-themes-bold-constructs t)
  '(modus-themes-italic-constructs t)
+ '(modus-themes-variable-pitch-ui nil)
  '(ns-antialias-text t)
  '(ns-use-fullscreen-animation t)
  '(package-archives
@@ -64,13 +67,13 @@
      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(acme-theme cape cider consult copilot copilot-chat corfu diredfl doom-modeline
-                doom-themes ef-themes emmet-mode exec-path-from-shell
-                flymake-eslint forge gcmh google-translate helpful
-                ibuffer-project marginalia multiple-cursors ns-auto-titlebar
-                orderless page-break-lines prettier rainbow-delimiters rg
-                rich-minority sass-mode sly standard-themes treemacs vertico
-                vterm vundo yaml-mode yasnippet))
+   '(aidermacs cape cider consult copilot copilot-chat corfu diredfl ef-themes
+               emmet-mode evil exec-path-from-shell flymake-eslint forge gcmh
+               google-translate gptel helpful ibuffer-project marginalia
+               multiple-cursors ns-auto-titlebar orderless org-present
+               page-break-lines prettier rainbow-delimiters rg rich-minority
+               sass-mode sly standard-themes treemacs vertico visual-fill-column
+               vterm vundo yaml-mode yasnippet))
  '(package-vc-selected-packages
    '((copilot :url "https://github.com/copilot-emacs/copilot.el" :branch "main")))
  '(pixel-scroll-precision-mode t)
@@ -108,7 +111,8 @@
  '(flymake-error ((t (:underline nil))))
  '(flymake-note ((t (:underline nil))))
  '(flymake-warning ((t (:underline nil))))
- '(variable-pitch ((t (:inherit 'default :family "Noto Sans"))))
+ '(modus-themes-button ((t (:inherit nil))) t)
+ '(variable-pitch ((t (:inherit 'default :family "Iosevka Aile"))))
  '(warning ((t :underline nil))))
 
 ;;; Consts
@@ -142,17 +146,36 @@
 
 ;;; UI
 
+(use-package ns-auto-titlebar
+  :when *is-a-mac*
+  :config
+  (ns-auto-titlebar-mode))
+
+;; Standard themes is the standard
+(use-package standard-themes
+  :custom
+  ((standard-themes-bold-constructs t)
+   (standard-themes-italic-constructs t)
+   (standard-themes-mixed-fonts t)))
+
 ;; Modus themes
+(setq modus-themes-headings '((0 1.7)
+                              (1 1.5)
+                              (2 1.3)
+                              (3 1.1)))
 
 (setq modus-themes-common-palette-overrides
       '(;; Make line numbers less intense
-        (fg-line-number-inactive "gray50")
         (fg-line-number-active fg-main)
         (bg-line-number-inactive unspecified)
-        (bg-line-number-active unspecified)
+        (bg-line-number-active bg-hl-line)
         ;; Make the fringe invisible
         (fringe unspecified)))
 
+(load-theme 'modus-operandi-tinted)
+;; (load-theme 'modus-vivendi-tinted)
+
+;; Ef themes
 (use-package ef-themes
   :custom
   (ef-themes-headings '((0 1.7)
@@ -160,12 +183,13 @@
                         (2 1.3)
                         (3 1.1))))
 
-(use-package doom-themes
-  :custom
-  ((doom-themes-enable-bold  t)
-   (doom-themes-enable-italic t)
-   (doom-gruvbox-dark-variant "hard")
-   (doom-gruvbox-light-variant "soft")))
+;; Doom themes
+;; (use-package doom-themes
+;;   :custom
+;;   ((doom-themes-enable-bold  t)
+;;    (doom-themes-enable-italic t)
+;;    (doom-gruvbox-dark-variant "hard")
+;;    (doom-gruvbox-light-variant "soft")))
 
 ;; Line numbers in prog mode only
 (add-hook 'prog-mode-hook
@@ -290,25 +314,26 @@
         try-complete-lisp-symbol))
 
 ;; In buffer completion
-(use-package corfu
-  :bind
-  (:map corfu-map ("M-SPC" . corfu-insert-separator))
-  :init
-  (global-corfu-mode)
-  (corfu-popupinfo-mode)
-  (corfu-history-mode))
+;; (use-package corfu
+;;   :bind
+;;   (:map corfu-map ("M-SPC" . corfu-insert-separator))
+;;   :init
+;;   (global-corfu-mode)
+;;   (corfu-popupinfo-mode)
+;;   (corfu-history-mode))
 
 ;; Setup *Completions* buffer
-(setq completion-auto-help 'always
-      completion-auto-select 'second-tab
-      completions-max-height 15
-      completions-format 'one-column
-      completions-sort 'alphabetical)
+;; (setq completion-auto-help 'always
+;;       completion-auto-select 'second-tab
+;;       completions-max-height 15
+;;       completions-format 'vertical
+;;       completions-sort 'alphabetical)
 
 ;; Completion at point extensions
 (use-package cape
   :init
-  (add-to-list 'completion-at-point-functions #'cape-file))
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-dict))
 
 (use-package yasnippet
   :custom (yas-indent-line 'fixed)
@@ -316,10 +341,22 @@
 
 ;; Search and navigation
 (use-package consult
+  :bind
+  (("C-c m" . consult-man)
+   ("C-c i" . consult-info)
+   ([remap Info-search] . consult-info)
+   ("C-x b" . consult-buffer) ;; TODO: Maybe switch (kbd "s-b") later
+   ("C-x 4 b" . consult-buffer-other-window)
+   ("C-x 5 b" . consult-buffer-other-frame)
+   ("C-x t b" . consult-buffer-other-tab)
+   ("C-x r b" . consult-bookmark)
+   ("C-x p b" . consult-project-buffer) ;; TODO: idem
+   ("M-y" . consult-yank-pop)
+   ("M-g f" . consult-flymake)
+   ("M-g g" . consult-goto-line)
+   ("M-g M-g" . consult-goto-line))
   :config
-  ;; Use consult/vertico for completion when not graphics mode
-  (unless (display-graphic-p)
-    (setq completion-in-region-function #'consult-completion-in-region)))
+  (setq completion-in-region-function #'consult-completion-in-region))
 
 (use-package multiple-cursors
   :config
@@ -646,6 +683,8 @@
   (define-auto-insert
     '("tmp/.*\.org" . "Tmp notes")
     'org-tmp-skeleton))
+
+(use-package org-present)
 
 ;;; Text
 
@@ -778,7 +817,8 @@
                             (string-equal buffer-name "*vterm*")
                             (string-match-p "*EGLOT" buffer-name))
                   (kill-buffer buffer))))
-            project-buffers)))
+            project-buffers)
+    (message (concat "Buffers cleaned for project: " project-root))))
 
 (define-key project-prefix-map (kbd "k") 'project-clean-buffers)
 
@@ -917,6 +957,9 @@
               ("C-RET" . copilot-accept-completion)))
 
 (use-package copilot-chat)
+
+(use-package aidermacs
+  :bind (("C-c a" . aidermacs-transient-menu)))
 
 (use-package vterm)
 

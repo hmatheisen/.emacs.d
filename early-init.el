@@ -28,8 +28,6 @@
 ;; (setq init-file-debug t)
 ;; (setq messages-buffer-max-lines 100000)
 
-(defconst *is-a-mac* (eq system-type 'darwin))
-
 (setq inhibit-startup-screen t)
 (setf gc-cons-threshold #x40000000)
 
