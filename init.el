@@ -34,7 +34,7 @@
  '(column-number-mode t)
  '(confirm-kill-emacs 'y-or-n-p)
  '(custom-safe-themes
-   '("bf4d25079f7d052cb656e099d9c2af9fb61ee377e8e72b7f13cecf8dffb74f92" default))
+   '("30d174000ea9cbddecd6cc695943afb7dba66b302a14f9db5dd65074e70cc744" default))
  '(default-frame-alist '((ns-transparent-titlebar . t)))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
@@ -45,7 +45,7 @@
  '(ediff-split-window-function 'split-window-horizontally)
  '(ediff-window-setup-function 'ediff-setup-windows-plain)
  '(eglot-ignored-server-capabilities '(:inlayHintProvider))
- '(eldoc-echo-area-use-multiline-p nil)
+ '(eldoc-echo-area-use-multiline-p 'truncate-sym-name-if-fit)
  '(electric-pair-mode t)
  '(epg-pinentry-mode 'loopback)
  '(fill-column 80)
@@ -67,13 +67,14 @@
      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(aidermacs cape cider consult copilot copilot-chat corfu diredfl ef-themes
-               emmet-mode evil exec-path-from-shell flymake-eslint forge gcmh
-               google-translate gptel helpful ibuffer-project marginalia
-               multiple-cursors ns-auto-titlebar orderless org-present
-               page-break-lines prettier rainbow-delimiters rg rich-minority
-               sass-mode sly standard-themes treemacs vertico visual-fill-column
-               vterm vundo yaml-mode yasnippet))
+   '(aidermacs cape cider consult copilot copilot-chat corfu diredfl doom-modeline
+               doom-themes ef-themes emmet-mode evil exec-path-from-shell
+               flymake-eslint forge gcmh google-translate gptel helpful
+               ibuffer-project inf-ruby marginalia multiple-cursors
+               ns-auto-titlebar orderless org-present page-break-lines prettier
+               rainbow-delimiters rg rich-minority sass-mode sly standard-themes
+               treemacs vertico visual-fill-column vterm vundo yaml-mode
+               yasnippet))
  '(package-vc-selected-packages
    '((copilot :url "https://github.com/copilot-emacs/copilot.el" :branch "main")))
  '(pixel-scroll-precision-mode t)
@@ -89,6 +90,7 @@
  '(savehist-mode t)
  '(scroll-bar-mode nil)
  '(scroll-conservatively 1000)
+ '(scroll-preserve-screen-position 1)
  '(show-paren-delay 0)
  '(tab-width 4)
  '(tool-bar-mode nil)
@@ -105,14 +107,17 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :height 130 :family "JetBrains Mono"))))
+ '(default ((t (:inherit nil :height 130 :family "Hack"))))
  '(error ((t :underline nil)))
- '(fixed-pitch ((t (:inherit 'default :familiy "JetBrains Mono"))))
+ '(fixed-pitch ((t (:inherit 'default :familiy "Hack"))))
+ '(fixed-pitch-serif ((t (:inherit 'default :familiy "Hack"))))
  '(flymake-error ((t (:underline nil))))
  '(flymake-note ((t (:underline nil))))
  '(flymake-warning ((t (:underline nil))))
- '(modus-themes-button ((t (:inherit nil))) t)
- '(variable-pitch ((t (:inherit 'default :family "Iosevka Aile"))))
+ '(org-level-1 ((t (:height 1.5))))
+ '(org-level-2 ((t (:height 1.3))))
+ '(org-level-3 ((t (:height 1.1))))
+ '(variable-pitch ((t (:inherit 'default :family "DejaVu Sans"))))
  '(warning ((t :underline nil))))
 
 ;;; Consts
@@ -153,17 +158,15 @@
 
 ;; Standard themes is the standard
 (use-package standard-themes
+  :config
+  (setq standard-themes-common-palette-overrides
+        '((fringe unspecified)))
   :custom
   ((standard-themes-bold-constructs t)
    (standard-themes-italic-constructs t)
    (standard-themes-mixed-fonts t)))
 
 ;; Modus themes
-(setq modus-themes-headings '((0 1.7)
-                              (1 1.5)
-                              (2 1.3)
-                              (3 1.1)))
-
 (setq modus-themes-common-palette-overrides
       '(;; Make line numbers less intense
         (fg-line-number-active fg-main)
@@ -171,9 +174,6 @@
         (bg-line-number-active bg-hl-line)
         ;; Make the fringe invisible
         (fringe unspecified)))
-
-(load-theme 'modus-operandi-tinted)
-;; (load-theme 'modus-vivendi-tinted)
 
 ;; Ef themes
 (use-package ef-themes
@@ -183,13 +183,21 @@
                         (2 1.3)
                         (3 1.1))))
 
+
 ;; Doom themes
-;; (use-package doom-themes
-;;   :custom
-;;   ((doom-themes-enable-bold  t)
-;;    (doom-themes-enable-italic t)
-;;    (doom-gruvbox-dark-variant "hard")
-;;    (doom-gruvbox-light-variant "soft")))
+(use-package doom-themes
+  :custom
+  ((doom-themes-enable-bold t)
+   (doom-themes-enable-italic t)
+   (doom-gruvbox-dark-variant "hard")
+   (doom-gruvbox-light-variant "soft")))
+
+;; (use-package doom-modeline
+;;   :custom ((doom-modeline-lsp nil)
+;;            (doom-modeline-buffer-encoding nil)
+;;            (doom-modeline-height 0)
+;;            (doom-modeline-icon nil)
+;;            (doom-modeline-mode t)))
 
 ;; Line numbers in prog mode only
 (add-hook 'prog-mode-hook
@@ -201,7 +209,7 @@
 
 (use-package which-key
   :custom
-  (which-key-idle-delay 1.0)
+  (Which-key-idle-delay 1.0)
   :init
   (which-key-mode))
 
@@ -281,7 +289,7 @@
   (rich-minority-mode t))
 
 ;; Line spacing
-(setq-default line-spacing 0)
+(setq-default line-spacing nil)
 
 ;; Clean title bar
 (setq-default ns-use-proxy-icon nil)
@@ -314,13 +322,12 @@
         try-complete-lisp-symbol))
 
 ;; In buffer completion
-;; (use-package corfu
-;;   :bind
-;;   (:map corfu-map ("M-SPC" . corfu-insert-separator))
-;;   :init
-;;   (global-corfu-mode)
-;;   (corfu-popupinfo-mode)
-;;   (corfu-history-mode))
+(use-package corfu
+  :bind
+  (:map corfu-map ("M-SPC" . corfu-insert-separator))
+  :init
+  (corfu-popupinfo-mode)
+  (corfu-history-mode))
 
 ;; Setup *Completions* buffer
 ;; (setq completion-auto-help 'always
@@ -442,11 +449,25 @@
   ;;  '((ruby-mode ruby-ts-mode) "ruby-lsp"))
   )
 
+;; TS/TSX
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
 
 (use-package emmet-mode
   :hook (tsx-ts-mode . emmet-mode))
+
+(define-skeleton react-component-skeleton
+  "React component."
+  "Component name: "
+  "import React from 'react';\n\n"
+  "type Props = {};\n\n"
+  "const " str " = ({}: Props) => {\n"
+  "  return <p>" str "</p>;\n";
+  "};\n\n"
+  "export default " str ";")
+(define-auto-insert
+  '("\\.tsx\\'" . "React component")
+  'react-component-skeleton)
 
 ;; Sass
 (use-package sass-mode)
@@ -757,48 +778,50 @@
 
 (define-key global-map (kbd "s-p") project-prefix-map)
 
-(defmacro with-current-project-root (root &rest body)
+(defmacro with-current-project (project &rest body)
   "Execute BODY with ROOT as the current project root."
   (declare (indent 1))
-  (let ((project (gensym)))
-    `(let* ((,project (project-current t))
-            (,root (project-root ,project)))
-       ,@body)))
+  `(let ((,project (project-current t)))
+     ,@body))
 
 ;; Copy file absolute path
 (defun project-absolute-file-path ()
   "Print and kill the absolute file path of the current buffer in a project."
   (interactive)
-  (with-current-project-root root
-    (let ((absolute-file-path (file-relative-name buffer-file-name root)))
+  (unless buffer-file-name
+    (error "project-absolute-file-path: could not get buffer file name"))
+  (with-current-project project
+    (let* ((root (project-root project))
+           (absolute-file-path (file-relative-name buffer-file-name root)))
       (kill-new absolute-file-path)
       (message (concat "Saved \"" absolute-file-path "\" to kill ring")))))
 
 (define-key project-prefix-map "\C-y" 'project-absolute-file-path)
 
-(defvar vterm-main-session 1)
-(defvar vterm-rails-console-session 2)
-
 ;; open vterm at root of project
 (defun project-vterm ()
   "Open a vterm at the root of the current project."
   (interactive)
-  (with-current-project-root root
-    (vterm vterm-main-session)
-    (vterm-send-string (concat "cd " root))
-    (vterm-send-return)
-    (vterm-clear)))
+  (with-current-project project
+    (let ((name (project-name project))
+          (root (project-root project)))
+      (vterm (concat "*vterm*<" name ">"))
+      (vterm-send-string (concat "cd " root))
+      (vterm-send-return)
+      (vterm-clear))))
 
 (define-key project-prefix-map "t" 'project-vterm)
 
 (defun project-rails-console ()
   "Open a rails console at the root of the current project."
   (interactive)
-  (with-current-project-root root
-    (vterm vterm-rails-console-session)
-    (vterm-send-string (concat "cd " root " && bin/rails c\n"))
-    (vterm-send-return)
-    (vterm-clear)))
+  (with-current-project project
+    (let ((name (project-name project))
+          (root (project-root project)))
+      (vterm (concat "*vterm*<" name " - rails console>"))
+      (vterm-send-string (concat "cd " root " && bin/rails c"))
+      (vterm-send-return)
+      (vterm-clear))))
 
 (define-key project-prefix-map (kbd "t") 'project-vterm)
 
@@ -807,10 +830,11 @@
   (interactive)
   (save-some-buffers)
   (let* ((project (project-current t))
+         (project-name (project-name project))
          (project-root (project-root project))
          (project-buffers (project-buffers project))
          (dired-buffer-name (buffer-name (dired-noselect project-root))))
-    (mapcar (lambda (buffer)
+    (mapc (lambda (buffer)
               (let ((buffer-name (buffer-name buffer)))
                 (unless (or (string-equal buffer-name dired-buffer-name)
                             (string-equal buffer-name (concat "magit: " dired-buffer-name))
@@ -818,7 +842,7 @@
                             (string-match-p "*EGLOT" buffer-name))
                   (kill-buffer buffer))))
             project-buffers)
-    (message (concat "Buffers cleaned for project: " project-root))))
+    (message (concat "Buffers cleaned for project: " project-name))))
 
 (define-key project-prefix-map (kbd "k") 'project-clean-buffers)
 
@@ -912,14 +936,12 @@
 (defun scroll-half-page-up-command ()
   "Scroll up half the height of a window."
   (interactive)
-  (let ((scroll-preserve-screen-position t))
-    (scroll-up-command (window-half-height))))
+  (scroll-up-command (window-half-height)))
 
 (defun scroll-half-page-down-command ()
   "Scroll down half the height of a window."
   (interactive)
-  (let ((scroll-preserve-screen-position t))
-    (scroll-down-command (window-half-height))))
+  (scroll-down-command (window-half-height)))
 
 (global-set-key (kbd "C-v") 'scroll-half-page-up-command)
 (global-set-key (kbd "M-v") 'scroll-half-page-down-command)
@@ -959,9 +981,44 @@
 (use-package copilot-chat)
 
 (use-package aidermacs
-  :bind (("C-c a" . aidermacs-transient-menu)))
+  :bind (("C-c a" . aidermacs-transient-menu))
+  :config
+  (add-hook 'aidermacs-before-run-backend-hook
+            (lambda ()
+              (setenv "ANTHROPIC_API_KEY"
+                      (auth-info-password
+                       (car (auth-source-search :host "anthropic-api-key")))))))
 
-(use-package vterm)
+(use-package vterm
+  :config
+  (defun vterm-start-process (proc)
+    (vterm (concat "*vterm*<" proc ">"))
+    (vterm-send-string proc)
+    (vterm-send-return))
+  ;; TODO: Turn this into a cool macro so I can flex on my reddit friends
+  (defun elevo ()
+    (interactive)
+    (delete-other-windows)
+    (let* ((left-window (selected-window))
+           (upper-right-window (split-window-right nil left-window))
+           (down-right-window (split-window-below nil upper-right-window)))
+      (select-window left-window)
+      (vterm-start-process "start-rails-server")
+      (select-window upper-right-window)
+      (vterm-start-process "start-sidekiq")
+      (select-window down-right-window)
+      (vterm-start-process "start-client"))))
+
+(require 'emacsocil)
+
+(define-layout elevo
+  :project-path "~/Code/elevo-rails/"
+  :procs '("start-rails-server" "start-sidekiq" "start-client")
+  :layout :main-vertical
+  :proc-fn (lambda (proc)
+             (vterm (concat "*vterm*<" proc ">"))
+             (vterm-send-string proc)
+             (vterm-send-return)))
 
 (use-package server
   :ensure nil
