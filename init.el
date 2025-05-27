@@ -33,8 +33,6 @@
  '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(confirm-kill-emacs 'y-or-n-p)
- '(custom-safe-themes
-   '("30d174000ea9cbddecd6cc695943afb7dba66b302a14f9db5dd65074e70cc744" default))
  '(default-frame-alist '((ns-transparent-titlebar . t)))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
@@ -69,12 +67,12 @@
  '(package-selected-packages
    '(aidermacs cape cider consult copilot copilot-chat corfu diredfl doom-modeline
                doom-themes ef-themes emmet-mode evil exec-path-from-shell
-               flymake-eslint forge gcmh google-translate gptel helpful
+               flymake-eslint gcmh google-translate gptel helpful
                ibuffer-project inf-ruby marginalia multiple-cursors
                ns-auto-titlebar orderless org-present page-break-lines prettier
-               rainbow-delimiters rg rich-minority sass-mode sly standard-themes
-               treemacs vertico visual-fill-column vterm vundo yaml-mode
-               yasnippet))
+               rainbow-delimiters rg rich-minority sass-mode slime
+               standard-themes treemacs vertico visual-fill-column vterm vundo
+               yaml-mode yasnippet))
  '(package-vc-selected-packages
    '((copilot :url "https://github.com/copilot-emacs/copilot.el" :branch "main")))
  '(pixel-scroll-precision-mode t)
@@ -101,7 +99,7 @@
  '(user-mail-address "henry.mthsn@gmail.com")
  '(warning-minimum-level :emergency)
  '(windmove-default-keybindings '([ignore]))
- '(winner-mode nil))
+ '(winner-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -109,11 +107,12 @@
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :height 130 :family "Hack"))))
  '(error ((t :underline nil)))
- '(fixed-pitch ((t (:inherit 'default :familiy "Hack"))))
- '(fixed-pitch-serif ((t (:inherit 'default :familiy "Hack"))))
+ '(fixed-pitch ((t (:inherit 'default :familiy "DejaVu Sans Mono"))))
+ '(fixed-pitch-serif ((t (:inherit 'default :familiy "DejaVu Sans Mono"))))
  '(flymake-error ((t (:underline nil))))
  '(flymake-note ((t (:underline nil))))
  '(flymake-warning ((t (:underline nil))))
+ '(org-document-title ((t (:height 1.7))))
  '(org-level-1 ((t (:height 1.5))))
  '(org-level-2 ((t (:height 1.3))))
  '(org-level-3 ((t (:height 1.1))))
@@ -178,10 +177,7 @@
 ;; Ef themes
 (use-package ef-themes
   :custom
-  (ef-themes-headings '((0 1.7)
-                        (1 1.5)
-                        (2 1.3)
-                        (3 1.1))))
+  (ef-themes-headings nil))
 
 
 ;; Doom themes
@@ -299,11 +295,8 @@
 ;; Orderless completion mode
 (use-package orderless
   :custom
-  (orderless-component-separator #'orderless-escapable-split-on-space)
-  (orderless-matching-styles '(orderless-literal orderless-regexp))
   (completion-styles '(orderless basic))
-  (completion-category-defaults nil)
-  (completion-category-overrides '((file (styles partial-completion)))))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
 
 ;; Replace dabbrev-expand with hippie-expand
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
@@ -330,11 +323,12 @@
   (corfu-history-mode))
 
 ;; Setup *Completions* buffer
-;; (setq completion-auto-help 'always
-;;       completion-auto-select 'second-tab
-;;       completions-max-height 15
-;;       completions-format 'vertical
-;;       completions-sort 'alphabetical)
+(setq completion-auto-help 'always
+      completion-auto-select 'second-tab
+      completions-max-height 15
+      completions-format 'one-column
+      completions-sort 'alphabetical)
+
 
 ;; Completion at point extensions
 (use-package cape
@@ -488,6 +482,7 @@
 
 ;; Markdown
 (use-package markdown-mode
+  :custom ((markdown-command "md2html"))
   :hook
   ((markdown-mode . (lambda ()
                       ;; Do not remove trailing whitespace when cleaning in
@@ -573,9 +568,11 @@
             (local-set-key (kbd "C-c f") 'eglot-format-buffer)))
 
 ;; Lisp
-(use-package sly
+(use-package slime
   :config
-  (setq inferior-lisp-program "sbcl --dynamic-space-size 4096"))
+  (setq inferior-lisp-program "sbcl --dynamic-space-size 4096")
+  :custom
+  (slime-completion-at-point-functions '(slime-simple-completion-at-point t)))
 
 ;;; Site lisp config
 
@@ -805,10 +802,10 @@
   (with-current-project project
     (let ((name (project-name project))
           (root (project-root project)))
-      (vterm (concat "*vterm*<" name ">"))
-      (vterm-send-string (concat "cd " root))
-      (vterm-send-return)
-      (vterm-clear))))
+      (when (vterm-open (concat "*vterm*<" name ">"))
+        (vterm-send-string (concat "cd " root))
+        (vterm-send-return)
+        (vterm-clear)))))
 
 (define-key project-prefix-map "t" 'project-vterm)
 
@@ -818,12 +815,12 @@
   (with-current-project project
     (let ((name (project-name project))
           (root (project-root project)))
-      (vterm (concat "*vterm*<" name " - rails console>"))
-      (vterm-send-string (concat "cd " root " && bin/rails c"))
-      (vterm-send-return)
-      (vterm-clear))))
+      (when (vterm-open (concat "*vterm*<" name " - rails console>"))
+        (vterm-send-string (concat "cd " root " && bin/rails c"))
+        (vterm-send-return)
+        (vterm-clear)))))
 
-(define-key project-prefix-map (kbd "t") 'project-vterm)
+(define-key project-prefix-map (kbd "C-r") 'project-rails-console)
 
 (defun project-clean-buffers ()
   "Like `project-kill-buffers' but keeps some arbitrary ones."
@@ -838,7 +835,7 @@
               (let ((buffer-name (buffer-name buffer)))
                 (unless (or (string-equal buffer-name dired-buffer-name)
                             (string-equal buffer-name (concat "magit: " dired-buffer-name))
-                            (string-equal buffer-name "*vterm*")
+                            (string-match-p "^\*vterm\*" buffer-name)
                             (string-match-p "*EGLOT" buffer-name))
                   (kill-buffer buffer))))
             project-buffers)
@@ -867,8 +864,8 @@
   :config
   (transient-append-suffix 'magit-log "-A" '("-m" "No Merges" "--no-merges")))
 
-(use-package forge
-  :after magit)
+;; (use-package forge
+;;   :after magit)
 
 ;;; Utils
 
@@ -991,23 +988,20 @@
 
 (use-package vterm
   :config
+  (defun vterm-open (buffer-name)
+    "Open or switch to a vterm buffer called BUFFER-NAME.  Return `nil' if the
+  buffer already existed otherwise, return the new buffer."
+    (if-let ((buffer (seq-find (lambda (buffer)
+                                 (string= buffer-name (buffer-name buffer)))
+                               (buffer-list))))
+        (progn (switch-to-buffer buffer) nil)
+      (vterm buffer-name)))
   (defun vterm-start-process (proc)
-    (vterm (concat "*vterm*<" proc ">"))
-    (vterm-send-string proc)
-    (vterm-send-return))
-  ;; TODO: Turn this into a cool macro so I can flex on my reddit friends
-  (defun elevo ()
-    (interactive)
-    (delete-other-windows)
-    (let* ((left-window (selected-window))
-           (upper-right-window (split-window-right nil left-window))
-           (down-right-window (split-window-below nil upper-right-window)))
-      (select-window left-window)
-      (vterm-start-process "start-rails-server")
-      (select-window upper-right-window)
-      (vterm-start-process "start-sidekiq")
-      (select-window down-right-window)
-      (vterm-start-process "start-client"))))
+    "Open or switch to a vterm buffer to run a command PROC."
+    (let ((vterm-buffer-name (concat "*vterm*<" proc ">")))
+      (when (vterm-open vterm-buffer-name)
+        (vterm-send-string proc)
+        (vterm-send-return)))))
 
 (require 'emacsocil)
 
@@ -1015,10 +1009,7 @@
   :project-path "~/Code/elevo-rails/"
   :procs '("start-rails-server" "start-sidekiq" "start-client")
   :layout :main-vertical
-  :proc-fn (lambda (proc)
-             (vterm (concat "*vterm*<" proc ">"))
-             (vterm-send-string proc)
-             (vterm-send-return)))
+  :proc-fn #'vterm-start-process)
 
 (use-package server
   :ensure nil
