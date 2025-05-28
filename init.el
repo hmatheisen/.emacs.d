@@ -186,7 +186,9 @@
   ((doom-themes-enable-bold t)
    (doom-themes-enable-italic t)
    (doom-gruvbox-dark-variant "hard")
-   (doom-gruvbox-light-variant "soft")))
+   (doom-gruvbox-light-variant "soft"))
+  :config
+  (doom-themes-org-config))
 
 ;; (use-package doom-modeline
 ;;   :custom ((doom-modeline-lsp nil)
@@ -700,7 +702,15 @@
     "#+OPTIONS: toc:nil\n\n")
   (define-auto-insert
     '("tmp/.*\.org" . "Tmp notes")
-    'org-tmp-skeleton))
+    'org-tmp-skeleton)
+  (define-auto-insert
+    '("tickets/.*\.org" . "Org ticket")
+    '(nil
+      "#+TITLE: "
+      (humanize-branch-name
+       (file-name-sans-extension
+        (car (last (split-string (buffer-file-name) "/")))))
+      "\n")))
 
 (use-package org-present)
 
@@ -845,14 +855,6 @@
 
 ;;; Git
 
-(defun kill-ring-save-forestadmin-url ()
-  (interactive)
-  (if-let* ((current-branch (magit-get-current-branch)))
-      (let ((url (concat "https://app.forestadmin.com/Elevo/" current-branch)))
-        (kill-new url)
-        (message (concat "Saved '" url "' to kill ring.")))
-    (error "Not in a git repository")))
-
 (use-package transient)
 
 (use-package magit
@@ -862,7 +864,27 @@
          :map magit-hunk-section-map
          ("RET" . magit-diff-visit-file-other-window))
   :config
+  (defmacro with-current-branch (branch &rest body)
+    "Execute BODY with BRANCH set to to the current VC branch."
+    (declare (indent 1))
+    `(if-let ((,branch (magit-get-current-branch)))
+         (progn ,@body)
+       (error "Not in a git repository")))
   (transient-append-suffix 'magit-log "-A" '("-m" "No Merges" "--no-merges")))
+
+(defun kill-ring-save-forestadmin-url ()
+  "Saves to kill ring the URL for Forestadmin of the current branch."
+  (interactive)
+  (with-current-branch branch
+    (let ((url (concat "https://app.forestadmin.com/Elevo/" current-branch)))
+      (kill-new url)
+      (message (concat "Saved '" url "' to kill ring.")))))
+
+(defun org-make-file-for-branch ()
+  "Create a new org file for the current branch"
+  (interactive)
+  (with-current-branch branch
+    (find-file (concat org-directory "tickets/" branch ".org"))))
 
 ;; (use-package forge
 ;;   :after magit)
@@ -914,6 +936,33 @@
   "Repeats the last shell command in as an `async-shell-command'."
   (interactive)
   (async-shell-command (car shell-command-history)))
+
+(defun humanize-branch-name (branch-name)
+  "Very personal way of transforming a BRANCH-NAME into its humanized name.
+Example:
+(humanize-branch-name \"fix-3456--fix-broken-stuff\")
+\"FIX-3456: Fix broken stuff\"
+
+When called interactively, choose from `magit-list-local-branch-names' and the humanized
+name is saved to the kill ring"
+  (interactive (list
+                (completing-read
+                 "Branch name: " (magit-list-local-branch-names))))
+  (let* ((split (split-string branch-name "-"))
+         (ticket-type (nth 0 split))
+         (ticket-id (nth 1 split))
+         (description (nthcdr 3 split))
+         (humanized (concat (upcase ticket-type)
+                            "-"
+                            ticket-id
+                            ": "
+                            (capitalize (car description))
+                            " "
+                            (string-join (cdr description) " "))))
+    (when (called-interactively-p)
+      (kill-new humanized)
+      (message (concat "Saved \"" humanized "\" to kill ring.")))
+    humanized))
 
 ;;; Window
 
