@@ -51,7 +51,6 @@
  '(global-goto-address-mode t)
  '(global-page-break-lines-mode t nil (page-break-lines))
  '(global-so-long-mode t)
- '(grep-command "rg --no-heading ")
  '(grep-use-null-device nil)
  '(indent-tabs-mode nil)
  '(mode-line-compact 'long)
@@ -65,14 +64,13 @@
      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(aidermacs cape cider consult copilot copilot-chat corfu diredfl doom-modeline
-               doom-themes ef-themes emmet-mode evil exec-path-from-shell
-               flymake-eslint gcmh google-translate gptel helpful
-               ibuffer-project inf-ruby marginalia multiple-cursors
-               ns-auto-titlebar orderless org-present page-break-lines prettier
-               rainbow-delimiters rg rich-minority sass-mode slime
-               standard-themes treemacs vertico visual-fill-column vterm vundo
-               yaml-mode yasnippet))
+   '(aidermacs cape cider consult copilot copilot-chat corfu diredfl doom-themes
+               ef-themes emmet-mode evil exec-path-from-shell flymake-eslint
+               gcmh google-translate gptel helpful ibuffer-project inf-ruby
+               marginalia multiple-cursors ns-auto-titlebar orderless
+               org-present page-break-lines prettier rainbow-delimiters rg
+               rich-minority sass-mode slime standard-themes treemacs vertico
+               visual-fill-column vterm vundo yaml-mode yasnippet))
  '(package-vc-selected-packages
    '((copilot :url "https://github.com/copilot-emacs/copilot.el" :branch "main")))
  '(pixel-scroll-precision-mode t)
@@ -107,15 +105,11 @@
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :height 130 :family "Hack"))))
  '(error ((t :underline nil)))
- '(fixed-pitch ((t (:inherit 'default :familiy "DejaVu Sans Mono"))))
- '(fixed-pitch-serif ((t (:inherit 'default :familiy "DejaVu Sans Mono"))))
+ '(fixed-pitch ((t (:inherit 'default :familiy "Hack"))))
+ '(fixed-pitch-serif ((t (:inherit 'default :familiy "Hack"))))
  '(flymake-error ((t (:underline nil))))
  '(flymake-note ((t (:underline nil))))
  '(flymake-warning ((t (:underline nil))))
- '(org-document-title ((t (:height 1.7))))
- '(org-level-1 ((t (:height 1.5))))
- '(org-level-2 ((t (:height 1.3))))
- '(org-level-3 ((t (:height 1.1))))
  '(variable-pitch ((t (:inherit 'default :family "DejaVu Sans"))))
  '(warning ((t :underline nil))))
 
@@ -639,7 +633,13 @@
   (defun my-org-mode-hook ()
     ;; (org-indent-mode 1)
     (visual-line-mode 1)
-    (windmove-mode -1))
+    (windmove-mode -1)
+    ;; Bigger font for title and levels
+    ;; It lives here since a lot of themes like to override this
+    (set-face-attribute 'org-document-title nil :height 1.7)
+    (set-face-attribute 'org-level-1 nil :height 1.5)
+    (set-face-attribute 'org-level-2 nil :height 1.3)
+    (set-face-attribute 'org-level-3 nil :height 1.1))
   :hook ((org-mode . my-org-mode-hook))
   :bind (("C-c l" . org-store-link)
          ("C-c a" . org-agenda)
@@ -762,7 +762,7 @@
 
 (use-package wgrep
   :custom
-  (wgrep-auto-save-buffer t))
+  (auto-save-buffer t))
 
 (defun kill-ring-save-whole-buffer ()
   "Save whole buffer to the kill ring."
