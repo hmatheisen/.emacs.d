@@ -64,13 +64,15 @@
      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(aidermacs cape cider consult copilot copilot-chat corfu diredfl doom-themes
-               ef-themes emmet-mode evil exec-path-from-shell flymake-eslint
-               gcmh google-translate gptel helpful ibuffer-project inf-ruby
+   '(aidermacs cape cider consult copilot copilot-chat corfu crontab-mode diredfl
+               doom-themes dracula-theme ef-themes emmet-mode evil
+               exec-path-from-shell flymake-eslint gcmh glsl-mode
+               google-translate gptel helpful ibuffer-project inf-ruby
                marginalia multiple-cursors ns-auto-titlebar orderless
-               org-present page-break-lines prettier rainbow-delimiters rg
-               rich-minority sass-mode slime standard-themes treemacs vertico
-               visual-fill-column vterm vundo yaml-mode yasnippet))
+               org-present page-break-lines prettier rails-log-mode
+               rainbow-delimiters rbs-mode rg rich-minority sass-mode slime
+               standard-themes treemacs vertico visual-fill-column vlf vterm
+               vundo yaml-mode yasnippet))
  '(package-vc-selected-packages
    '((copilot :url "https://github.com/copilot-emacs/copilot.el" :branch "main")))
  '(pixel-scroll-precision-mode t)
@@ -79,7 +81,7 @@
  '(repeat-mode t)
  '(ring-bell-function 'ignore)
  '(safe-local-variable-values
-   '((etags-regen-ignores "test/manual/etags/")
+   '((eval message "Hello!") (etags-regen-ignores "test/manual/etags/")
      (etags-regen-regexp-alist
       (("c" "objc") "/[ \11]*DEFVAR_[A-Z_ \11(]+\"\\([^\"]+\\)\"/\\1/"
        "/[ \11]*DEFVAR_[A-Z_ \11(]+\"[^\"]+\",[ \11]\\([A-Za-z0-9_]+\\)/\\1/"))))
@@ -110,7 +112,7 @@
  '(flymake-error ((t (:underline nil))))
  '(flymake-note ((t (:underline nil))))
  '(flymake-warning ((t (:underline nil))))
- '(variable-pitch ((t (:inherit 'default :family "DejaVu Sans"))))
+ '(variable-pitch ((t (:inherit 'default :family "Noto Sans"))))
  '(warning ((t :underline nil))))
 
 ;;; Consts
@@ -426,18 +428,12 @@
           ((derived-mode-p 'ruby-ts-mode)
            (add-hook 'flymake-diagnostic-functions
                      'ruby-flymake-auto)))) ; Enables rubocop
-  :hook ((ruby-ts-mode . eglot-ensure)
+  :hook ((ruby-ts-mode       . eglot-ensure)
          (typescript-ts-mode . eglot-ensure)
-         (tsx-ts-mode . eglot-ensure)
-         (c++-ts-mode . eglot-ensure)
-         (go-ts-mode . eglot-ensure)
-         (eglot-managed-mode . setup-other-flymake-backends))
-  :config
-  ;; Ruby LSP is promising but sucks ass right now
-  ;; (add-to-list
-  ;;  'eglot-server-programs
-  ;;  '((ruby-mode ruby-ts-mode) "ruby-lsp"))
-  )
+         (tsx-ts-mode        . eglot-ensure)
+         (c++-ts-mode        . eglot-ensure)
+         (go-ts-mode         . eglot-ensure)
+         (eglot-managed-mode . setup-other-flymake-backends)))
 
 ;; TS/TSX
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
@@ -457,7 +453,7 @@
   "export default " str ";")
 (define-auto-insert
   '("\\.tsx\\'" . "React component")
-  'react-component-skeleton)
+  'reactf-component-skeleton)
 
 ;; Sass
 (use-package sass-mode)
@@ -507,6 +503,7 @@
     (json "https://github.com/tree-sitter/tree-sitter-json")
     (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
     (go "https://github.com/tree-sitter/tree-sitter-go")
+    (c "https://github.com/tree-sitter/tree-sitter-c")
     (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
     (bash "https://github.com/tree-sitter/tree-sitter-bash")
     (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
@@ -567,6 +564,10 @@
 (use-package slime
   :config
   (setq inferior-lisp-program "sbcl --dynamic-space-size 4096")
+  (add-hook 'slime-mode-hook
+            (lambda ()
+              (setq slime-completion-at-point-functions
+                    '(slime-simple-completion-at-point t))))
   :custom
   (slime-completion-at-point-functions '(slime-simple-completion-at-point t)))
 
@@ -654,7 +655,7 @@
   (setq org-todo-keywords
         '((sequence "TODO(t)" "ON GOING(g)" "|" "DONE(d)" "WON'T DO(w)")
           (sequence "TODO(T)" "IN PROGRESS(P)" "TO REVIEW(R)" "TO TEST(F)"
-          "READY TO MERGE(M)" "|" "DONE(D)")))
+                    "READY TO MERGE(M)" "|" "DONE(D)")))
   (setq org-capture-templates
         '(("i" "Emacs Ideas" entry
            (file+headline (lambda () (concat org-directory "journal.org"))
@@ -780,6 +781,16 @@
 (global-set-key (kbd "M-j") 'join-line)
 
 (use-package vundo)
+
+;; Support for very large files
+(use-package vlf
+  :config
+  (defun display-ansi-colors ()
+    "Display ansi colors as actual colors in buffers.  Works well in pair with
+vlf to see long log files."
+    (interactive)
+    (let ((inhibit-read-only t))
+      (ansi-color-apply-on-region (point-min) (point-max)))))
 
 ;;; Project
 
@@ -842,13 +853,13 @@
          (project-buffers (project-buffers project))
          (dired-buffer-name (buffer-name (dired-noselect project-root))))
     (mapc (lambda (buffer)
-              (let ((buffer-name (buffer-name buffer)))
-                (unless (or (string-equal buffer-name dired-buffer-name)
-                            (string-equal buffer-name (concat "magit: " dired-buffer-name))
-                            (string-match-p "^\*vterm\*" buffer-name)
-                            (string-match-p "*EGLOT" buffer-name))
-                  (kill-buffer buffer))))
-            project-buffers)
+            (let ((buffer-name (buffer-name buffer)))
+              (unless (or (string-equal buffer-name dired-buffer-name)
+                          (string-equal buffer-name (concat "magit: " dired-buffer-name))
+                          (string-match-p "^\*vterm\*" buffer-name)
+                          (string-match-p "*EGLOT" buffer-name))
+                (kill-buffer buffer))))
+          project-buffers)
     (message (concat "Buffers cleaned for project: " project-name))))
 
 (define-key project-prefix-map (kbd "k") 'project-clean-buffers)
@@ -876,7 +887,7 @@
   "Saves to kill ring the URL for Forestadmin of the current branch."
   (interactive)
   (with-current-branch branch
-    (let ((url (concat "https://app.forestadmin.com/Elevo/" current-branch)))
+    (let ((url (concat "https://app.forestadmin.com/Elevo/" branch)))
       (kill-new url)
       (message (concat "Saved '" url "' to kill ring.")))))
 
