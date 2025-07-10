@@ -33,9 +33,12 @@
  '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(confirm-kill-emacs 'y-or-n-p)
+ '(context-menu-mode t)
  '(default-frame-alist '((ns-transparent-titlebar . t)))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
+ '(dired-recursive-copies 'always)
+ '(dired-recursive-deletes 'always)
  '(display-line-numbers nil)
  '(display-line-numbers-width 4)
  '(dynamic-completion-mode t)
@@ -45,6 +48,7 @@
  '(eglot-ignored-server-capabilities '(:inlayHintProvider))
  '(eldoc-echo-area-use-multiline-p 'truncate-sym-name-if-fit)
  '(electric-pair-mode t)
+ '(enable-recursive-minibuffers nil)
  '(epg-pinentry-mode 'loopback)
  '(fill-column 80)
  '(global-auto-revert-mode t)
@@ -53,6 +57,7 @@
  '(global-so-long-mode t)
  '(grep-use-null-device nil)
  '(indent-tabs-mode nil)
+ '(ispell-program-name "aspell")
  '(mode-line-compact 'long)
  '(modus-themes-bold-constructs t)
  '(modus-themes-italic-constructs t)
@@ -64,11 +69,11 @@
      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(aidermacs cape cider consult copilot copilot-chat corfu crontab-mode diredfl
-               doom-themes dracula-theme ef-themes emmet-mode evil
-               exec-path-from-shell flymake-eslint gcmh glsl-mode
-               google-translate gptel helpful ibuffer-project inf-ruby
-               marginalia multiple-cursors ns-auto-titlebar orderless
+   '(aidermacs cape centaur-tabs cider consult copilot copilot-chat corfu
+               crontab-mode diredfl doom-themes doric-themes ef-themes
+               emmet-mode evil exec-path-from-shell flymake-eslint gcmh
+               glsl-mode google-translate gptel helpful ibuffer-project inf-ruby
+               marginalia multiple-cursors ns-auto-titlebar olivetti orderless
                org-present page-break-lines prettier rails-log-mode
                rainbow-delimiters rbs-mode rg rich-minority sass-mode slime
                standard-themes treemacs vertico visual-fill-column vlf vterm
@@ -80,11 +85,6 @@
  '(recentf-mode t)
  '(repeat-mode t)
  '(ring-bell-function 'ignore)
- '(safe-local-variable-values
-   '((eval message "Hello!") (etags-regen-ignores "test/manual/etags/")
-     (etags-regen-regexp-alist
-      (("c" "objc") "/[ \11]*DEFVAR_[A-Z_ \11(]+\"\\([^\"]+\\)\"/\\1/"
-       "/[ \11]*DEFVAR_[A-Z_ \11(]+\"[^\"]+\",[ \11]\\([A-Za-z0-9_]+\\)/\\1/"))))
  '(savehist-mode t)
  '(scroll-bar-mode nil)
  '(scroll-conservatively 1000)
@@ -143,6 +143,21 @@
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
+(defun authinfo-password-for (host)
+  "Fetch the password for HOST in authinfo.gpg file."
+  (let ((source (auth-source-search :host host)))
+    (cond ((not source)
+           (error (concat "There are no sources with the name: " host)))
+          ((length< source 1)
+           (error (concat "There is more than one source with the name: " host))))
+    (auth-info-password
+     (car source))))
+
+(setq erc-nick "haineriz"
+      erc-password (authinfo-password-for "libera")
+      erc-user-full-name "Henry M."
+      erc-user-login-name "haineriz"
+      erc-fill-column 80)
 
 ;;; UI
 
@@ -174,7 +189,6 @@
 (use-package ef-themes
   :custom
   (ef-themes-headings nil))
-
 
 ;; Doom themes
 (use-package doom-themes
@@ -293,8 +307,10 @@
 ;; Orderless completion mode
 (use-package orderless
   :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles basic partial-completion)))))
+  (orderless-component-separator #'orderless-escapable-split-on-space)
+  (completion-styles '(orderless basic partial-completion))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles partial-completion)))))
 
 ;; Replace dabbrev-expand with hippie-expand
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
@@ -326,7 +342,6 @@
       completions-max-height 15
       completions-format 'one-column
       completions-sort 'alphabetical)
-
 
 ;; Completion at point extensions
 (use-package cape
@@ -433,7 +448,9 @@
          (tsx-ts-mode        . eglot-ensure)
          (c++-ts-mode        . eglot-ensure)
          (go-ts-mode         . eglot-ensure)
-         (eglot-managed-mode . setup-other-flymake-backends)))
+         (eglot-managed-mode . setup-other-flymake-backends))
+  :config
+  (add-to-list 'eglot-server-programs '((ruby-mode ruby-ts-mode) "ruby-lsp")))
 
 ;; TS/TSX
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
@@ -453,7 +470,7 @@
   "export default " str ";")
 (define-auto-insert
   '("\\.tsx\\'" . "React component")
-  'reactf-component-skeleton)
+  'react-component-skeleton)
 
 ;; Sass
 (use-package sass-mode)
@@ -526,7 +543,7 @@
         (json-mode       . json-ts-mode)
         (dockerfile-mode . dockerfile-ts-mode)
         (c++-mode        . c++-ts-mode)
-        (yaml-mode       . yaml-ts-mode)
+        ;; (yaml-mode       . yaml-ts-mode)
         (go-mode         . go-ts-mode)))
 
 ;; Golang
@@ -675,11 +692,19 @@
   (define-skeleton org-refinement-skeleton
     "Refinement Template."
     "Insert Refinement subject: "
-    "# -*- eval: (auto-fill-mode -1) -*-'\n"
     "#+TITLE: " str "\n"
-    "#+OPTIONS: toc:nil\n\n"
+    "#+OPTIONS: html-postamble:nil num:nil toc:nil\n"
+    "#+HTML_HEAD: <link rel=\"stylesheet\" href=\"../org.css\">\n\n"
     "* Notes :noexport:\n"
+    "* Summary\n"
+    "** Catch phrase\n"
+    "** Feature Flag\n"
+    "** Links\n"
+    "- Link to product discovery\n"
+    "- Link to Figma\n"
+    "- Link to Jira epic\n"
     "* Tech Solution\n"
+    "** Development steps\n"
     "** Models\n"
     "** Services\n"
     "** Controllers\n"
@@ -791,6 +816,7 @@ vlf to see long log files."
     (interactive)
     (let ((inhibit-read-only t))
       (ansi-color-apply-on-region (point-min) (point-max)))))
+
 
 ;;; Project
 
@@ -1043,8 +1069,14 @@ name is saved to the kill ring"
   (add-hook 'aidermacs-before-run-backend-hook
             (lambda ()
               (setenv "ANTHROPIC_API_KEY"
-                      (auth-info-password
-                       (car (auth-source-search :host "anthropic-api-key")))))))
+                      (authinfo-paswosrd-for "anthropic-api-key")))))
+
+(use-package gptel
+  :config
+  (setq gptel-backend
+        (gptel-make-gemini "Gemini"
+          :key (authinfo-password-for "gemini-api-key")
+          :stream t)))
 
 (use-package vterm
   :config
