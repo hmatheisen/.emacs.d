@@ -10,3 +10,5 @@
 
 !lisp
 !lisp/*.el
+
+!abbrev_defs

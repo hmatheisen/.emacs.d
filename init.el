@@ -85,6 +85,7 @@
  '(recentf-mode t)
  '(repeat-mode t)
  '(ring-bell-function 'ignore)
+ '(safe-local-variable-values '((flymake-mode)))
  '(savehist-mode t)
  '(scroll-bar-mode nil)
  '(scroll-conservatively 1000)
@@ -105,7 +106,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :height 130 :family "Hack"))))
+ '(default ((t (:inherit nil :height 140 :family "JetBrains Mono"))))
  '(error ((t :underline nil)))
  '(fixed-pitch ((t (:inherit 'default :familiy "Hack"))))
  '(fixed-pitch-serif ((t (:inherit 'default :familiy "Hack"))))
@@ -150,8 +151,7 @@
            (error (concat "There are no sources with the name: " host)))
           ((length< source 1)
            (error (concat "There is more than one source with the name: " host))))
-    (auth-info-password
-     (car source))))
+    (auth-info-password (car source))))
 
 (setq erc-nick "haineriz"
       erc-password (authinfo-password-for "libera")
@@ -217,7 +217,7 @@
 
 (use-package which-key
   :custom
-  (Which-key-idle-delay 1.0)
+  (which-key-idle-delay 1.0)
   :init
   (which-key-mode))
 
