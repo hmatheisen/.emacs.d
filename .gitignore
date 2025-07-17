@@ -4,6 +4,7 @@
 
 !init.el
 !early-init.el
+!mini.el
 
 !snippets
 !snippets/*

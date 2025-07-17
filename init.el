@@ -59,9 +59,6 @@
  '(indent-tabs-mode nil)
  '(ispell-program-name "aspell")
  '(mode-line-compact 'long)
- '(modus-themes-bold-constructs t)
- '(modus-themes-italic-constructs t)
- '(modus-themes-variable-pitch-ui nil)
  '(ns-antialias-text t)
  '(ns-use-fullscreen-animation t)
  '(package-archives
@@ -69,15 +66,16 @@
      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(aidermacs cape centaur-tabs cider consult copilot copilot-chat corfu
-               crontab-mode diredfl doom-themes doric-themes ef-themes
-               emmet-mode evil exec-path-from-shell flymake-eslint gcmh
-               glsl-mode google-translate gptel helpful ibuffer-project inf-ruby
-               marginalia multiple-cursors ns-auto-titlebar olivetti orderless
+   '(aidermacs autothemer cape centaur-tabs cider closql consult copilot
+               copilot-chat corfu crontab-mode csv-mode diredfl doom-themes
+               doric-themes ef-themes emmet-mode evil exec-path-from-shell
+               flymake-eslint gcmh ghub glsl-mode google-translate gptel helpful
+               ibuffer-project inf-ruby magit marginalia modus-themes
+               multiple-cursors nerd-icons ns-auto-titlebar olivetti orderless
                org-present page-break-lines prettier rails-log-mode
-               rainbow-delimiters rbs-mode rg rich-minority sass-mode slime
-               standard-themes treemacs vertico visual-fill-column vlf vterm
-               vundo yaml-mode yasnippet))
+               rainbow-delimiters rbs-mode rg rich-minority sass-mode
+               shrink-path slime standard-themes treemacs vertico
+               visual-fill-column vlf vterm vundo yaml yaml-mode yasnippet))
  '(package-vc-selected-packages
    '((copilot :url "https://github.com/copilot-emacs/copilot.el" :branch "main")))
  '(pixel-scroll-precision-mode t)
@@ -92,6 +90,7 @@
  '(scroll-preserve-screen-position 1)
  '(show-paren-delay 0)
  '(tab-width 4)
+ '(text-scale-mode-step 1.1)
  '(tool-bar-mode nil)
  '(tooltip-mode nil)
  '(trash-directory "~/.Trash")
@@ -106,13 +105,17 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :height 140 :family "JetBrains Mono"))))
+ '(default ((t (:inherit nil :height 130 :family "Hack"))))
  '(error ((t :underline nil)))
  '(fixed-pitch ((t (:inherit 'default :familiy "Hack"))))
  '(fixed-pitch-serif ((t (:inherit 'default :familiy "Hack"))))
  '(flymake-error ((t (:underline nil))))
  '(flymake-note ((t (:underline nil))))
  '(flymake-warning ((t (:underline nil))))
+ '(info-title-1 ((t (:height 1.7))))
+ '(info-title-2 ((t (:height 1.5))))
+ '(info-title-3 ((t (:height 1.3))))
+ '(info-title-4 ((t (:height 1.1))))
  '(variable-pitch ((t (:inherit 'default :family "Noto Sans"))))
  '(warning ((t :underline nil))))
 
@@ -167,23 +170,34 @@
   (ns-auto-titlebar-mode))
 
 ;; Standard themes is the standard
-(use-package standard-themes
-  :config
-  (setq standard-themes-common-palette-overrides
-        '((fringe unspecified)))
-  :custom
-  ((standard-themes-bold-constructs t)
-   (standard-themes-italic-constructs t)
-   (standard-themes-mixed-fonts t)))
+;; (use-package standard-themes
+;;   :config
+;;   (standard-themes-load-theme 'standard-light-tinted)
+;;   (define-key global-map (kbd "<f5>") #'standard-themes-toggle)
+;;   :custom
+;;   ((standard-themes-bold-constructs t)
+;;    (standard-themes-italic-constructs t)
+;;    (standard-themes-mixed-fonts t)
+;;    (standard-themes-common-palette-overrides '((fringe unspecified)))
+;;    (standard-themes-to-toggle '(standard-light-tinted standard-dark))))
 
 ;; Modus themes
-(setq modus-themes-common-palette-overrides
-      '(;; Make line numbers less intense
-        (fg-line-number-active fg-main)
-        (bg-line-number-inactive unspecified)
-        (bg-line-number-active bg-hl-line)
-        ;; Make the fringe invisible
-        (fringe unspecified)))
+(use-package modus-themes
+  :config
+  (modus-themes-load-theme 'modus-operandi-tinted)
+  (define-key global-map (kbd "<f5>") #'modus-themes-toggle)
+  :custom
+  ((modus-themes-common-palette-overrides
+    '(;; Make line numbers less intense
+      (fg-line-number-active fg-main)
+      (bg-line-number-inactive unspecified)
+      (bg-line-number-active bg-hl-line)
+      ;; Make the fringe invisible
+      (fringe unspecified)))
+   (modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi))
+   (modus-themes-bold-constructs t)
+   (modus-themes-italic-constructs t)
+   (modus-themes-variable-pitch-ui nil)))
 
 ;; Ef themes
 (use-package ef-themes
@@ -229,6 +243,21 @@
    ("C-h k" . helpful-key)))
 
 ;; Minibuffer
+
+(define-advice keyboard-quit (:around (quit))
+  "Quit the current context.
+
+When there is an active minibuffer and we are not inside it close it.  When we
+are inside the minibuffer use the regular `minibuffer-keyboard-quit' which quits
+any active region before exiting.  When there is no minibuffer `keyboard-quit'
+unless we are defining or executing a macro."
+  (if (active-minibuffer-window)
+      (if (minibufferp)
+          (minibuffer-keyboard-quit)
+        (abort-recursive-edit))
+    (unless (or defining-kbd-macro
+                executing-kbd-macro)
+      (funcall-interactively quit))))
 
 (use-package vertico
   :init
@@ -545,6 +574,11 @@
         (c++-mode        . c++-ts-mode)
         ;; (yaml-mode       . yaml-ts-mode)
         (go-mode         . go-ts-mode)))
+
+;; Dockerfile
+;; Somehow, this needs to be required otherwise the auto-mode -> mode-remap
+;; won't work.
+(require 'dockerfile-ts-mode)
 
 ;; Golang
 (setq go-ts-mode-indent-offset 4)
