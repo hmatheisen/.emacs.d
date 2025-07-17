@@ -32,6 +32,14 @@
  '(auto-insert-mode t)
  '(blink-cursor-mode nil)
  '(column-number-mode t)
+ '(completion-auto-help 'visible)
+ '(completion-auto-select 'second-tab)
+ '(completion-ignore-case t t)
+ '(completion-preview-minimum-symbol-length 2)
+ '(completion-styles '(basic flex orderless) nil nil "Customized with use-package orderless")
+ '(completions-format 'one-column)
+ '(completions-max-height 15)
+ '(completions-sort 'alphabetical)
  '(confirm-kill-emacs 'y-or-n-p)
  '(context-menu-mode t)
  '(default-frame-alist '((ns-transparent-titlebar . t)))
@@ -52,6 +60,7 @@
  '(epg-pinentry-mode 'loopback)
  '(fill-column 80)
  '(global-auto-revert-mode t)
+ '(global-completion-preview-mode nil)
  '(global-goto-address-mode t)
  '(global-page-break-lines-mode t nil (page-break-lines))
  '(global-so-long-mode t)
@@ -67,8 +76,8 @@
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
    '(aidermacs autothemer cape centaur-tabs cider closql consult copilot
-               copilot-chat corfu crontab-mode csv-mode diredfl doom-themes
-               doric-themes ef-themes emmet-mode evil exec-path-from-shell
+               copilot-chat corfu crontab-mode csv-mode diredfl doric-themes
+               ef-themes emmet-mode evil exec-path-from-shell fido-vertical-mode
                flymake-eslint gcmh ghub glsl-mode google-translate gptel helpful
                ibuffer-project inf-ruby magit marginalia modus-themes
                multiple-cursors nerd-icons ns-auto-titlebar olivetti orderless
@@ -105,7 +114,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :height 130 :family "Hack"))))
+ '(default ((t (:inherit nil :height 120 :family "Hack"))))
  '(error ((t :underline nil)))
  '(fixed-pitch ((t (:inherit 'default :familiy "Hack"))))
  '(fixed-pitch-serif ((t (:inherit 'default :familiy "Hack"))))
@@ -205,21 +214,14 @@
   (ef-themes-headings nil))
 
 ;; Doom themes
-(use-package doom-themes
-  :custom
-  ((doom-themes-enable-bold t)
-   (doom-themes-enable-italic t)
-   (doom-gruvbox-dark-variant "hard")
-   (doom-gruvbox-light-variant "soft"))
-  :config
-  (doom-themes-org-config))
-
-;; (use-package doom-modeline
-;;   :custom ((doom-modeline-lsp nil)
-;;            (doom-modeline-buffer-encoding nil)
-;;            (doom-modeline-height 0)
-;;            (doom-modeline-icon nil)
-;;            (doom-modeline-mode t)))
+;; (use-package doom-themes
+;;   :custom
+;;   ((doom-themes-enable-bold t)
+;;    (doom-themes-enable-italic t)
+;;    (doom-gruvbox-dark-variant "hard")
+;;    (doom-gruvbox-light-variant "soft"))
+;;   :config
+;;   (doom-themes-org-config))
 
 ;; Line numbers in prog mode only
 (add-hook 'prog-mode-hook
@@ -268,6 +270,10 @@ unless we are defining or executing a macro."
               ("M-v" . vertico-scroll-down))
   :custom
   (vertico-count 15))
+;; (use-package icomplete
+;;   :ensure nil
+;;   :custom
+;;   (fido-vertical-mode t))
 
 (use-package marginalia
   :custom
@@ -335,42 +341,41 @@ unless we are defining or executing a macro."
 
 ;; Orderless completion mode
 (use-package orderless
+  :ensure t
+  :config
+  (add-hook 'icomplete-minibuffer-setup-hook
+            (lambda ()
+              (setq-local completion-styles '(orderless basic flex))))
+  ;; Disable SPC completion in minibufffer since we use if for orderless
+  (define-key minibuffer-local-completion-map " " 'self-insert-command)
   :custom
-  (orderless-component-separator #'orderless-escapable-split-on-space)
-  (completion-styles '(orderless basic partial-completion))
-  (completion-category-defaults nil)
-  (completion-category-overrides '((file (styles partial-completion)))))
+  (completion-styles '(orderless basic flex)))
 
 ;; Replace dabbrev-expand with hippie-expand
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
 
-;; Reorder so Dabbrev is tried first
-(setq hippie-expand-try-functions-list
-      '(try-expand-dabbrev
-        try-expand-dabbrev-all-buffers
-        try-expand-dabbrev-from-kill
-        try-complete-file-name-partially
-        try-complete-file-name
-        try-expand-all-abbrevs
-        try-expand-list
-        try-expand-line
-        try-complete-lisp-symbol-partially
-        try-complete-lisp-symbol))
+(defun hippie-try-function-dabbrev-first ()
+  "Reorder the function lists in `hippie-expand-try-functions-list' to put all
+dabbrev functions first."
+  (let ((groups (seq-group-by           ; Maybe there's a better way to do this?
+                 (lambda (fun)
+                   (if (string-match "try-expand-dabbrev" (symbol-name fun))
+                       "dabbrev"
+                     "others"))
+                 hippie-expand-try-functions-list)))
+    (append
+     (alist-get "dabbrev" groups nil nil #'string=)
+     (alist-get "others" groups nil nil #'string=))))
+
+(setq hippie-expand-try-functions-list (hippie-try-function-dabbrev-first))
 
 ;; In buffer completion
-(use-package corfu
-  :bind
-  (:map corfu-map ("M-SPC" . corfu-insert-separator))
-  :init
-  (corfu-popupinfo-mode)
-  (corfu-history-mode))
-
-;; Setup *Completions* buffer
-(setq completion-auto-help 'always
-      completion-auto-select 'second-tab
-      completions-max-height 15
-      completions-format 'one-column
-      completions-sort 'alphabetical)
+;; (use-package corfu
+;;   :bind
+;;   (:map corfu-map ("M-SPC" . corfu-insert-separator))
+;;   :init
+;;   (corfu-popupinfo-mode)
+;;   (corfu-history-mode))
 
 ;; Completion at point extensions
 (use-package cape
@@ -385,21 +390,19 @@ unless we are defining or executing a macro."
 ;; Search and navigation
 (use-package consult
   :bind
-  (("C-c m" . consult-man)
-   ("C-c i" . consult-info)
+  (("C-c m"             . consult-man)
+   ("C-c i"             . consult-info)
    ([remap Info-search] . consult-info)
-   ("C-x b" . consult-buffer) ;; TODO: Maybe switch (kbd "s-b") later
-   ("C-x 4 b" . consult-buffer-other-window)
-   ("C-x 5 b" . consult-buffer-other-frame)
-   ("C-x t b" . consult-buffer-other-tab)
-   ("C-x r b" . consult-bookmark)
-   ("C-x p b" . consult-project-buffer) ;; TODO: idem
-   ("M-y" . consult-yank-pop)
-   ("M-g f" . consult-flymake)
-   ("M-g g" . consult-goto-line)
-   ("M-g M-g" . consult-goto-line))
-  :config
-  (setq completion-in-region-function #'consult-completion-in-region))
+   ("C-x b"             . consult-buffer) ;; TODO: Maybe switch (kbd "s-b") later
+   ("C-x 4 b"           . consult-buffer-other-window)
+   ("C-x 5 b"           . consult-buffer-other-frame)
+   ("C-x t b"           . consult-buffer-other-tab)
+   ("C-x r b"           . consult-bookmark)
+   ("C-x p b"           . consult-project-buffer) ;; TODO: idem
+   ("M-y"               . consult-yank-pop)
+   ("M-g f"             . consult-flymake)
+   ("M-g g"             . consult-goto-line)
+   ("M-g M-g"           . consult-goto-line)))
 
 (use-package multiple-cursors
   :config
@@ -479,7 +482,8 @@ unless we are defining or executing a macro."
          (go-ts-mode         . eglot-ensure)
          (eglot-managed-mode . setup-other-flymake-backends))
   :config
-  (add-to-list 'eglot-server-programs '((ruby-mode ruby-ts-mode) "ruby-lsp")))
+  ;; (add-to-list 'eglot-server-programs '((ruby-mode ruby-ts-mode) "ruby-lsp"))
+  )
 
 ;; TS/TSX
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
