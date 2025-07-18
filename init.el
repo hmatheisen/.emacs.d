@@ -33,13 +33,14 @@
  '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(completion-auto-help 'visible)
- '(completion-auto-select 'second-tab)
+ '(completion-auto-select t)
+ '(completion-flex-nospace t)
  '(completion-ignore-case t t)
- '(completion-preview-minimum-symbol-length 2)
- '(completion-styles '(basic flex orderless) nil nil "Customized with use-package orderless")
+ '(completion-show-help nil)
  '(completions-format 'one-column)
- '(completions-max-height 15)
- '(completions-sort 'alphabetical)
+ '(completions-group t)
+ '(completions-max-height 30)
+ '(completions-sort 'historical)
  '(confirm-kill-emacs 'y-or-n-p)
  '(context-menu-mode t)
  '(default-frame-alist '((ns-transparent-titlebar . t)))
@@ -47,26 +48,23 @@
  '(delete-selection-mode t)
  '(dired-recursive-copies 'always)
  '(dired-recursive-deletes 'always)
- '(display-line-numbers nil)
  '(display-line-numbers-width 4)
- '(dynamic-completion-mode t)
  '(ediff-merge-split-window-function 'split-window-horizontally)
  '(ediff-split-window-function 'split-window-horizontally)
  '(ediff-window-setup-function 'ediff-setup-windows-plain)
  '(eglot-ignored-server-capabilities '(:inlayHintProvider))
- '(eldoc-echo-area-use-multiline-p 'truncate-sym-name-if-fit)
  '(electric-pair-mode t)
- '(enable-recursive-minibuffers nil)
  '(epg-pinentry-mode 'loopback)
  '(fill-column 80)
  '(global-auto-revert-mode t)
  '(global-completion-preview-mode nil)
- '(global-goto-address-mode t)
- '(global-page-break-lines-mode t nil (page-break-lines))
- '(global-so-long-mode t)
- '(grep-use-null-device nil)
+ '(gnus-select-method '(nnimap "imap.gmail.com"))
  '(indent-tabs-mode nil)
+ '(isearch-allow-scroll t)
+ '(isearch-lazy-count t)
+ '(isearch-wrap-pause 'no-ding)
  '(ispell-program-name "aspell")
+ '(max-mini-window-height 20)
  '(mode-line-compact 'long)
  '(ns-antialias-text t)
  '(ns-use-fullscreen-animation t)
@@ -75,39 +73,34 @@
      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(aidermacs autothemer cape centaur-tabs cider closql consult copilot
-               copilot-chat corfu crontab-mode csv-mode diredfl doric-themes
-               ef-themes emmet-mode evil exec-path-from-shell fido-vertical-mode
-               flymake-eslint gcmh ghub glsl-mode google-translate gptel helpful
-               ibuffer-project inf-ruby magit marginalia modus-themes
-               multiple-cursors nerd-icons ns-auto-titlebar olivetti orderless
-               org-present page-break-lines prettier rails-log-mode
-               rainbow-delimiters rbs-mode rg rich-minority sass-mode
-               shrink-path slime standard-themes treemacs vertico
-               visual-fill-column vlf vterm vundo yaml yaml-mode yasnippet))
- '(package-vc-selected-packages
-   '((copilot :url "https://github.com/copilot-emacs/copilot.el" :branch "main")))
+   '(consult diredfl doom-themes doric-themes eglot emmet-mode exec-path-from-shell
+             flymake-eslint google-translate helpful ibuffer-project magit
+             marginalia markdown-mode modus-themes multiple-cursors
+             ns-auto-titlebar orderless org-present page-break-lines prettier
+             rainbow-delimiters rg rich-minority sass-mode slime smex vertico
+             vlf vterm vundo yaml-mode yasnippet))
  '(pixel-scroll-precision-mode t)
  '(recentf-max-menu-items 100)
  '(recentf-mode t)
  '(repeat-mode t)
  '(ring-bell-function 'ignore)
- '(safe-local-variable-values '((flymake-mode)))
  '(savehist-mode t)
  '(scroll-bar-mode nil)
- '(scroll-conservatively 1000)
+ '(scroll-conservatively 101)
  '(scroll-preserve-screen-position 1)
+ '(search-default-mode t)
+ '(send-mail-function 'smtpmail-send-it)
  '(show-paren-delay 0)
+ '(smtpmail-smtp-server "smtp.gmail.com")
+ '(smtpmail-smtp-service 587)
  '(tab-width 4)
  '(text-scale-mode-step 1.1)
  '(tool-bar-mode nil)
- '(tooltip-mode nil)
  '(trash-directory "~/.Trash")
  '(truncate-lines t)
  '(use-package-always-ensure t)
  '(user-mail-address "henry.mthsn@gmail.com")
  '(warning-minimum-level :emergency)
- '(windmove-default-keybindings '([ignore]))
  '(winner-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -117,7 +110,7 @@
  '(default ((t (:inherit nil :height 120 :family "Hack"))))
  '(error ((t :underline nil)))
  '(fixed-pitch ((t (:inherit 'default :familiy "Hack"))))
- '(fixed-pitch-serif ((t (:inherit 'default :familiy "Hack"))))
+ '(fixed-pitch-serif ((t (:inherit 'default :familiy "Go Mono"))))
  '(flymake-error ((t (:underline nil))))
  '(flymake-note ((t (:underline nil))))
  '(flymake-warning ((t (:underline nil))))
@@ -143,33 +136,12 @@
 
 ;;; System
 
-(setq user-mail-address "henry.mthsn@gmail.com"
-      smtpmail-smtp-service 587
-      smtpmail-smtp-server "smtp.gmail.com"
-      send-mail-function 'smtpmail-send-it)
-
-(setq gnus-select-method
-      '(nnimap "imap.gmail.com"))
-
 (use-package exec-path-from-shell
   :config
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
-(defun authinfo-password-for (host)
-  "Fetch the password for HOST in authinfo.gpg file."
-  (let ((source (auth-source-search :host host)))
-    (cond ((not source)
-           (error (concat "There are no sources with the name: " host)))
-          ((length< source 1)
-           (error (concat "There is more than one source with the name: " host))))
-    (auth-info-password (car source))))
-
-(setq erc-nick "haineriz"
-      erc-password (authinfo-password-for "libera")
-      erc-user-full-name "Henry M."
-      erc-user-login-name "haineriz"
-      erc-fill-column 80)
+(defalias 'yes-or-no-p 'y-or-n-p)
 
 ;;; UI
 
@@ -178,22 +150,12 @@
   :config
   (ns-auto-titlebar-mode))
 
-;; Standard themes is the standard
-;; (use-package standard-themes
-;;   :config
-;;   (standard-themes-load-theme 'standard-light-tinted)
-;;   (define-key global-map (kbd "<f5>") #'standard-themes-toggle)
-;;   :custom
-;;   ((standard-themes-bold-constructs t)
-;;    (standard-themes-italic-constructs t)
-;;    (standard-themes-mixed-fonts t)
-;;    (standard-themes-common-palette-overrides '((fringe unspecified)))
-;;    (standard-themes-to-toggle '(standard-light-tinted standard-dark))))
+(setq-default ns-use-proxy-icon nil)
 
 ;; Modus themes
 (use-package modus-themes
   :config
-  (modus-themes-load-theme 'modus-operandi-tinted)
+  (modus-themes-load-theme 'modus-vivendi-tinted)
   (define-key global-map (kbd "<f5>") #'modus-themes-toggle)
   :custom
   ((modus-themes-common-palette-overrides
@@ -203,25 +165,10 @@
       (bg-line-number-active bg-hl-line)
       ;; Make the fringe invisible
       (fringe unspecified)))
-   (modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi))
+   (modus-themes-to-toggle '(modus-vivendi-tinted modus-operandi-tinted))
    (modus-themes-bold-constructs t)
    (modus-themes-italic-constructs t)
    (modus-themes-variable-pitch-ui nil)))
-
-;; Ef themes
-(use-package ef-themes
-  :custom
-  (ef-themes-headings nil))
-
-;; Doom themes
-;; (use-package doom-themes
-;;   :custom
-;;   ((doom-themes-enable-bold t)
-;;    (doom-themes-enable-italic t)
-;;    (doom-gruvbox-dark-variant "hard")
-;;    (doom-gruvbox-light-variant "soft"))
-;;   :config
-;;   (doom-themes-org-config))
 
 ;; Line numbers in prog mode only
 (add-hook 'prog-mode-hook
@@ -229,23 +176,17 @@
             (display-line-numbers-mode t)
             (hl-line-mode t)))
 
-(global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
-
 (use-package which-key
   :custom
   (which-key-idle-delay 1.0)
   :init
   (which-key-mode))
 
-(use-package helpful
-  :defer t
-  :bind
-  (("C-h f" . helpful-callable)
-   ("C-h v" . helpful-variable)
-   ("C-h k" . helpful-key)))
+;; Remove `vc-mode' from mode-line
+(setq-default mode-line-format
+              (delete '(vc-mode vc-mode) mode-line-format))
 
 ;; Minibuffer
-
 (define-advice keyboard-quit (:around (quit))
   "Quit the current context.
 
@@ -261,19 +202,22 @@ unless we are defining or executing a macro."
                 executing-kbd-macro)
       (funcall-interactively quit))))
 
+(use-package orderless
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic flex))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
+
 (use-package vertico
-  :init
-  (vertico-mode)
   :bind (:map vertico-map
               ("DEL" . vertico-directory-delete-char)
               ("C-v" . vertico-scroll-up)
               ("M-v" . vertico-scroll-down))
   :custom
-  (vertico-count 15))
-;; (use-package icomplete
-;;   :ensure nil
-;;   :custom
-;;   (fido-vertical-mode t))
+  ((vertico-cycle t)
+   (vertico-mode t)
+   (vertico-scroll-margin 5)
+   (vertico-count 20)))
 
 (use-package marginalia
   :custom
@@ -284,28 +228,10 @@ unless we are defining or executing a macro."
 (use-package page-break-lines
   :config (global-page-break-lines-mode))
 
-(use-package treemacs
-  :custom
-  (treemacs-no-png-images t)
-  (treemacs-width 50)
-  (treemacs-width-is-initially-locked nil)
-  :bind (("s-t" . treemacs)))
-
 (when *is-a-mac*
   (setq mac-option-modifier 'meta
         mac-command-modifier 'super
         mac-right-option-modifier 'nil))
-
-;; Display buffer alist
-(defun display-buffer-below (buffer-name)
-  "Display BUFFER-NAME below the selected window."
-  (add-to-list 'display-buffer-alist
-               `(,buffer-name
-                 (display-buffer-below-selected)
-                 (window-height . 0.3))))
-
-(display-buffer-below "\\*Flymake diag.+\\*")
-(display-buffer-below "\\*eldoc.*\\*")
 
 ;; ibuffer
 (global-set-key (kbd "C-x C-b") 'ibuffer)
@@ -320,36 +246,13 @@ unless we are defining or executing a macro."
      (unless (eq ibuffer-sorting-mode 'project-file-relative)
        (ibuffer-do-sort-by-project-file-relative)))))
 
-;; Clean modeline
-;; Remove `vc-mode' from modeline
-(setq-default mode-line-format
-              (delete '(vc-mode vc-mode) mode-line-format))
-
 (use-package rich-minority
   :custom
   (rm-blacklist (mapconcat 'identity '() "\\|"))
   :config
   (rich-minority-mode t))
-
-;; Line spacing
-(setq-default line-spacing nil)
-
-;; Clean title bar
-(setq-default ns-use-proxy-icon nil)
 
 ;;; Completion & Navigation
-
-;; Orderless completion mode
-(use-package orderless
-  :ensure t
-  :config
-  (add-hook 'icomplete-minibuffer-setup-hook
-            (lambda ()
-              (setq-local completion-styles '(orderless basic flex))))
-  ;; Disable SPC completion in minibufffer since we use if for orderless
-  (define-key minibuffer-local-completion-map " " 'self-insert-command)
-  :custom
-  (completion-styles '(orderless basic flex)))
 
 ;; Replace dabbrev-expand with hippie-expand
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
@@ -369,40 +272,14 @@ dabbrev functions first."
 
 (setq hippie-expand-try-functions-list (hippie-try-function-dabbrev-first))
 
-;; In buffer completion
-;; (use-package corfu
-;;   :bind
-;;   (:map corfu-map ("M-SPC" . corfu-insert-separator))
-;;   :init
-;;   (corfu-popupinfo-mode)
-;;   (corfu-history-mode))
-
-;; Completion at point extensions
-(use-package cape
-  :init
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-dict))
-
 (use-package yasnippet
   :custom (yas-indent-line 'fixed)
   :config (yas-global-mode t))
 
 ;; Search and navigation
 (use-package consult
-  :bind
-  (("C-c m"             . consult-man)
-   ("C-c i"             . consult-info)
-   ([remap Info-search] . consult-info)
-   ("C-x b"             . consult-buffer) ;; TODO: Maybe switch (kbd "s-b") later
-   ("C-x 4 b"           . consult-buffer-other-window)
-   ("C-x 5 b"           . consult-buffer-other-frame)
-   ("C-x t b"           . consult-buffer-other-tab)
-   ("C-x r b"           . consult-bookmark)
-   ("C-x p b"           . consult-project-buffer) ;; TODO: idem
-   ("M-y"               . consult-yank-pop)
-   ("M-g f"             . consult-flymake)
-   ("M-g g"             . consult-goto-line)
-   ("M-g M-g"           . consult-goto-line)))
+  :config
+  (setq completion-in-region-function #'consult-completion-in-region))
 
 (use-package multiple-cursors
   :config
@@ -412,7 +289,6 @@ dabbrev functions first."
   (global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
   (global-unset-key (kbd "M-<down-mouse-1>"))
   (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))
-
 
 ;;; Files
 
@@ -427,16 +303,14 @@ dabbrev functions first."
 ;; Dired
 (use-package dired
   :ensure nil
-  :bind (:map dired-mode-map
-              ("C-c C-q" . wdired-change-to-wdired-mode))
+  :bind
+  (:map dired-mode-map ("C-c C-q" . wdired-change-to-wdired-mode))
   :config
   (when (executable-find "gls")
-    (setq insert-directory-program "gls"
-          dired-listing-switches "-aGFhlv --dired --group-directories-first
-          --time-style=long-iso"))
-  ;; Always delete and copy recursively
-  (setq dired-recursive-deletes 'always
-        dired-recursive-copies 'always)
+    (setq
+     insert-directory-program "gls"
+     dired-listing-switches
+     "-aGFhlv --dired --group-directories-first --time-style=long-iso"))
   ;; Guess a default target directory
   (setq dired-dwim-target t))
 
@@ -467,23 +341,11 @@ dabbrev functions first."
 ;; Eglot
 (use-package eglot
   :ensure nil
-  :preface
-  (defun setup-other-flymake-backends ()
-    "Add other backends to flymake when using eglot"
-    (cond ((derived-mode-p 'typescript-ts-mode 'tsx-ts-mode)
-           (flymake-eslint-enable))
-          ((derived-mode-p 'ruby-ts-mode)
-           (add-hook 'flymake-diagnostic-functions
-                     'ruby-flymake-auto)))) ; Enables rubocop
   :hook ((ruby-ts-mode       . eglot-ensure)
          (typescript-ts-mode . eglot-ensure)
          (tsx-ts-mode        . eglot-ensure)
          (c++-ts-mode        . eglot-ensure)
-         (go-ts-mode         . eglot-ensure)
-         (eglot-managed-mode . setup-other-flymake-backends))
-  :config
-  ;; (add-to-list 'eglot-server-programs '((ruby-mode ruby-ts-mode) "ruby-lsp"))
-  )
+         (go-ts-mode         . eglot-ensure)))
 
 ;; TS/TSX
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
@@ -509,7 +371,9 @@ dabbrev functions first."
 (use-package sass-mode)
 
 ;; Enable eslint for flymake
-(use-package flymake-eslint)
+(use-package flymake-eslint
+  :hook (tsx-ts-mode . (lambda ()
+                         (flymake-eslint-enable))))
 
 ;; Flymake
 (use-package flymake
@@ -576,13 +440,12 @@ dabbrev functions first."
         (json-mode       . json-ts-mode)
         (dockerfile-mode . dockerfile-ts-mode)
         (c++-mode        . c++-ts-mode)
-        ;; (yaml-mode       . yaml-ts-mode)
         (go-mode         . go-ts-mode)))
 
-;; Dockerfile
 ;; Somehow, this needs to be required otherwise the auto-mode -> mode-remap
 ;; won't work.
 (require 'dockerfile-ts-mode)
+(require 'go-ts-mode)
 
 ;; Golang
 (setq go-ts-mode-indent-offset 4)
@@ -598,10 +461,6 @@ dabbrev functions first."
   '(nil
     "# frozen_string_literal: true\n"
     "\n"))
-
-(add-hook 'ruby-ts-mode-hook
-          (lambda ()
-            (setq fill-column 100)))
 
 ;; C/C++
 (add-hook 'c-mode-hook
@@ -619,12 +478,23 @@ dabbrev functions first."
 (use-package slime
   :config
   (setq inferior-lisp-program "sbcl --dynamic-space-size 4096")
-  (add-hook 'slime-mode-hook
-            (lambda ()
-              (setq slime-completion-at-point-functions
-                    '(slime-simple-completion-at-point t))))
-  :custom
-  (slime-completion-at-point-functions '(slime-simple-completion-at-point t)))
+  (setq slime-contribs '(slime-repl
+                         slime-mrepl
+                         inferior-slime
+                         slime-autodoc
+                         slime-asdf
+                         slime-banner
+                         slime-editing-commands
+                         slime-fancy-inspector
+                         slime-presentations
+                         slime-references
+                         slime-xref-browser
+                         slime-highlight-edits
+                         slime-scratch
+                         slime-trace-dialog
+                         slime-sprof
+                         slime-mdot-fu
+                         slime-quicklisp)))
 
 ;;; Site lisp config
 
@@ -687,7 +557,6 @@ dabbrev functions first."
   :ensure nil
   :preface
   (defun my-org-mode-hook ()
-    ;; (org-indent-mode 1)
     (visual-line-mode 1)
     (windmove-mode -1)
     ;; Bigger font for title and levels
@@ -782,10 +651,9 @@ dabbrev functions first."
 
 (use-package google-translate
   :config
-  (setq google-translate-translation-directions-alist '(("en" . "fr")
-                                                        ("fr" . "en")))
-  :bind
-  (("C-c t" . google-translate-smooth-translate)))
+  (setq google-translate-translation-directions-alist
+        '(("en" . "fr")
+          ("fr" . "en"))))
 
 (require 'isearch-transient)
 
@@ -796,21 +664,14 @@ dabbrev functions first."
 (put 'list-timers 'disabled nil)
 (put 'scroll-left 'disabled nil)
 
-(defun align-equals (beg end)
-  "Align `=' signs in a given region, from BEG to END."
-  (interactive "r")
-  (align-regexp beg end "\\(\\s-*\\)="))
-
 ;; Whitespace cleanup on save
 (add-hook 'before-save-hook 'whitespace-cleanup)
-
-;; Auto insert mode
-(auto-insert-mode t)
 
 ;; Redo binding with super
 (global-set-key (kbd "s-Z") 'undo-redo)
 
 ;; Kill to end of line
+;; FIXME: May be buggy in terminals and other buffers
 (defun kill-beg-line ()
   "Kill a line from point to column 0."
   (interactive)
@@ -818,12 +679,10 @@ dabbrev functions first."
 
 (global-set-key (kbd "s-<backspace>") 'kill-beg-line)
 
-;; Auto fill in text mode
-(add-hook 'text-mode-hook 'auto-fill-mode)
-
 ;; Abbrev mode by default in all buffers
 (setq-default abbrev-mode t)
 
+;; TODO: Check if there isn't a built-in function for this
 (use-package wgrep
   :custom
   (auto-save-buffer t))
@@ -960,16 +819,8 @@ vlf to see long log files."
   (interactive)
   (with-current-branch branch
     (find-file (concat org-directory "tickets/" branch ".org"))))
-
-;; (use-package forge
-;;   :after magit)
 
 ;;; Utils
-
-(defun add-to-path (path)
-  "Add a path to variable `exec-path' and Emacs \"PATH\" variable."
-  (add-to-list 'exec-path path)
-  (setenv "PATH" (concat (getenv "PATH") ":" path)))
 
 (defun chez-scheme-set-env (dir)
   "List dirs in chez scheme lib DIR and set the proper env."
@@ -978,11 +829,6 @@ vlf to see long log files."
                            directory-files-no-dot-files-regexp))
          (env (string-join scheme-lib-dirs ":")))
     (setenv "CHEZSCHEMELIBDIRS" (concat env ":."))))
-
-(add-to-path "/usr/local/bin")
-(add-to-path "/Library/TeX/texbin")
-(add-to-path "/Users/henry/.rbenv/shims")
-(add-to-path "/Users/henry/.local/bin")
 
 (when *is-a-mac*
   (setenv "DYLD_LIBRARY_PATH" "/opt/homebrew/lib")
@@ -1006,11 +852,6 @@ vlf to see long log files."
    (concat "*" new-buffer-name "*")))
 
 (global-set-key (kbd "C-x B") 'new-buffer)
-
-(defun repeat-last-async-shell-command ()
-  "Repeats the last shell command in as an `async-shell-command'."
-  (interactive)
-  (async-shell-command (car shell-command-history)))
 
 (defun humanize-branch-name (branch-name)
   "Very personal way of transforming a BRANCH-NAME into its humanized name.
@@ -1067,21 +908,6 @@ name is saved to the kill ring"
 (global-set-key (kbd "C-v") 'scroll-half-page-up-command)
 (global-set-key (kbd "M-v") 'scroll-half-page-down-command)
 
-(defun split-window-right-focus ()
-  "Splits whe window below and move point to new window."
-  (interactive)
-  (split-window-right)
-  (other-window 1))
-
-(defun split-window-below-focus ()
-  "Splits whe window below and move point to new window."
-  (interactive)
-  (split-window-below)
-  (other-window 1))
-
-(global-set-key (kbd "C-x 2") 'split-window-below-focus)
-(global-set-key (kbd "C-x 3") 'split-window-right-focus)
-
 ;; Unbind suspend frame in GUI mode
 (when (display-graphic-p)
   (global-unset-key (kbd "C-z"))
@@ -1091,30 +917,14 @@ name is saved to the kill ring"
 
 ;;; Tools
 
-(use-package copilot
-  :vc (:url "https://github.com/copilot-emacs/copilot.el"
-            :rev :newest
-            :branch "main")
-  :bind (:map copilot-completion-map
-              ("C-<return>" . copilot-accept-completion)
-              ("C-RET" . copilot-accept-completion)))
-
-(use-package copilot-chat)
-
-(use-package aidermacs
-  :bind (("C-c a" . aidermacs-transient-menu))
-  :config
-  (add-hook 'aidermacs-before-run-backend-hook
-            (lambda ()
-              (setenv "ANTHROPIC_API_KEY"
-                      (authinfo-paswosrd-for "anthropic-api-key")))))
-
-(use-package gptel
-  :config
-  (setq gptel-backend
-        (gptel-make-gemini "Gemini"
-          :key (authinfo-password-for "gemini-api-key")
-          :stream t)))
+(defun authinfo-password-for (host)
+  "Fetch the password for HOST in authinfo.gpg file."
+  (let ((source (auth-source-search :host host)))
+    (cond ((not source)
+           (error (concat "There are no sources with the name: " host)))
+          ((length< source 1)
+           (error (concat "There is more than one source with the name: " host))))
+    (auth-info-password (car source))))
 
 (use-package vterm
   :config
@@ -1126,6 +936,7 @@ name is saved to the kill ring"
                                (buffer-list))))
         (progn (switch-to-buffer buffer) nil)
       (vterm buffer-name)))
+
   (defun vterm-start-process (proc)
     "Open or switch to a vterm buffer to run a command PROC."
     (let ((vterm-buffer-name (concat "*vterm*<" proc ">")))
