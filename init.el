@@ -33,13 +33,14 @@
  '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(completion-auto-help 'visible)
- '(completion-auto-select t)
+ '(completion-auto-select 'second-tab)
  '(completion-flex-nospace t)
  '(completion-ignore-case t t)
  '(completion-show-help nil)
+ '(completions-detailed t)
  '(completions-format 'one-column)
  '(completions-group t)
- '(completions-max-height 30)
+ '(completions-max-height 20)
  '(completions-sort 'historical)
  '(confirm-kill-emacs 'y-or-n-p)
  '(context-menu-mode t)
@@ -54,11 +55,20 @@
  '(ediff-window-setup-function 'ediff-setup-windows-plain)
  '(eglot-ignored-server-capabilities '(:inlayHintProvider))
  '(electric-pair-mode t)
+ '(enable-recursive-minibuffers t)
  '(epg-pinentry-mode 'loopback)
  '(fill-column 80)
  '(global-auto-revert-mode t)
  '(global-completion-preview-mode nil)
+ '(global-hl-line-mode nil)
  '(gnus-select-method '(nnimap "imap.gmail.com"))
+ '(icomplete-compute-delay 0)
+ '(icomplete-hide-common-prefix nil)
+ '(icomplete-max-delay-chars 0)
+ '(icomplete-mode t)
+ '(icomplete-prospects-height 5)
+ '(icomplete-scroll t t)
+ '(icomplete-show-matches-on-no-input t)
  '(indent-tabs-mode nil)
  '(isearch-allow-scroll t)
  '(isearch-lazy-count t)
@@ -68,21 +78,30 @@
  '(mode-line-compact 'long)
  '(ns-antialias-text t)
  '(ns-use-fullscreen-animation t)
+ '(org-clock-string-limit 0)
  '(package-archives
    '(("gnu" . "https://elpa.gnu.org/packages/")
      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(consult diredfl doom-themes doric-themes eglot emmet-mode exec-path-from-shell
-             flymake-eslint google-translate helpful ibuffer-project magit
-             marginalia markdown-mode modus-themes multiple-cursors
-             ns-auto-titlebar orderless org-present page-break-lines prettier
-             rainbow-delimiters rg rich-minority sass-mode slime smex vertico
-             vlf vterm vundo yaml-mode yasnippet))
+   '(color-theme-sanityinc-tomorrow consult diredfl doom-themes doric-themes
+                                    ef-themes eglot emmet-mode
+                                    exec-path-from-shell flymake-eslint
+                                    google-translate helpful ibuffer-project
+                                    magit marginalia markdown-mode mct
+                                    modus-themes multiple-cursors
+                                    ns-auto-titlebar orderless org-pomodoro
+                                    org-present page-break-lines prettier
+                                    rainbow-delimiters rg rich-minority
+                                    sass-mode slime smex vertico vlf vterm vundo
+                                    yaml-mode yasnippet))
  '(pixel-scroll-precision-mode t)
+ '(read-buffer-completion-ignore-case t)
+ '(read-file-name-completion-ignore-case t)
  '(recentf-max-menu-items 100)
  '(recentf-mode t)
  '(repeat-mode t)
+ '(resize-mini-windows t)
  '(ring-bell-function 'ignore)
  '(savehist-mode t)
  '(scroll-bar-mode nil)
@@ -107,7 +126,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :height 120 :family "Hack"))))
+ '(default ((t (:inherit nil :height 130 :family "Hack"))))
  '(error ((t :underline nil)))
  '(fixed-pitch ((t (:inherit 'default :familiy "Hack"))))
  '(fixed-pitch-serif ((t (:inherit 'default :familiy "Go Mono"))))
@@ -155,7 +174,7 @@
 ;; Modus themes
 (use-package modus-themes
   :config
-  (modus-themes-load-theme 'modus-vivendi-tinted)
+  (modus-themes-load-theme 'modus-vivendi)
   (define-key global-map (kbd "<f5>") #'modus-themes-toggle)
   :custom
   ((modus-themes-common-palette-overrides
@@ -165,7 +184,7 @@
       (bg-line-number-active bg-hl-line)
       ;; Make the fringe invisible
       (fringe unspecified)))
-   (modus-themes-to-toggle '(modus-vivendi-tinted modus-operandi-tinted))
+   (modus-themes-to-toggle '(modus-vivendi modus-operandi-tinted))
    (modus-themes-bold-constructs t)
    (modus-themes-italic-constructs t)
    (modus-themes-variable-pitch-ui nil)))
@@ -185,39 +204,6 @@
 ;; Remove `vc-mode' from mode-line
 (setq-default mode-line-format
               (delete '(vc-mode vc-mode) mode-line-format))
-
-;; Minibuffer
-(define-advice keyboard-quit (:around (quit))
-  "Quit the current context.
-
-When there is an active minibuffer and we are not inside it close it.  When we
-are inside the minibuffer use the regular `minibuffer-keyboard-quit' which quits
-any active region before exiting.  When there is no minibuffer `keyboard-quit'
-unless we are defining or executing a macro."
-  (if (active-minibuffer-window)
-      (if (minibufferp)
-          (minibuffer-keyboard-quit)
-        (abort-recursive-edit))
-    (unless (or defining-kbd-macro
-                executing-kbd-macro)
-      (funcall-interactively quit))))
-
-(use-package orderless
-  :ensure t
-  :custom
-  (completion-styles '(orderless basic flex))
-  (completion-category-overrides '((file (styles basic partial-completion)))))
-
-(use-package vertico
-  :bind (:map vertico-map
-              ("DEL" . vertico-directory-delete-char)
-              ("C-v" . vertico-scroll-up)
-              ("M-v" . vertico-scroll-down))
-  :custom
-  ((vertico-cycle t)
-   (vertico-mode t)
-   (vertico-scroll-margin 5)
-   (vertico-count 20)))
 
 (use-package marginalia
   :custom
@@ -254,6 +240,32 @@ unless we are defining or executing a macro."
 
 ;;; Completion & Navigation
 
+;; No help while completing
+(setq completion-show-inline-help nil)
+
+;; Re-map M-<up> and M-<down> to easier keys
+(define-key completion-in-region-mode-map (kbd "M-n") 'minibuffer-next-completion)
+(define-key completion-in-region-mode-map (kbd "M-p") 'minibuffer-previous-completion)
+(define-key minibuffer-mode-map (kbd "M-n") 'minibuffer-next-completion)
+(define-key minibuffer-mode-map (kbd "M-p") 'minibuffer-previous-completion)
+
+;; Toggle icomplet vertical mode
+(define-key icomplete-minibuffer-map (kbd "C-v") 'icomplete-vertical-mode)
+
+;; Some settings for the *Completions* buffer
+(add-hook 'completion-list-mode-hook
+          (lambda ()
+            ;; (setq mode-line-format nil)
+            (hl-line-mode t)))
+
+(use-package orderless
+  :ensure t
+  :custom
+  (completion-styles '(basic orderless))
+  (completion-category-overrides '((file (styles basic partial-completion))))
+  (orderless-matching-styles
+   '(orderless-regexp orderless-literal orderless-initialism orderless-prefixes orderless-flex)))
+
 ;; Replace dabbrev-expand with hippie-expand
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
 
@@ -279,8 +291,8 @@ dabbrev functions first."
 ;; Search and navigation
 (use-package consult
   :config
-  (setq completion-in-region-function #'consult-completion-in-region))
-
+  ;; (setq completion-in-region-function #'consult-completion-in-region)
+  )
 (use-package multiple-cursors
   :config
   (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
