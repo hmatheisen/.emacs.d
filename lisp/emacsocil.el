@@ -42,15 +42,17 @@
       (with-selected-window window
         (funcall proc-fn proc)))))
 
-(cl-defmacro define-layout (name &key procs layout proc-fn project-path)
+(cl-defmacro define-layout (name &optional documentation &key procs layout proc-fn project-path)
   "Create a new layout called NAME.
 Split the current frame using a predefined LAYOUT and run all PROCS with PROC-FN."
-  (declare (indent defun))
+  (declare (doc-string 2)
+           (indent defun))
   (unless (member layout emacsocil-layouts)
     (error (concat "Unknonwn layout name: " (symbol-name layout))))
   (let ((layout-fn (cl-case layout
                      (:main-vertical #'emacsocil--main-vertical))))
     `(defun ,name ()
+       ,documentation
        (interactive)
        (let ((default-directory ,(or project-path `default-directory)))
          (,layout-fn ,procs ,proc-fn)))))

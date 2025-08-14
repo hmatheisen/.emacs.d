@@ -44,7 +44,7 @@
  '(completions-sort 'historical)
  '(confirm-kill-emacs 'y-or-n-p)
  '(context-menu-mode t)
- '(default-frame-alist '((ns-transparent-titlebar . t)))
+ '(default-frame-alist '((ns-transparent-titlebar . t) (vertical-scroll-bars)))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
  '(dired-recursive-copies 'always)
@@ -60,14 +60,21 @@
  '(fill-column 80)
  '(global-auto-revert-mode t)
  '(global-completion-preview-mode nil)
+ '(global-goto-address-mode t)
  '(global-hl-line-mode nil)
- '(gnus-select-method '(nnimap "imap.gmail.com"))
+ '(gnus-always-read-dribble-file t)
+ '(gnus-asynchronous t)
+ '(gnus-group-sort-function
+   '(gnus-group-sort-by-unread gnus-group-sort-by-alphabet gnus-group-sort-by-rank))
+ '(gnus-summary-display-while-building t)
+ '(gnus-thread-sort-functions
+   '(gnus-thread-sort-by-number (not gnus-thread-sort-by-date)))
  '(icomplete-compute-delay 0)
  '(icomplete-hide-common-prefix nil)
  '(icomplete-max-delay-chars 0)
- '(icomplete-mode t)
  '(icomplete-prospects-height 5)
  '(icomplete-scroll t t)
+ '(icomplete-separator " · ")
  '(icomplete-show-matches-on-no-input t)
  '(indent-tabs-mode nil)
  '(isearch-allow-scroll t)
@@ -75,26 +82,26 @@
  '(isearch-wrap-pause 'no-ding)
  '(ispell-program-name "aspell")
  '(max-mini-window-height 20)
+ '(message-cite-style nil)
  '(mode-line-compact 'long)
  '(ns-antialias-text t)
  '(ns-use-fullscreen-animation t)
- '(org-clock-string-limit 0)
+ '(org-clock-clocked-in-display nil)
  '(package-archives
    '(("gnu" . "https://elpa.gnu.org/packages/")
      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(color-theme-sanityinc-tomorrow consult diredfl doom-themes doric-themes
-                                    ef-themes eglot emmet-mode
-                                    exec-path-from-shell flymake-eslint
-                                    google-translate helpful ibuffer-project
-                                    magit marginalia markdown-mode mct
-                                    modus-themes multiple-cursors
-                                    ns-auto-titlebar orderless org-pomodoro
-                                    org-present page-break-lines prettier
-                                    rainbow-delimiters rg rich-minority
-                                    sass-mode slime smex vertico vlf vterm vundo
-                                    yaml-mode yasnippet))
+   '(adaptive-wrap async avy cape color-theme-sanityinc-solarized
+                   color-theme-sanityinc-tomorrow consult corfu diredfl
+                   doric-themes ef-themes eglot ellama emmet-mode
+                   exec-path-from-shell flymake-eslint google-translate helpful
+                   ibuffer-project iedit inf-ruby lorem-ipsum magit marginalia
+                   markdown-mode mct modus-themes multiple-cursors
+                   ns-auto-titlebar oauth2 orderless org-pomodoro org-present
+                   page-break-lines prettier rainbow-delimiters rg rich-minority
+                   sass-mode slime vertico visual-fill visual-fill-column vlf
+                   vterm vundo wfnames yaml-mode yari yasnippet))
  '(pixel-scroll-precision-mode t)
  '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)
@@ -104,7 +111,6 @@
  '(resize-mini-windows t)
  '(ring-bell-function 'ignore)
  '(savehist-mode t)
- '(scroll-bar-mode nil)
  '(scroll-conservatively 101)
  '(scroll-preserve-screen-position 1)
  '(search-default-mode t)
@@ -118,6 +124,7 @@
  '(trash-directory "~/.Trash")
  '(truncate-lines t)
  '(use-package-always-ensure t)
+ '(use-package-verbose t)
  '(user-mail-address "henry.mthsn@gmail.com")
  '(warning-minimum-level :emergency)
  '(winner-mode t))
@@ -126,10 +133,10 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :height 130 :family "Hack"))))
+ '(default ((t (:height 130 :family "Go Mono"))))
  '(error ((t :underline nil)))
- '(fixed-pitch ((t (:inherit 'default :familiy "Hack"))))
- '(fixed-pitch-serif ((t (:inherit 'default :familiy "Go Mono"))))
+ '(fixed-pitch ((t (:familiy "Go Mono"))))
+ '(fixed-pitch-serif ((t (:familiy "Go Mono"))))
  '(flymake-error ((t (:underline nil))))
  '(flymake-note ((t (:underline nil))))
  '(flymake-warning ((t (:underline nil))))
@@ -137,7 +144,7 @@
  '(info-title-2 ((t (:height 1.5))))
  '(info-title-3 ((t (:height 1.3))))
  '(info-title-4 ((t (:height 1.1))))
- '(variable-pitch ((t (:inherit 'default :family "Noto Sans"))))
+ '(variable-pitch ((t (:family "Literata"))))
  '(warning ((t :underline nil))))
 
 ;;; Consts
@@ -171,10 +178,10 @@
 
 (setq-default ns-use-proxy-icon nil)
 
-;; Modus themes
+;; Theme
 (use-package modus-themes
   :config
-  (modus-themes-load-theme 'modus-vivendi)
+  (modus-themes-load-theme 'modus-vivendi-tinted)
   (define-key global-map (kbd "<f5>") #'modus-themes-toggle)
   :custom
   ((modus-themes-common-palette-overrides
@@ -184,7 +191,8 @@
       (bg-line-number-active bg-hl-line)
       ;; Make the fringe invisible
       (fringe unspecified)))
-   (modus-themes-to-toggle '(modus-vivendi modus-operandi-tinted))
+   (modus-themes-completions '())
+   (modus-themes-to-toggle '(modus-vivendi-tinted modus-operandi-tinted))
    (modus-themes-bold-constructs t)
    (modus-themes-italic-constructs t)
    (modus-themes-variable-pitch-ui nil)))
@@ -204,12 +212,6 @@
 ;; Remove `vc-mode' from mode-line
 (setq-default mode-line-format
               (delete '(vc-mode vc-mode) mode-line-format))
-
-(use-package marginalia
-  :custom
-  (marginalia-field-width 100)
-  :init
-  (marginalia-mode))
 
 (use-package page-break-lines
   :config (global-page-break-lines-mode))
@@ -238,33 +240,49 @@
   :config
   (rich-minority-mode t))
 
-;;; Completion & Navigation
+;;; Minibuffer
+
+(use-package vertico
+  :init
+  (vertico-mode)
+  :bind (:map vertico-map
+              ("DEL" . vertico-directory-delete-char)
+              ("C-v" . vertico-scroll-up)
+              ("M-v" . vertico-scroll-down))
+  :custom
+  ((vertico-count 20)
+   (vertico-cycle t)
+   (vertico-resize 'grow-only)
+   (vertico-scroll-margin 5)))
+
+(use-package marginalia
+  :custom
+  (marginalia-field-width 100)
+  :init
+  (marginalia-mode))
+
+;;; Completion
 
 ;; No help while completing
 (setq completion-show-inline-help nil)
 
-;; Re-map M-<up> and M-<down> to easier keys
-(define-key completion-in-region-mode-map (kbd "M-n") 'minibuffer-next-completion)
-(define-key completion-in-region-mode-map (kbd "M-p") 'minibuffer-previous-completion)
-(define-key minibuffer-mode-map (kbd "M-n") 'minibuffer-next-completion)
-(define-key minibuffer-mode-map (kbd "M-p") 'minibuffer-previous-completion)
-
-;; Toggle icomplet vertical mode
-(define-key icomplete-minibuffer-map (kbd "C-v") 'icomplete-vertical-mode)
-
 ;; Some settings for the *Completions* buffer
-(add-hook 'completion-list-mode-hook
-          (lambda ()
-            ;; (setq mode-line-format nil)
-            (hl-line-mode t)))
+;; (define-key completion-list-mode-map (kbd "M-n") 'next-line)
+;; (define-key completion-list-mode-map (kbd "M-p") 'previous-line)
+;; (add-hook 'completion-list-mode-hook
+;;           (lambda ()
+;;             (setq mode-line-format nil)
+;;             (hl-line-mode t)))
 
 (use-package orderless
   :ensure t
   :custom
   (completion-styles '(basic orderless))
-  (completion-category-overrides '((file (styles basic partial-completion))))
-  (orderless-matching-styles
-   '(orderless-regexp orderless-literal orderless-initialism orderless-prefixes orderless-flex)))
+  (completion-category-overrides
+   '((file (styles basic partial-completion))
+     (buffer (styles orderless basic))))
+  (orderless-matching-styles '(orderless-literal orderless-regexp))
+  (orderless-style-dispatchers '(orderless-affix-dispatch)))
 
 ;; Replace dabbrev-expand with hippie-expand
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
@@ -285,22 +303,16 @@ dabbrev functions first."
 (setq hippie-expand-try-functions-list (hippie-try-function-dabbrev-first))
 
 (use-package yasnippet
-  :custom (yas-indent-line 'fixed)
+  :custom (yas-indent-line 'auto)
   :config (yas-global-mode t))
 
 ;; Search and navigation
 (use-package consult
   :config
-  ;; (setq completion-in-region-function #'consult-completion-in-region)
-  )
-(use-package multiple-cursors
-  :config
-  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-  (global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
-  (global-unset-key (kbd "M-<down-mouse-1>"))
-  (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))
+  ;; Previews when in *Completions*
+  (add-hook 'completion-list-mode-hook #'consult-preview-at-point-mode)
+  ;; Completion in region is done with the minibuffer
+  (setq completion-in-region-function #'consult-completion-in-region))
 
 ;;; Files
 
@@ -326,8 +338,7 @@ dabbrev functions first."
   ;; Guess a default target directory
   (setq dired-dwim-target t))
 
-(use-package diredfl
-  :config (diredfl-global-mode))
+(use-package diredfl :config (diredfl-global-mode))
 
 ;; Quicker switch to buffer
 (global-set-key (kbd "s-b") 'switch-to-buffer)
@@ -340,24 +351,33 @@ dabbrev functions first."
   :config
   (rg-enable-default-bindings)
   (rg-define-toggle "--context=10" "C" nil)
-  (rg-define-search project-search-regex
+  (rg-define-search rg-project-regex
     "Search in project using regex."
     :query ask
     :format regexp
     :files "everything"
     :dir project)
-  (define-key project-prefix-map (kbd "g") 'project-search-regex))
+  (define-key project-prefix-map (kbd "g") 'rg-project-regex)
+  (define-key isearch-mode-map (kbd "M-s r") 'rg-isearch-menu))
 
 ;;; Languages
 
 ;; Eglot
 (use-package eglot
-  :ensure nil
+  :preface
+  (defun setup-other-flymake-backends ()
+    "This needs to be implemented here as `eglot' completely overrides
+`flymake-diagnostic-functions' when it starts."
+    (cond ((derived-mode-p 'typescript-ts-mode 'tsx-ts-mode)
+           (flymake-eslint-enable))
+          ((derived-mode-p 'ruby-ts-mode)
+           (add-hook 'flymake-diagnostic-functions
+                     'ruby-flymake-auto))))
   :hook ((ruby-ts-mode       . eglot-ensure)
          (typescript-ts-mode . eglot-ensure)
          (tsx-ts-mode        . eglot-ensure)
-         (c++-ts-mode        . eglot-ensure)
-         (go-ts-mode         . eglot-ensure)))
+         (go-ts-mode         . eglot-ensure)
+         (eglot-managed-mode . setup-other-flymake-backends)))
 
 ;; TS/TSX
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
@@ -384,8 +404,8 @@ dabbrev functions first."
 
 ;; Enable eslint for flymake
 (use-package flymake-eslint
-  :hook (tsx-ts-mode . (lambda ()
-                         (flymake-eslint-enable))))
+  :hook ((tsx-ts-mode . flymake-eslint-enable)
+         (typescript-ts-mode . flymake-eslint-enable)))
 
 ;; Flymake
 (use-package flymake
@@ -514,30 +534,30 @@ dabbrev functions first."
 (require 'tasks)
 
 (define-task rails-migrate
+  "Run migrations in rails project"
   :command "bundle exec rails db:migrate"
-  :description "Run migrations in rails project"
-  :project-path "~/Code/elevo-rails/")
+  :project t)
 
 (define-task rails-gettext
+  "Regenerate translation files in rails project"
   :command "bundle exec rails gettext:update"
-  :description "Regenerate translation files in rails project"
-  :project-path "~/Code/elevo-rails/")
+  :project t)
 
 (define-task sort-forestschema
+  "Sort `.forestadmin-schema.json' file"
   :command "bundle exec bin/sort_forestschema"
-  :project-path "~/Code/elevo-rails/"
-  :description "Sort `.forestadmin-schema.json' file"
+  :path "~/Code/elevo-rails/"
   :async nil)
 
 (define-task annotate-models
+  "Annotate rails models"
   :command "bundle exec rails annotate_models"
-  :project-path "~/Code/elevo-rails/"
-  :description "Annotate rails models")
+  :project t)
 
 (define-task pre-commit
+  "Run all pre-commit checks against all files"
   :command "pre-commit run --all-files"
-  :project-path "~/Code/elevo-rails"
-  :description "Run all pre-commit checks against all files")
+  :project t)
 
 ;; Format buffer with the given command
 (require 'format-buffer)
@@ -557,11 +577,31 @@ dabbrev functions first."
   :command "clang-format")
 
 (use-package prettier
-  :config
-  (let ((prettify-hook (lambda ()
-                         (local-set-key (kbd "C-c f") 'prettier-prettify))))
-    (add-hook 'typescript-ts-mode-hook prettify-hook)
-    (add-hook 'tsx-ts-mode-hook prettify-hook)))
+  :custom
+  (prettier-prettify-on-save-flag nil)
+  (cl-flet ((prettify-hook ()
+              (prettier-mode)
+              (local-set-key (kbd "C-c f") 'prettier-prettify)))
+    (add-hook 'typescript-ts-mode-hook #'prettify-hook)
+    (add-hook 'tsx-ts-mode-hook #'prettify-hook)))
+
+;;; Gnus
+
+(setopt gnus-select-method '(nnnil "")
+        gnus-secondary-select-methods
+        '((nntp "news.gmane.io")
+          (nnimap "gmail"
+                  (nnimap-address "imap.gmail.com")
+                  (nnimap-user "henry.mthsn@gmail.com")
+                  (nnimap-server-port 993)
+                  (nnmail-expiry-target "nnimap+gmail:[Gmail]/All Mail")
+                  (nnimap-stream ssl)
+                  (nnmail-expiry-wait immediate))
+          (nnatom "planet.gnu.org/atom.xml")
+          (nnatom "planet.emacslife.com/atom.xml")))
+
+(add-hook 'gnus-group-mode-hook #'gnus-topic-mode)
+(add-hook 'gnus-select-group-hook #'gnus-group-set-timestamp)
 
 ;;; Org
 
@@ -569,45 +609,52 @@ dabbrev functions first."
   :ensure nil
   :preface
   (defun my-org-mode-hook ()
-    (visual-line-mode 1)
-    (windmove-mode -1)
+    (visual-line-mode)
+    (visual-fill-column-mode)
+    (adaptive-wrap-prefix-mode)
+    (setq fill-column 90)
     ;; Bigger font for title and levels
     ;; It lives here since a lot of themes like to override this
-    (set-face-attribute 'org-document-title nil :height 1.7)
-    (set-face-attribute 'org-level-1 nil :height 1.5)
-    (set-face-attribute 'org-level-2 nil :height 1.3)
-    (set-face-attribute 'org-level-3 nil :height 1.1))
+    (set-face-attribute 'org-document-title nil :height 1.3))
   :hook ((org-mode . my-org-mode-hook))
   :bind (("C-c l" . org-store-link)
          ("C-c a" . org-agenda)
          ("C-c c" . org-capture))
+  :custom
+  ((org-directory (file-name-as-directory (expand-file-name "~/org")))
+   (org-agenda-files (list org-directory))
+   (org-startup-folded 'content)
+   (org-refile-targets
+    '(("projects.org" :level 1)
+      ("collections.org" :level 1)
+      ("agenda.org" :regexp "Tasks")))
+   (org-todo-keywords
+    '((sequence "TODO(t)" "ON GOING(g)" "HOLD(h)" "|" "DONE(d)")))
+   (org-capture-templates
+    '(("i" "Inbox" entry (file "inbox.org")
+       "* TODO %?\n"
+       :prepend t :empty-lines-before 1)
+      ("n" "Note" entry (file "notes.org")
+       "* %?\n"
+       :prepend t :empty-lines-before 1)
+      ("a" "Agenda" entry (file+headline "agenda.org" "Tasks")
+       "* %?\n"
+       :prepend t :empty-lines-before 1)))
+   (org-agenda-prefix-format
+    '((agenda . "  %-10:c%?-12t")
+      (todo   . "  %-10:c")
+      (tags   . "  %-10:c")
+      (search . "  %-10:c")))
+   (org-agenda-custom-commands
+    '(("d" "Daily view"
+       ((agenda nil
+                ((org-agenda-span 'day)))
+        (todo "ON GOING"
+              ((org-agenda-overriding-header "Current Tasks:")))
+        (todo "HOLD"
+              ((org-agenda-overriding-header "On Hold:")))))))
+   (org-deadline-warning-days 0))
   :config
-  ;; files
-  (setq org-directory "~/org/")
-  (setq org-agenda-files (list org-directory))
-  ;; others
-  (setq org-startup-folded 'fold)
-  (setq org-log-done 'time)
-  (setq org-todo-keywords
-        '((sequence "TODO(t)" "ON GOING(g)" "|" "DONE(d)" "WON'T DO(w)")
-          (sequence "TODO(T)" "IN PROGRESS(P)" "TO REVIEW(R)" "TO TEST(F)"
-                    "READY TO MERGE(M)" "|" "DONE(D)")))
-  (setq org-capture-templates
-        '(("i" "Emacs Ideas" entry
-           (file+headline (lambda () (concat org-directory "journal.org"))
-                          "Ideas")
-           "* %?\nEntered on: %u")
-          ("m" "Merge Request" entry
-           (file (lambda () (concat org-directory "tasks.org"))
-                 "Merge Requests")
-           "* %?\n")
-          ("t" "Todo" entry
-           (file (lambda () (concat org-directory "tasks.org")))
-           "* TODO %?\n")
-          ("T" "Ticket" entry
-           (file+headline (lambda () (concat org-directory "tasks.org"))
-                          "Tickets")
-           "* IN PROGRESS %?\nSCHEDULED: %t")))
   (define-skeleton org-refinement-skeleton
     "Refinement Template."
     "Insert Refinement subject: "
@@ -637,25 +684,7 @@ dabbrev functions first."
     "* Tickets\n")
   (define-auto-insert
     '("refinements/.*\.org" . "Refinement template")
-    'org-refinement-skeleton)
-  (define-skeleton org-tmp-skeleton
-    "tmp notes/to be imported elsewhere."
-    "Insert title: "
-    "# -*- eval: (auto-fill-mode -1) -*-"
-    "#+TITLE: " str "\n"
-    "#+DATE: " "<" (format-time-string "%Y-%m-%d") ">" "\n"
-    "#+OPTIONS: toc:nil\n\n")
-  (define-auto-insert
-    '("tmp/.*\.org" . "Tmp notes")
-    'org-tmp-skeleton)
-  (define-auto-insert
-    '("tickets/.*\.org" . "Org ticket")
-    '(nil
-      "#+TITLE: "
-      (humanize-branch-name
-       (file-name-sans-extension
-        (car (last (split-string (buffer-file-name) "/")))))
-      "\n")))
+    'org-refinement-skeleton))
 
 (use-package org-present)
 
@@ -668,6 +697,9 @@ dabbrev functions first."
           ("fr" . "en"))))
 
 (require 'isearch-transient)
+
+(add-hook 'prog-mode-hook
+          'turn-on-auto-fill)
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
@@ -699,6 +731,20 @@ dabbrev functions first."
   :custom
   (auto-save-buffer t))
 
+(use-package iedit)
+
+(use-package visual-fill-column)
+(use-package adaptive-wrap)
+
+;; (use-package multiple-cursors
+;;   :config
+;;   (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+;;   (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+;;   (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+;;   (global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
+;;   (global-unset-key (kbd "M-<down-mouse-1>"))
+;;   (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))
+
 (defun kill-ring-save-whole-buffer ()
   "Save whole buffer to the kill ring."
   (interactive)
@@ -725,7 +771,6 @@ vlf to see long log files."
     (interactive)
     (let ((inhibit-read-only t))
       (ansi-color-apply-on-region (point-min) (point-max)))))
-
 
 ;;; Project
 
@@ -826,11 +871,8 @@ vlf to see long log files."
       (kill-new url)
       (message (concat "Saved '" url "' to kill ring.")))))
 
-(defun org-make-file-for-branch ()
-  "Create a new org file for the current branch"
-  (interactive)
-  (with-current-branch branch
-    (find-file (concat org-directory "tickets/" branch ".org"))))
+;; Smerge
+(setopt smerge-command-prefix (kbd "C-c v"))
 
 ;;; Utils
 
@@ -845,7 +887,8 @@ vlf to see long log files."
 (when *is-a-mac*
   (setenv "DYLD_LIBRARY_PATH" "/opt/homebrew/lib")
   (setenv "LIBRARY_PATH" "/opt/homebrew/lib")
-  (setenv "C_PATH" "/opt/homebrew/include"))
+  (setenv "C_PATH" "/opt/homebrew/include")
+  (setopt Info-additional-directory-list '("/opt/homebrew/share/info")))
 
 (defun macroexpand-point (sexp)
   "Expand macro SEXP at point to temp buffer."
@@ -959,6 +1002,7 @@ name is saved to the kill ring"
 (require 'emacsocil)
 
 (define-layout elevo
+  "Run elevo rails in main vertical layout"
   :project-path "~/Code/elevo-rails/"
   :procs '("start-rails-server" "start-sidekiq" "start-client")
   :layout :main-vertical
@@ -969,6 +1013,13 @@ name is saved to the kill ring"
   :config
   (unless (server-running-p)
     (server-start)))
+
+
+;; LLM
+(use-package ellama
+  :hook (org-ctrl-c-ctrl-c-final . ellama-chat-send-last-message)
+  :custom
+  (ellama-auto-scroll t))
 
 (provide 'init)
 

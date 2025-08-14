@@ -42,12 +42,13 @@
                         program
                         input-file
                         (list (list :file stdout-file) stderr-file)
-                        t
+                        nil
                         args))) ; save return code
             ;; Save stderr in error buffer
             (with-current-buffer error-buffer
               (let ((inhibit-read-only t))
                 (insert-file-contents stderr-file nil nil nil t))
+              (ansi-color-apply-on-region (point-min) (point-max))
               (special-mode))
             ;; Update buffer if formatter returns 0
             ;; else, display error buffer
@@ -56,7 +57,8 @@
                   (save-restriction
                     (narrow-to-region beg end)
                     (insert-file-contents stdout-file nil nil nil t)
-                    (goto-char point-pos)))
+                    (goto-char point-pos))
+                  (kill-buffer error-buffer ))
               (display-buffer error-buffer))))
       (delete-file input-file)
       (delete-file stdout-file)

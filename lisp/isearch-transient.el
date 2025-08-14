@@ -92,6 +92,10 @@
     ("o"
      "occur"
      isearch-occur
+     :transient nil)
+    ("r"
+     "Ripgrep"
+     rg-isearch-menu
      :transient nil)]])
 
 (define-key isearch-mode-map (kbd "M-m") 'isearch-menu)
