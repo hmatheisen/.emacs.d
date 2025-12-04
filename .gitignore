@@ -1,15 +1,9 @@
 *
 !.gitignore
-!README.org
-
 !init.el
-!early-init.el
-!mini.el
 
-!snippets
-!snippets/*
+!elisp
+!elisp/*.el
 
-!lisp
-!lisp/*.el
-
-!abbrev_defs
+!hma
+!hma/*.el
