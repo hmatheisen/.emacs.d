@@ -53,6 +53,10 @@
  '(completions-sort 'historical)
  '(confirm-kill-emacs 'y-or-n-p)
  '(context-menu-mode t)
+ '(custom-safe-themes
+   '("1b7e575c6681e66d8d83634c2c160b40af12f3756360a4dd81b8032f4495cb5e"
+     "ed2efc874021b54144b9ed9874e4d9c036090488aeabe19c9ac28576a162ec12"
+     "4513755b1c9b35e1a37c58b0eac79b8f5bb9d6334f59d17aae54d46a0d2e462d" default))
  '(default-frame-alist
    '((ns-transparent-titlebar . t) (width . 120) (height . 60) (top . 100)
      (left . 100) (horizontal-scroll-bars)))
@@ -132,10 +136,10 @@
  '(package-native-compile t)
  '(package-quickstart t)
  '(package-selected-packages
-   '(cmake-mode corfu csv dart-mode eldoc-box exec-path-from-shell flutter magit
-                marginalia markdown-mode modus-themes multiple-cursors prettier
-                rainbow-mode ruby-electric sass-mode sly treemacs vterm
-                yaml-mode))
+   '(chess cmake-mode corfu csv dart-mode ef-themes eldoc-box exec-path-from-shell
+           flutter magit marginalia markdown-mode modus-themes multiple-cursors
+           prettier rainbow-mode ruby-electric sass-mode sly treemacs vala-mode
+           vterm yaml-mode))
  '(pixel-scroll-mode t)
  '(pixel-scroll-precision-mode t)
  '(project-buffers-viewer 'project-list-buffers-ibuffer)

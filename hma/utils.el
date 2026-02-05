@@ -122,5 +122,12 @@
 
 (global-set-key (kbd "C-x B") 'new-buffer)
 
+(defvar hma/current-time-format "%d-%m-%Y (%H:%M:%S)")
+
+(defun hma/insert-current-date-time ()
+  "Insert the current date and time into current buffer."
+  (interactive)
+  (insert (format-time-string hma/current-time-format (current-time))))
+
 (provide 'utils)
 ;;; utils.el ends here

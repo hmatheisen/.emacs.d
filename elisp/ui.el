@@ -26,6 +26,10 @@
 
 (setq-default ns-use-proxy-icon nil)
 
+;; (use-package ef-themes
+;;   :config
+;;   (load-theme 'ef-dream))
+
 (use-package modus-themes
   :ensure t
   :config
@@ -41,15 +45,15 @@
       (bg-mode-line-active bg-lavender)
       (border-mode-line-active indigo)
 
-      (comment cyan-faint)
-      (builtin magenta-warmer)
-      (constant blue-cooler)
-      (fnname magenta)
-      (keyword magenta-cooler)
-      (property cyan)
-      (type cyan-cooler)
-      (string blue-warmer)
-      (variable cyan)
+      ;; (comment cyan-faint)
+      ;; (builtin magenta-warmer)
+      ;; (constant blue-cooler)
+      ;; (fnname magenta)
+      ;; (keyword magenta-cooler)
+      ;; (property cyan)
+      ;; (type cyan-cooler)
+      ;; (string blue-warmer)
+      ;; (variable cyan)
 
       (fringe unspecified)
       (cursor magenta-intense)
