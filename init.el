@@ -40,7 +40,7 @@
  '(comment-auto-fill-only-comments t)
  '(completion-auto-select 'second-tab)
  '(completion-cycle-threshold nil)
- '(completion-eager-display t)
+ '(completion-eager-display 'auto)
  '(completion-eager-update t)
  '(completion-show-help nil)
  '(completions-detailed t)
@@ -51,10 +51,7 @@
  '(confirm-kill-emacs 'y-or-n-p)
  '(context-menu-mode t)
  '(custom-safe-themes
-   '("967c23e9ba179b80560774419f081df22e7674aac23c5c550b817e4a1ce7d058"
-     "ed2efc874021b54144b9ed9874e4d9c036090488aeabe19c9ac28576a162ec12"
-     "e684e71b7276a85c0ec8ee8f3ff4bc6b61dbc1694288ad049e062029fc072e54"
-     "68e9ab92a95e1ab84478c94a912766b00cf2b492b6b56db39f7e5d31c65498a2" default))
+   '("967c23e9ba179b80560774419f081df22e7674aac23c5c550b817e4a1ce7d058" default))
  '(default-frame-alist
    '((ns-transparent-titlebar . t) (fullscreen . maximized) (vertical-scroll-bar)
      (horizontal-scroll-bar)))
@@ -90,18 +87,6 @@
  '(global-reveal-mode t)
  '(global-so-long-mode t)
  '(grep-command "rg --no-heading ")
- '(grep-find-ignored-directories
-   '("SCCS" "RCS" "CVS" "MCVS" ".src" ".svn" ".git" ".hg" ".bzr" "_MTN" "_darcs"
-     "{arch}" "node_modules" "dist" ".yarn"))
- '(grep-find-ignored-files
-   '(".#*" "*.o" "*~" "*.bin" "*.lbin" "*.so" "*.a" "*.ln" "*.blg" "*.bbl" "*.elc"
-     "*.lof" "*.glo" "*.idx" "*.lot" "*.fmt" "*.tfm" "*.class" "*.fas" "*.lib"
-     "*.mem" "*.x86f" "*.sparcf" "*.dfsl" "*.pfsl" "*.d64fsl" "*.p64fsl"
-     "*.lx64fsl" "*.lx32fsl" "*.dx64fsl" "*.dx32fsl" "*.fx64fsl" "*.fx32fsl"
-     "*.sx64fsl" "*.sx32fsl" "*.wx64fsl" "*.wx32fsl" "*.fasl" "*.ufsl" "*.fsl"
-     "*.dxl" "*.lo" "*.la" "*.gmo" "*.mo" "*.toc" "*.aux" "*.cp" "*.fn" "*.ky"
-     "*.pg" "*.tp" "*.vr" "*.cps" "*.fns" "*.kys" "*.pgs" "*.tps" "*.vrs"
-     "*.pyc" "*.pyo" "*.log"))
  '(grep-use-headings t)
  '(grep-use-null-device nil)
  '(help-at-pt-display-when-idle 'never nil (help-at-pt))
@@ -144,8 +129,8 @@
  '(package-native-compile t)
  '(package-quickstart t)
  '(package-selected-packages
-   '(alabaster-themes editorconfig ef-themes eglot exec-path-from-shell magit
-                      marginalia markdown-mode markdown-ts-mode orderless vterm))
+   '(editorconfig eglot exec-path-from-shell magit marginalia markdown-mode
+                  markdown-ts-mode modus-themes orderless vterm))
  '(pixel-scroll-mode t)
  '(pixel-scroll-precision-mode t)
  '(project-buffers-viewer 'project-list-buffers-ibuffer)
@@ -184,7 +169,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Monaspace Neon" :height 120))))
+ '(default ((t (:family "Monaspace Neon" :height 110))))
  '(error ((t (:underline nil))))
  '(fill-column-indicator ((t :height 1.0 :background nil)))
  '(fixed-pitch ((t (:inherit default))))
@@ -214,9 +199,17 @@
 
 (defun hma/typescript-ts-mode-hook ()
   "Typescript mode hook."
-  (set-fill-column 100))
+  (set-fill-column 100)
+  (eglot-ensure))
 
 (add-hook 'typescript-ts-mode-hook #'hma/typescript-ts-mode-hook)
+
+(defun hma/tsx-ts-mode-hook ()
+  "TSX mode hook."
+  (set-fill-column 100)
+  (eglot-ensure))
+
+(add-hook 'tsx-ts-mode-hook #'hma/tsx-ts-mode-hook)
 
 ;;; UI
 
@@ -240,26 +233,26 @@
 ;; Overrides default implementation to remove minor modes because I do not know
 ;; how to do this differently.
 (setq mode-line-modes
-  (let ((recursive-edit-help-echo
-         "Recursive edit, type C-M-c to get out"))
-    (list (propertize "%[" 'help-echo recursive-edit-help-echo)
-          '(:eval (car mode-line-modes-delimiters))
-	  `(:propertize ("" mode-name)
-			help-echo "Major mode\n\
+      (let ((recursive-edit-help-echo
+             "Recursive edit, type C-M-c to get out"))
+        (list (propertize "%[" 'help-echo recursive-edit-help-echo)
+              '(:eval (car mode-line-modes-delimiters))
+	          `(:propertize ("" mode-name)
+			                help-echo "Major mode\n\
 mouse-1: Display major mode menu\n\
 mouse-2: Show help for major mode\n\
 mouse-3: Toggle minor modes"
-			mouse-face mode-line-highlight
-			local-map ,mode-line-major-mode-keymap)
-	  '("" mode-line-process)
-	  (propertize "%n" 'help-echo "mouse-2: Remove narrowing from buffer"
-		      'mouse-face 'mode-line-highlight
-		      'local-map (make-mode-line-mouse-map
-				  'mouse-2 #'mode-line-widen))
-	  ;; '("" mode-line-minor-modes)
-          '(:eval (cdr mode-line-modes-delimiters))
-	  (propertize "%]" 'help-echo recursive-edit-help-echo)
-	  " ")))
+			                mouse-face mode-line-highlight
+			                local-map ,mode-line-major-mode-keymap)
+	          '("" mode-line-process)
+	          (propertize "%n" 'help-echo "mouse-2: Remove narrowing from buffer"
+		                  'mouse-face 'mode-line-highlight
+		                  'local-map (make-mode-line-mouse-map
+				                      'mouse-2 #'mode-line-widen))
+	          ;; '("" mode-line-minor-modes)
+              '(:eval (cdr mode-line-modes-delimiters))
+	          (propertize "%]" 'help-echo recursive-edit-help-echo)
+	          " ")))
 
 ;; Keys
 
@@ -344,7 +337,7 @@ mouse-3: Toggle minor modes"
   :config
   (keymap-set minibuffer-local-completion-map "SPC" #'self-insert-command)
   :custom
-  (completion-styles '(orderless basic))
+  (completion-styles '(orderless flex basic))
   (completion-category-overrides '((file (styles partial-completion))))
   (completion-pcm-leading-wildcard t))
 
