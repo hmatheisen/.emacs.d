@@ -49,20 +49,31 @@
  '(delete-selection-mode t)
  '(dired-listing-switches
    "-aFGhlv --dired --group-directories-first --time-style=long-iso")
+ '(display-buffer-alist
+   '(("\\*eldoc" display-buffer-below-selected (window-height . 0.2) (no-other-window . t)
+      (no-delete-other-windows . t))))
+ '(display-line-numbers-width 4)
  '(eglot-code-action-indications nil)
  '(eglot-documentation-renderer 'markdown-ts-view-mode)
+ '(eglot-ignored-server-capabilities '(:inlayHintProvider))
+ '(eldoc-echo-area-prefer-doc-buffer t)
  '(eldoc-echo-area-use-multiline-p t)
  '(electric-pair-mode t)
  '(enable-recursive-minibuffers t)
  '(fill-column 100)
  '(fit-frame-to-buffer t)
+ '(frame-resize-pixelwise t)
  '(global-goto-address-mode t)
  '(global-so-long-mode t)
  '(grep-command "rg --no-heading -C 5 -e ")
  '(grep-use-headings t)
  '(grep-use-null-device nil)
+ '(ibuffer-expert t)
+ '(ibuffer-use-other-window t)
  '(icon-preference '(text))
  '(indent-tabs-mode nil)
+ '(log-edit-hook
+   '(log-edit-insert-changelog log-edit-show-files log-edit-maybe-show-diff))
  '(minibuffer-auto-raise t)
  '(minibuffer-completion-auto-choose t)
  '(minibuffer-depth-indicate-mode t)
@@ -92,9 +103,11 @@
    '(("gnu" . "https://elpa.gnu.org/packages/") ("nongnu" . "https://elpa.nongnu.org/nongnu/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(consult doric-themes ef-themes exec-path-from-shell magit marginalia vterm))
+   '(dictionary editorconfig eglot exec-path-from-shell ghostel less-css-mode magit marginalia
+                markdown-ts-mode org page-break-lines terraform-mode transient treemacs which-key))
  '(pixel-scroll-mode t)
  '(pixel-scroll-precision-mode t)
+ '(pixel-scroll-precision-use-momentum t)
  '(recentf-auto-cleanup 'never)
  '(recentf-mode t)
  '(repeat-mode t)
@@ -104,9 +117,18 @@
  '(scroll-step 5)
  '(server-mode t)
  '(tool-bar-mode nil)
+ '(treemacs-no-png-images t)
+ '(treemacs-width 50)
  '(truncate-lines t)
+ '(vc-allow-async-diff t)
+ '(vc-allow-async-revert t)
+ '(vc-allow-rewriting-published-history 'ask)
+ '(vc-async-checkin t)
+ '(vc-auto-revert-mode t)
+ '(vc-handled-backends '(Git))
  '(which-key-mode t)
  '(windmove-default-keybindings '([ignore] meta super))
+ '(window-resize-pixelwise t)
  '(winner-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -133,6 +155,9 @@
  '(variable-pitch ((t (:inherit default))))
  '(warning ((t (:underline nil)))))
 
+
+;;; Packages
+
 ;; Enable theme.  Must be after customize if we want the palette overrides to take effect
 (load-theme 'modus-vivendi)
 
@@ -146,6 +171,10 @@
   :config
   (when (memq window-system '(mac ns x pgtk))
     (exec-path-from-shell-initialize)))
+
+(use-package treemacs
+  :ensure t
+  :bind ("s-t" . treemacs))
 
 (defun hma/prog-mode-hook ()
   "Hook function for `prog-mode'."
@@ -161,6 +190,11 @@
 
 (add-hook 'prog-mode-hook #'hma/prog-mode-hook)
 
+(use-package page-break-lines
+  :functions global-page-break-lines-mode
+  :config (global-page-break-lines-mode))
+
+
 ;;; Languages
 
 ;; Require Markdown TS for Eglot's documentation
@@ -179,6 +213,10 @@
 
 (add-hook 'tsx-ts-mode-hook #'hma/tsx-ts-mode-hook)
 
+;;;; Biome
+
+;; Flymake backend
+
 (defvar-local hma/biome--flymake-proc nil)
 (defvar-local hma/biome--flymake-regexp
   "^::\\(\\w+\\) title=\\(\.*\\),file=.*,line=\\([0-9]+\\).*col=\\([0-9]+\\).*::\\(.*\\)$")
@@ -188,7 +226,7 @@
 REPORT-FN is the report function to call from Flymake"
   ;; Check executable
   (unless (executable-find "biome")
-    (error "Cannot find biome executable"))
+    (flymake-log :error "Cannot find biome executable"))
   ;; Kill existing process
   (when (process-live-p hma/biome--flymake-proc)
     (kill-process hma/biome--flymake-proc))
@@ -201,7 +239,7 @@ REPORT-FN is the report function to call from Flymake"
        (make-process
         :name "biome-flymake" :noquery t :connection-type 'pipe
         :buffer (generate-new-buffer " *biome-flymake*")
-        :command `("biome" "lint" "--reporter" "github" ,file-name)
+        :command `("npx" "biome" "lint" "--reporter" "github" ,file-name)
         :sentinel
         (lambda (proc _event)
           (when (memq (process-status proc) '(exit signal))
@@ -229,11 +267,8 @@ REPORT-FN is the report function to call from Flymake"
                                                         message)
                        into diags
                        finally (funcall report-fn diags)))
-                  (flymake-log :warning "Canceling obsolete check %s"
-                               proc))
-              (kill-buffer (process-buffer proc)))))))
-      (process-send-region hma/biome--flymake-proc (point-min) (point-max))
-      (process-send-eof hma/biome--flymake-proc))))
+                  (flymake-log :warning "Canceling obsolete check %s" proc))
+              (kill-buffer (process-buffer proc))))))))))
 
 (defun hma/biome-setup-flymake-backend ()
   "Add Biome to flymake backends."
@@ -249,7 +284,13 @@ It is used to setup other flymake backends since Eglot overrides the list"
 
 (add-hook 'eglot-managed-mode-hook #'hma/eglot-managed-mode-hook)
 
+;; Compilation regexp
 
+(add-to-list 'compilation-error-regexp-alist-alist
+             '(biome "^\\(.*\\):\\([0-9]+\\):\\([0-9]+\\).*━$" 1 2 3))
+(add-to-list 'compilation-error-regexp-alist 'biome)
+
+
 ;;; Keymaps settings
 
 (keymap-global-set "M-/" 'hippie-expand)
@@ -280,6 +321,7 @@ It is used to setup other flymake backends since Eglot overrides the list"
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
+
 ;;; Window handling
 
 ;; Scroll by half page by default
@@ -315,10 +357,10 @@ It is used to setup other flymake backends since Eglot overrides the list"
   (unless buffer-file-name
     (error "project-absolute-file-path: Could not get buffer file name"))
   (with-current-project project
-			(let* ((root (project-root project))
-			       (absolute-file-path (file-relative-name buffer-file-name root)))
-			  (kill-new absolute-file-path)
-			  (message (concat "Saved \"" absolute-file-path "\" to kill ring")))))
+    (let* ((root (project-root project))
+	   (absolute-file-path (file-relative-name buffer-file-name root)))
+      (kill-new absolute-file-path)
+      (message (concat "Saved \"" absolute-file-path "\" to kill ring")))))
 
 (defun project-copy-relative-path ()
   "Print and kill the absolute file path of the current buffer in a project."
@@ -327,6 +369,7 @@ It is used to setup other flymake backends since Eglot overrides the list"
 
 (keymap-set project-prefix-map "C-y" #'project-copy-relative-path)
 
+
 ;;; Utils
 
 (defun new-buffer (new-buffer-name)
@@ -336,5 +379,12 @@ It is used to setup other flymake backends since Eglot overrides the list"
    (concat "*" new-buffer-name "*")))
 
 (global-set-key (kbd "C-x B") 'new-buffer)
+
+(use-package ghostel
+  :bind
+  (("C-x m" . ghostel)
+   :map project-prefix-map
+   ("m" . ghostel-project)
+   ("M" . ghostel-project-list-buffers)))
 
 ;;; init.el ends here
